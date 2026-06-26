@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://c2330742-cell.github.io/termite-biotech-and-unbounded/sitemap.xml

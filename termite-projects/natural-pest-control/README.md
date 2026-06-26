@@ -112,7 +112,7 @@ natural-pest-control/
 | 3 | 2026-04-01 | Borax 25% bait granules | 92% mortality, 14-day feeding |
 | 4 | 2026-04-15 | S. carpocapsae at 2×10⁶/mL | 76% mortality, 7-day soil assay |
 
-See `implementation/product-formulation-recipes.md:238` for full results.
+See `implementation/product-formulation-recipes.md` (line 238) for full results.
 
 ## Timeline
 - ✅ Months 1-2: Research and formulation (complete)

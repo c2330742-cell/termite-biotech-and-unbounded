@@ -1,11 +1,39 @@
+# Python
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
-.DS_Store
-Thumbs.db
 *.egg-info/
 dist/
 build/
+.eggs/
+*.whl
+*.egg
+
+# Environment
 .env
+.venv/
+venv/
+
+# Node
 node_modules/
+
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+
+# Project specific
+*.log
+*.db
+*.sqlite

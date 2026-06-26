@@ -340,7 +340,7 @@
 ## 7. FILE LOCATIONS
 
 All files are saved in:
-**C:\termite-projects\funding-partnerships\**
+**`termite-projects/funding-partnerships/`**
 
 | File | Description | Size |
 |------|-------------|------|
