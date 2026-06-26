@@ -1,0 +1,11 @@
+Entry,Date,Title,Type,Status,Key Result,Page
+1,2026-01-06,Termite Collection (Southern Luzon, Philippines),Field Collection,Complete,3 colonies (M. gilvus N. luzonensis C. gestroi),1
+2,2026-01-20,Bacterial Isolation from Gut Homogenate,Isolation,Complete,7 isolates (TF-001 through TF-007),5
+3,2026-02-10,16S rRNA Gene Sequencing and Identification,Molecular Biology,Complete,97.8-99.1% identity to known species,10
+4,2026-03-01,Cellulase Enzyme Activity Assay (DNS Method),Assay,Complete,TF-001: 85.2 ± 3.2 U/mg (highest),14
+5,2026-03-15,Enzyme Cocktail Optimization for Cellulose Hydrolysis,Optimization,Complete,C-5: 89.4% conversion (35% EG 35% CBH 30% BG),20
+6,2026-04-01,Batch Ethanol Fermentation of 5 Bacterial Strains,Fermentation,Complete,TF-001+TF-006 co-culture: 10.8 ± 0.8 g/L,26
+7,2026-05-01,Agricultural Waste Hydrolysis (4 Substrates),Hydrolysis,Complete,Rice straw: 81.2% conversion (NaOH pretreated, 48 h),32
+8,2026-05-20,5L Benchtop Bioreactor Validation,Scale-Up,Complete,10.2 g/L ethanol (SSF mode, 60 h),37
+9,2026-06-01,Techno-Economic Cost Analysis,Analysis,Complete,Breakeven: ₱23.23/L at 300,000 L/yr,42
+10,2026-06-15,Commercialization Business Plan,Business,Complete,Projected ₱260M revenue (Years 3-5),46

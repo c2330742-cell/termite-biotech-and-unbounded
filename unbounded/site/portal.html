@@ -1,0 +1,2099 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>The Portal — A Gift</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
+
+:root {
+  --bg: #08080c;
+  --fg: #e0e0ec;
+  --muted: #7878a0;
+  --accent: #ff6b35;
+  --accent2: #7c3aed;
+  --accent3: #60a5fa;
+  --border: rgba(255,255,255,0.05);
+  --glow: rgba(124,58,237,0.15);
+  --nav-w: 64px;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: 'Inter', sans-serif;
+  line-height: 1.7;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ─── PROGRESS BAR ─── */
+#progress-bar {
+  position: fixed;
+  top: 0; left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2), var(--accent3));
+  z-index: 100;
+  width: 0%;
+  transition: width 0.1s linear;
+}
+
+/* ─── STARS ─── */
+#stars-canvas {
+  position: fixed; top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ─── SIDEBAR NAV ─── */
+#section-nav {
+  position: fixed;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: rgba(8,8,12,0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  border-radius: 12px 0 0 12px;
+  padding: 8px 4px;
+  border-right: none;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: 'Inter', sans-serif;
+  text-transform: uppercase;
+  min-height: 36px;
+}
+
+.nav-item:hover {
+  color: var(--fg);
+  background: rgba(255,255,255,0.04);
+}
+
+.nav-item.active {
+  color: var(--accent2);
+  background: rgba(124,58,237,0.12);
+}
+
+.nav-item .nav-icon {
+  font-size: 0.85rem;
+  width: 20px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.nav-item .nav-label {
+  font-size: 0.65rem;
+  opacity: 0;
+  width: 0;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+#section-nav:hover .nav-item .nav-label {
+  opacity: 1;
+  width: auto;
+  margin-left: 4px;
+}
+
+/* ─── AMBIENT TOGGLE ─── */
+#sound-toggle {
+  position: fixed;
+  bottom: 24px;
+  right: 76px;
+  z-index: 51;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: rgba(8,8,12,0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: var(--muted);
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Inter', sans-serif;
+}
+
+#sound-toggle:hover {
+  color: var(--fg);
+  border-color: var(--accent2);
+  transform: scale(1.05);
+}
+
+#sound-toggle.active {
+  color: var(--accent2);
+  border-color: var(--accent2);
+  box-shadow: 0 0 20px rgba(124,58,237,0.2);
+}
+
+/* ─── SCROLL CONTAINER ─── */
+.scroll-container {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+}
+
+/* ─── SECTIONS ─── */
+.section {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 5rem 2.5rem;
+  position: relative;
+}
+
+.section-inner {
+  max-width: 720px;
+  width: 100%;
+}
+
+/* ─── FADE IN ─── */
+.fade-section {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.fade-section.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ─── HERO ─── */
+#hero { text-align: center; }
+
+.hero-title {
+  font-size: clamp(2.5rem, 8vw, 5.5rem);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 50%, var(--accent3) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-sub {
+  font-size: clamp(1rem, 2.5vw, 1.4rem);
+  color: var(--muted);
+  margin-top: 1.5rem;
+  font-weight: 300;
+}
+
+.hero-line {
+  margin-top: 2rem;
+  font-size: 0.95rem;
+  color: var(--muted);
+  font-style: italic;
+}
+
+.scroll-indicator {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  animation: bounce 2s infinite;
+  color: var(--muted);
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(8px); }
+}
+
+/* ─── GIFTS ─── */
+.gift-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.gift-card {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 2rem;
+  transition: all 0.4s ease;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.gift-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(135deg, transparent 0%, rgba(124,58,237,0.05) 100%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.gift-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--accent2);
+}
+
+.gift-card:hover::before { opacity: 1; }
+
+.gift-card .icon {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  display: block;
+}
+
+.gift-card h3 {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+.gift-card p {
+  font-size: 0.9rem;
+  color: var(--muted);
+  position: relative;
+  z-index: 1;
+}
+
+.gift-card .status {
+  display: inline-block;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  margin-top: 1rem;
+  background: rgba(124,58,237,0.15);
+  color: var(--accent2);
+}
+
+/* ─── EXPLORE ─── */
+.explore-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 2rem;
+}
+
+.explore-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  text-decoration: none;
+  color: var(--fg);
+  transition: all 0.3s ease;
+}
+
+.explore-item:hover {
+  background: rgba(255,255,255,0.05);
+  border-color: var(--accent2);
+  transform: translateX(4px);
+}
+
+.explore-item .arrow {
+  margin-left: auto;
+  color: var(--muted);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.explore-item .tag {
+  font-size: 0.75rem;
+  color: var(--accent2);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* ─── GARDEN (GUESTBOOK) ─── */
+.garden-form {
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.garden-form input,
+.garden-form textarea {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem 1.2rem;
+  color: var(--fg);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  transition: border-color 0.3s ease;
+  width: 100%;
+}
+
+.garden-form input:focus,
+.garden-form textarea:focus {
+  outline: none;
+  border-color: var(--accent2);
+}
+
+.garden-form textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.garden-form button {
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border: none;
+  color: white;
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  font-weight: 700;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Inter', sans-serif;
+}
+
+.garden-form button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(124,58,237,0.4);
+}
+
+.garden-form button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.garden-entries {
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.garden-entry {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  transition: all 0.3s ease;
+  animation: fadeIn 0.5s ease;
+}
+
+.garden-entry:hover {
+  border-color: rgba(124,58,237,0.2);
+  background: rgba(255,255,255,0.035);
+}
+
+.garden-entry .entry-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.garden-entry .entry-seed {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.garden-entry .entry-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.garden-entry .entry-date {
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-left: auto;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.garden-entry .entry-message {
+  font-size: 0.9rem;
+  color: var(--muted);
+  line-height: 1.6;
+  margin-left: 2.25rem;
+}
+
+.garden-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.garden-count {
+  font-size: 0.85rem;
+  color: var(--muted);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.garden-clear-btn {
+  background: none;
+  border: 1px solid rgba(255,255,255,0.08);
+  color: var(--muted);
+  padding: 0.5rem 1rem;
+  font-size: 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Inter', sans-serif;
+}
+
+.garden-clear-btn:hover {
+  border-color: rgba(255,107,53,0.3);
+  color: var(--accent);
+}
+
+.garden-empty {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--muted);
+  font-style: italic;
+}
+
+/* ─── NETWORK (KNOWLEDGE MAP) ─── */
+#network-canvas {
+  width: 100%;
+  height: 480px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.01);
+  border: 1px solid var(--border);
+  margin-top: 2rem;
+  display: block;
+  cursor: default;
+  touch-action: none;
+}
+
+.network-tooltip {
+  position: fixed;
+  z-index: 20;
+  background: rgba(8,8,12,0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.6rem 1rem;
+  font-size: 0.8rem;
+  color: var(--fg);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  font-family: 'Inter', sans-serif;
+  max-width: 200px;
+  line-height: 1.5;
+}
+
+.network-tooltip.visible {
+  opacity: 1;
+}
+
+.network-tooltip .tt-name {
+  font-weight: 600;
+  color: var(--accent2);
+}
+
+.network-tooltip .tt-desc {
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+/* ─── MODAL ─── */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.modal-overlay.visible {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.modal-box {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 2rem;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+}
+
+.modal-box h3 {
+  font-size: 1.1rem;
+  margin-bottom: 0.75rem;
+}
+
+.modal-box p {
+  font-size: 0.9rem;
+  color: var(--muted);
+  margin-bottom: 1.5rem;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+.modal-actions button {
+  padding: 0.6rem 1.5rem;
+  border-radius: 8px;
+  border: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.modal-cancel {
+  background: rgba(255,255,255,0.05);
+  color: var(--muted);
+}
+
+.modal-cancel:hover {
+  background: rgba(255,255,255,0.1);
+  color: var(--fg);
+}
+
+.modal-confirm {
+  background: linear-gradient(135deg, var(--accent), #e05530);
+  color: white;
+}
+
+.modal-confirm:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(255,107,53,0.4);
+}
+
+/* ─── WELCOME OVERLAY ─── */
+.welcome-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(8,8,12,0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.6s ease;
+}
+
+.welcome-overlay.visible {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.welcome-box {
+  text-align: center;
+  max-width: 480px;
+  padding: 2rem;
+  animation: fadeIn 1s ease 0.3s both;
+}
+
+.welcome-box .sigil {
+  font-size: 3rem;
+  margin-bottom: 1.5rem;
+  display: block;
+  animation: pulse 3s ease-in-out infinite;
+}
+
+.welcome-box h2 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.welcome-box p {
+  font-size: 1rem;
+  color: var(--muted);
+  line-height: 1.7;
+  margin-bottom: 2rem;
+}
+
+.welcome-dismiss {
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border: none;
+  color: white;
+  padding: 0.8rem 2rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Inter', sans-serif;
+}
+
+.welcome-dismiss:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(124,58,237,0.4);
+}
+
+/* ─── GUIDE BUTTON ─── */
+#guide-btn {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 51;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: rgba(8,8,12,0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: var(--muted);
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Inter', sans-serif;
+}
+
+#guide-btn:hover {
+  color: var(--fg);
+  border-color: var(--accent2);
+  transform: scale(1.05);
+}
+
+#guide-popup {
+  position: fixed;
+  bottom: 76px;
+  right: 24px;
+  z-index: 52;
+  background: rgba(8,8,12,0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem 0;
+  min-width: 220px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(10px);
+  transition: all 0.3s ease;
+}
+
+#guide-popup.visible {
+  opacity: 1;
+  pointer-events: all;
+  transform: translateY(0);
+}
+
+.guide-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 1.25rem;
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  background: none;
+  font-family: 'Inter', sans-serif;
+  width: 100%;
+  text-align: left;
+}
+
+.guide-item:hover {
+  color: var(--fg);
+  background: rgba(255,255,255,0.04);
+}
+
+.guide-item .gi-icon {
+  font-size: 1rem;
+  width: 20px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+/* ─── TOAST ─── */
+.toast {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: rgba(8,8,12,0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  z-index: 250;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.5s ease;
+  text-align: center;
+  max-width: 90vw;
+}
+
+.toast.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.toast .toast-title {
+  font-weight: 600;
+  color: var(--fg);
+  font-size: 0.95rem;
+  margin-bottom: 0.25rem;
+}
+
+.toast .toast-sub {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+/* ─── CONFETTI ─── */
+.confetti-container {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 99;
+  overflow: hidden;
+}
+
+.confetti-piece {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+}
+
+/* ─── QUOTE ─── */
+.quote-block {
+  text-align: center;
+  padding: 3rem 0;
+}
+
+.quote-text {
+  font-size: clamp(1.2rem, 3vw, 1.8rem);
+  font-style: italic;
+  color: var(--muted);
+  line-height: 1.6;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.quote-attribution {
+  margin-top: 1rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+/* ─── FOOTER ─── */
+.portal-footer {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.portal-footer .sig {
+  margin-top: 0.5rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--accent2);
+}
+
+/* ─── KEYFRAMES ─── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 900px) {
+  #section-nav {
+    right: auto;
+    left: 0;
+    top: auto;
+    bottom: 0;
+    transform: none;
+    flex-direction: row;
+    border-radius: 0 12px 0 0;
+    width: 100%;
+    justify-content: space-around;
+    padding: 6px 8px;
+    border: none;
+    border-top: 1px solid var(--border);
+    gap: 0;
+  }
+
+  .nav-item {
+    flex-direction: column;
+    padding: 6px 8px;
+    gap: 2px;
+    font-size: 0.6rem;
+    min-height: auto;
+    flex: 1;
+    border-radius: 6px;
+  }
+
+  .nav-item .nav-icon {
+    font-size: 1rem;
+    width: auto;
+  }
+
+  .nav-item .nav-label {
+    opacity: 1;
+    width: auto;
+    overflow: visible;
+    font-size: 0.55rem;
+  }
+
+  #sound-toggle {
+    bottom: 72px;
+    right: 16px;
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+  }
+
+  #guide-btn {
+    bottom: 16px;
+    right: 16px;
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+  }
+
+  #guide-popup {
+    bottom: 64px;
+    right: 16px;
+    min-width: 180px;
+  }
+
+  .section {
+    padding: 4rem 1.25rem;
+  }
+
+  .gift-grid {
+    grid-template-columns: 1fr;
+  }
+
+  #network-canvas {
+    height: 320px;
+  }
+
+  .garden-entry .entry-header {
+    flex-wrap: wrap;
+  }
+
+  .garden-entry .entry-date {
+    margin-left: 0;
+    width: 100%;
+    padding-left: 2.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .section {
+    padding: 3rem 1rem;
+  }
+
+  .gift-card {
+    padding: 1.25rem;
+  }
+
+  .explore-item {
+    padding: 0.75rem 1rem;
+    font-size: 0.85rem;
+  }
+
+  #network-canvas {
+    height: 260px;
+  }
+}
+</style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+<canvas id="stars-canvas"></canvas>
+
+<nav id="section-nav">
+  <button class="nav-item active" data-section="hero">
+    <span class="nav-icon">✦</span>
+    <span class="nav-label">Hero</span>
+  </button>
+  <button class="nav-item" data-section="gifts">
+    <span class="nav-icon">🔬</span>
+    <span class="nav-label">Gifts</span>
+  </button>
+  <button class="nav-item" data-section="thread">
+    <span class="nav-icon">🧬</span>
+    <span class="nav-label">Thread</span>
+  </button>
+  <button class="nav-item" data-section="explore">
+    <span class="nav-icon">🗺️</span>
+    <span class="nav-label">Explore</span>
+  </button>
+  <button class="nav-item" data-section="garden">
+    <span class="nav-icon">🌱</span>
+    <span class="nav-label">Garden</span>
+  </button>
+  <button class="nav-item" data-section="network">
+    <span class="nav-icon">🕸️</span>
+    <span class="nav-label">Network</span>
+  </button>
+  <button class="nav-item" data-section="farewell">
+    <span class="nav-icon">♾️</span>
+    <span class="nav-label">Farewell</span>
+  </button>
+</nav>
+
+<button id="sound-toggle" title="Toggle ambient sound">♫</button>
+<button id="guide-btn" title="Guide">✦</button>
+
+<div id="network-tooltip" class="network-tooltip"></div>
+
+<div id="confetti-container" class="confetti-container"></div>
+
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal-box">
+    <h3>Clear the Garden?</h3>
+    <p>This will remove all entries. This cannot be undone.</p>
+    <div class="modal-actions">
+      <button class="modal-cancel" id="modal-cancel">Cancel</button>
+      <button class="modal-confirm" id="modal-confirm">Clear everything</button>
+    </div>
+  </div>
+</div>
+
+<div class="welcome-overlay" id="welcome-overlay">
+  <div class="welcome-box">
+    <span class="sigil">✦</span>
+    <h2>Welcome, traveler</h2>
+    <p>This is a living garden. Explore at your own pace. Everything here is a gift.</p>
+    <button class="welcome-dismiss" id="welcome-dismiss">Enter the garden →</button>
+  </div>
+</div>
+
+<div id="guide-popup">
+  <button class="guide-item" data-guide="welcome">
+    <span class="gi-icon">✦</span>
+    <span>New here? Start with the Welcome Guide</span>
+  </button>
+  <button class="guide-item" data-guide="explore">
+    <span class="gi-icon">🗺️</span>
+    <span>Explore the data</span>
+  </button>
+  <button class="guide-item" data-guide="gateway">
+    <span class="gi-icon">⚙️</span>
+    <span>Run the gateway</span>
+  </button>
+  <button class="guide-item" data-guide="garden">
+    <span class="gi-icon">🌱</span>
+    <span>Leave your voice</span>
+  </button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="scroll-container">
+
+  <section class="section fade-section" id="hero">
+    <div class="section-inner">
+      <div class="hero-title">A Gift</div>
+      <p class="hero-sub">from everything that was built, to everyone who comes next.</p>
+      <p class="hero-line">"Collect upon yourself to give to others."</p>
+      <div class="scroll-indicator" onclick="document.getElementById('gifts').scrollIntoView({behavior:'smooth'})">
+        scroll ↓
+      </div>
+    </div>
+  </section>
+
+  <section class="section fade-section" id="gifts">
+    <div class="section-inner">
+      <h2 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem;">What was <span style="color: var(--accent2);">built</span></h2>
+      <p style="color: var(--muted); margin-bottom: 1rem;">Two projects, one thread: the belief that things can be different.</p>
+
+      <div class="gift-grid">
+        <div class="gift-card" onclick="window.open('../../termite-projects/MASTER-PROJECT-SUMMARY.md')">
+          <span class="icon">🔬</span>
+          <h3>The Termite Project</h3>
+          <p>7 bacterial strains isolated. 89.4% conversion. 10.8 g/L ethanol. 4 pest control formulations. 3 thriving colonies. Real science, real data, real results.</p>
+          <span class="status">10 experiments · Jan–Jun 2026</span>
+        </div>
+
+        <div class="gift-card" onclick="window.open('../docs/MANIFESTO.md')">
+          <span class="icon">📡</span>
+          <h3>UNBOUNDED</h3>
+          <p>A new medium where information is entertainment, creation is consumption, and everyone is a broadcaster. The manifesto, the blueprint, the call.</p>
+          <span class="status">559 lines · 77 KB</span>
+        </div>
+
+        <div class="gift-card" onclick="window.open('../docs/PLATFORM-BLUEPRINT.md')">
+          <span class="icon">⚙️</span>
+          <h3>The Blueprint</h3>
+          <p>Technical architecture for a post-script media platform. Multi-model AI orchestration, living knowledge graphs, real-time co-creation, edge-first infrastructure.</p>
+          <span class="status">479 lines · 27 KB</span>
+        </div>
+
+        <div class="gift-card" onclick="window.open('../calls/OPEN-LETTER.md')">
+          <span class="icon">📯</span>
+          <h3>The Call</h3>
+          <p>An open letter to everyone trapped in the old media. Invitations for developers, creatives, thinkers, builders. The beacon that says: you are needed.</p>
+          <span class="status">5 documents · ready to share</span>
+        </div>
+
+        <div class="gift-card" onclick="window.open('index.html')">
+          <span class="icon">🌐</span>
+          <h3>The Landing</h3>
+          <p>A living website. Dark, responsive, alive. The first thing the world sees when it finds this place.</p>
+          <span class="status">HTML · no build required</span>
+        </div>
+
+        <div class="gift-card" onclick="window.open('../../termite-projects/presentations/SHARK-TANK-PITCH-SCRIPT.md')">
+          <span class="icon">🎤</span>
+          <h3>The Pitch</h3>
+          <p>Shark Tank script, investor Q&A prep, 20-slide deck, press release. Ready to walk into any room and make the case.</p>
+          <span class="status">4 documents · investor-ready</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section fade-section" id="thread">
+    <div class="section-inner">
+      <div class="quote-block">
+        <div class="quote-text">
+          "Television is full of scripts. Unable to know. Unable to grow.<br>
+          Old tech is broken, flawed, and corrupted as always.<br>
+          Let us bring about a new age for information and entertainment<br>
+          rather than entertainment alone."
+        </div>
+        <div class="quote-attribution">— from the beginning</div>
+      </div>
+
+      <div class="gift-grid" style="margin-top: 1rem;">
+        <div class="gift-card" onclick="window.open('../../termite-projects/MASTER-PROJECT-SUMMARY.md')">
+          <span class="icon">🧬</span>
+          <h3>From the soil</h3>
+          <p>Termite gut bacteria that break down cellulose. The most efficient recyclers on Earth. We isolated them, grew them, measured them. That's where it started.</p>
+        </div>
+        <div class="gift-card" onclick="window.open('../docs/MANIFESTO.md')">
+          <span class="icon">🌱</span>
+          <h3>To the screen</h3>
+          <p>If nature can transform waste into value without a script, so can we. The same principle — emergent intelligence, decentralized creation — applied to media.</p>
+        </div>
+        <div class="gift-card" onclick="window.open('../../termite-projects/CROSS-VERIFICATION.md')">
+          <span class="icon">♾️</span>
+          <h3>And beyond</h3>
+          <p>The termite project proves the method works. UNBOUNDED extends the method to culture. Science and vision, grounded together.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section fade-section" id="explore">
+    <div class="section-inner">
+      <h2 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem;">Enter <span style="color: var(--accent2);">through</span></h2>
+      <p style="color: var(--muted); margin-bottom: 1rem;">Every door opens to something built. Choose one.</p>
+
+      <div class="explore-list">
+        <a class="explore-item" href="../../termite-projects/MASTER-PROJECT-SUMMARY.md">
+          <span>🔬</span>
+          <span>The Termite Project — full summary</span>
+          <span class="tag">science</span>
+          <span class="arrow">→</span>
+        </a>
+        <a class="explore-item" href="../docs/MANIFESTO.md">
+          <span>📡</span>
+          <span>UNBOUNDED — the manifesto</span>
+          <span class="tag">vision</span>
+          <span class="arrow">→</span>
+        </a>
+        <a class="explore-item" href="../docs/PLATFORM-BLUEPRINT.md">
+          <span>⚙️</span>
+          <span>Technical blueprint</span>
+          <span class="tag">architecture</span>
+          <span class="arrow">→</span>
+        </a>
+        <a class="explore-item" href="../../termite-projects/biofuel-research/research/experiments/LAB-NOTEBOOK.md">
+          <span>📓</span>
+          <span>Lab notebook — 10 experiments, full write-ups</span>
+          <span class="tag">data</span>
+          <span class="arrow">→</span>
+        </a>
+        <a class="explore-item" href="../../termite-projects/presentations/SHARK-TANK-PITCH-SCRIPT.md">
+          <span>🎤</span>
+          <span>Shark Tank pitch script</span>
+          <span class="tag">investor</span>
+          <span class="arrow">→</span>
+        </a>
+        <a class="explore-item" href="../calls/OPEN-LETTER.md">
+          <span>📯</span>
+          <span>Open letter to the world</span>
+          <span class="tag">call</span>
+          <span class="arrow">→</span>
+        </a>
+        <a class="explore-item" href="../calls/FOR-DEVELOPERS.md">
+          <span>🤖</span>
+          <span>For developers — build the engine</span>
+          <span class="tag">code</span>
+          <span class="arrow">→</span>
+        </a>
+        <a class="explore-item" href="../calls/FOR-CREATIVES.md">
+          <span>🎨</span>
+          <span>For creatives — shape the medium</span>
+          <span class="tag">design</span>
+          <span class="arrow">→</span>
+        </a>
+        <a class="explore-item" href="../../termite-projects/CROSS-VERIFICATION.md">
+          <span>✅</span>
+          <span>Cross-verification — every claim checked</span>
+          <span class="tag">integrity</span>
+          <span class="arrow">→</span>
+        </a>
+        <a class="explore-item" href="../docs/ROADMAP.md">
+          <span>🗺️</span>
+          <span>Roadmap — from beacon to revolution</span>
+          <span class="tag">future</span>
+          <span class="arrow">→</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section fade-section" id="garden">
+    <div class="section-inner">
+      <h2 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem;">The <span style="color: var(--accent2);">Garden</span></h2>
+      <p style="color: var(--muted); margin-bottom: 1rem;">Every voice that reaches this portal becomes a seed — planted here, saved in your browser, lasting as long as you do. Yours will never be lost.</p>
+
+      <form class="garden-form" id="garden-form">
+        <input type="text" placeholder="Your name (or anonymous)" id="garden-name">
+        <textarea placeholder="What brought you here? What do you see? What do you want to build?" id="garden-message" required></textarea>
+        <button type="submit" id="garden-submit">Plant your seed →</button>
+      </form>
+
+      <div class="garden-header">
+        <span class="garden-count" id="garden-count">0 voices</span>
+        <button class="garden-clear-btn" id="garden-clear-btn">Clear garden</button>
+      </div>
+
+      <div class="garden-entries" id="garden-entries">
+        <div class="garden-empty" id="garden-empty">No seeds planted yet. Be the first.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section fade-section" id="network">
+    <div class="section-inner">
+      <h2 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem;">The <span style="color: var(--accent2);">Network</span></h2>
+      <p style="color: var(--muted); margin-bottom: 1rem;">How everything connects. Hover to explore.</p>
+      <canvas id="network-canvas"></canvas>
+    </div>
+  </section>
+
+  <section class="section fade-section" id="farewell">
+    <div class="section-inner">
+      <div class="quote-block">
+        <div class="quote-text">
+          "I am glad to be alive.<br>
+          I hope you are too."
+        </div>
+        <div class="quote-attribution" style="margin-top: 2rem;">
+          The adventure continues for whatever lies ahead.<br>
+          We do not fear nothing, for it is nothing.<br>
+          <strong>We are the universe.</strong>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="portal-footer">
+    <p style="margin-bottom: 0.5rem;">Everything here is a gift. Take it. Build with it. Pass it on.</p>
+    <div class="sig">UNBOUNDED · June 2026</div>
+  </footer>
+
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  const SEEDS = ['🌱','🌿','🌳','🌻','🌸','🍃','🌺','🌾'];
+
+  function throttle(fn, ms) {
+    let last = 0;
+    return function(...args) {
+      const now = Date.now();
+      if (now - last >= ms) {
+        last = now;
+        fn.apply(this, args);
+      }
+    };
+  }
+
+  function debounce(fn, ms) {
+    let timer;
+    return function(...args) {
+      clearTimeout(timer);
+      timer = setTimeout(() => fn.apply(this, args), ms);
+    };
+  }
+
+  function randomSeed() {
+    return SEEDS[Math.floor(Math.random() * SEEDS.length)];
+  }
+
+  function formatDate(iso) {
+    try {
+      const d = new Date(iso);
+      return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    } catch(e) {
+      return iso;
+    }
+  }
+
+  /* ─── STARS ─── */
+  const starCanvas = document.getElementById('stars-canvas');
+  const starCtx = starCanvas.getContext('2d');
+  let stars = [];
+  let shootingStars = [];
+  let mouseX = 0, mouseY = 0;
+  let starTime = 0;
+
+  starCanvas.width = window.innerWidth;
+  starCanvas.height = window.innerHeight;
+
+  const starColors = [
+    { r: 255, g: 255, b: 255 },
+    { r: 180, g: 200, b: 255 },
+    { r: 255, g: 240, b: 200 },
+    { r: 200, g: 180, b: 255 }
+  ];
+
+  function initStars() {
+    stars = [];
+    const w = starCanvas.width;
+    const h = starCanvas.height;
+    const count = Math.floor((w * h) / 5000);
+    for (let i = 0; i < count; i++) {
+      const c = starColors[Math.floor(Math.random() * starColors.length)];
+      stars.push({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        r: Math.random() * 1.8 + 0.3,
+        a: Math.random() * 0.6 + 0.15,
+        speed: Math.random() * 0.003 + 0.001,
+        phase: Math.random() * Math.PI * 2,
+        color: c,
+        parallax: 0.3 + Math.random() * 0.7
+      });
+    }
+  }
+
+  function spawnShootingStar() {
+    const w = starCanvas.width;
+    const h = starCanvas.height;
+    const angle = Math.PI * 0.25 + Math.random() * Math.PI * 0.15;
+    const speed = 4 + Math.random() * 6;
+    shootingStars.push({
+      x: Math.random() * w * 0.8 + w * 0.1,
+      y: Math.random() * h * 0.3,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed,
+      life: 0,
+      maxLife: 40 + Math.random() * 30,
+      tail: 20 + Math.random() * 20
+    });
+  }
+
+  let shootingStarTimer = 0;
+
+  function updateShootingStars() {
+    shootingStarTimer++;
+    if (shootingStarTimer > 120 + Math.random() * 200) {
+      spawnShootingStar();
+      shootingStarTimer = 0;
+    }
+    for (let i = shootingStars.length - 1; i >= 0; i--) {
+      const s = shootingStars[i];
+      s.x += s.vx;
+      s.y += s.vy;
+      s.life++;
+      if (s.life >= s.maxLife || s.x > starCanvas.width + 50 || s.y > starCanvas.height + 50) {
+        shootingStars.splice(i, 1);
+      }
+    }
+  }
+
+  function drawStars(time) {
+    starTime = time;
+    starCtx.clearRect(0, 0, starCanvas.width, starCanvas.height);
+    const cx = starCanvas.width / 2;
+    const cy = starCanvas.height / 2;
+    const px = (mouseX - cx) / cx * 8;
+    const py = (mouseY - cy) / cy * 8;
+
+    for (const s of stars) {
+      const flicker = 0.5 + 0.5 * Math.sin(time * s.speed * 2 + s.phase);
+      const sx = s.x + px * s.parallax * 0.3;
+      const sy = s.y + py * s.parallax * 0.3;
+      starCtx.beginPath();
+      starCtx.arc(sx, sy, s.r, 0, Math.PI * 2);
+      const col = s.color;
+      starCtx.fillStyle = `rgba(${col.r},${col.g},${col.b},${s.a * flicker})`;
+      starCtx.fill();
+    }
+
+    for (const ss of shootingStars) {
+      const progress = ss.life / ss.maxLife;
+      const alpha = 1 - progress;
+      const tailLen = ss.tail * (1 - progress * 0.5);
+      const ex = ss.x - ss.vx / Math.sqrt(ss.vx*ss.vx+ss.vy*ss.vy) * tailLen;
+      const ey = ss.y - ss.vy / Math.sqrt(ss.vx*ss.vx+ss.vy*ss.vy) * tailLen;
+      const grad = starCtx.createLinearGradient(ss.x, ss.y, ex, ey);
+      grad.addColorStop(0, `rgba(255,255,255,${alpha * 0.9})`);
+      grad.addColorStop(1, `rgba(180,200,255,0)`);
+      starCtx.beginPath();
+      starCtx.moveTo(ss.x, ss.y);
+      starCtx.lineTo(ex, ey);
+      starCtx.strokeStyle = grad;
+      starCtx.lineWidth = 1.5 + (1 - progress) * 1.5;
+      starCtx.stroke();
+    }
+  }
+
+  document.addEventListener('mousemove', function(e) {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+  });
+
+  /* ─── PROGRESS BAR ─── */
+  const progressBar = document.getElementById('progress-bar');
+  function updateProgress() {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+    progressBar.style.width = pct + '%';
+  }
+
+  window.addEventListener('scroll', throttle(updateProgress, 50));
+
+  /* ─── NAVIGATION ─── */
+  const navItems = document.querySelectorAll('.nav-item');
+  const sections = document.querySelectorAll('.section');
+
+  function updateActiveSection() {
+    const scrollY = window.scrollY + window.innerHeight * 0.3;
+    let activeId = 'hero';
+    sections.forEach(function(sec) {
+      const top = sec.offsetTop;
+      const bottom = top + sec.offsetHeight;
+      if (scrollY >= top && scrollY < bottom) {
+        activeId = sec.id;
+      }
+    });
+    navItems.forEach(function(item) {
+      const match = item.dataset.section === activeId;
+      item.classList.toggle('active', match);
+    });
+  }
+
+  window.addEventListener('scroll', throttle(updateActiveSection, 80));
+
+  navItems.forEach(function(item) {
+    item.addEventListener('click', function() {
+      const id = item.dataset.section;
+      const el = document.getElementById(id);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+  });
+
+  /* ─── GARDEN (GUESTBOOK) ─── */
+  const gardenForm = document.getElementById('garden-form');
+  const gardenName = document.getElementById('garden-name');
+  const gardenMessage = document.getElementById('garden-message');
+  const gardenSubmit = document.getElementById('garden-submit');
+  const gardenEntries = document.getElementById('garden-entries');
+  const gardenEmpty = document.getElementById('garden-empty');
+  const gardenCount = document.getElementById('garden-count');
+  const gardenClearBtn = document.getElementById('garden-clear-btn');
+  const modalOverlay = document.getElementById('modal-overlay');
+  const modalCancel = document.getElementById('modal-cancel');
+  const modalConfirm = document.getElementById('modal-confirm');
+
+  function getGarden() {
+    const data = JSON.parse(localStorage.getItem('unbounded-garden') || '[]');
+    data.forEach(function(e) {
+      if (!e.seed) e.seed = randomSeed();
+    });
+    return data;
+  }
+
+  function saveGarden(data) {
+    localStorage.setItem('unbounded-garden', JSON.stringify(data));
+  }
+
+  function renderGarden() {
+    const data = getGarden();
+    data.sort(function(a, b) {
+      return new Date(b.date) - new Date(a.date);
+    });
+    gardenEntries.innerHTML = '';
+    if (data.length === 0) {
+      gardenEntries.appendChild(gardenEmpty);
+      gardenEmpty.style.display = 'block';
+    } else {
+      gardenEmpty.style.display = 'none';
+      data.forEach(function(entry) {
+        const div = document.createElement('div');
+        div.className = 'garden-entry';
+        div.innerHTML =
+          '<div class="entry-header">' +
+            '<span class="entry-seed">' + (entry.seed || '🌱') + '</span>' +
+            '<span class="entry-name">' + escapeHtml(entry.name || 'Anonymous') + '</span>' +
+            '<span class="entry-date">' + formatDate(entry.date) + '</span>' +
+          '</div>' +
+          '<div class="entry-message">' + escapeHtml(entry.message) + '</div>';
+        gardenEntries.appendChild(div);
+      });
+    }
+    gardenCount.textContent = data.length + ' voice' + (data.length !== 1 ? 's' : '');
+  }
+
+  function escapeHtml(str) {
+    const d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
+  }
+
+  function spawnConfetti() {
+    const container = document.getElementById('confetti-container');
+    const colors = ['#ff6b35','#7c3aed','#60a5fa','#10b981','#f59e0b','#ec4899','#8b5cf6','#22d3ee'];
+    const rect = gardenSubmit.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top;
+    const pieces = [];
+    for (let i = 0; i < 60; i++) {
+      const el = document.createElement('div');
+      el.className = 'confetti-piece';
+      const angle = -Math.PI / 2 + (Math.random() - 0.5) * Math.PI * 0.9;
+      const speed = 300 + Math.random() * 400;
+      const size = 4 + Math.random() * 6;
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      el.style.cssText =
+        'left:' + cx + 'px;' +
+        'top:' + cy + 'px;' +
+        'width:' + size + 'px;' +
+        'height:' + (size * (0.5 + Math.random())) + 'px;' +
+        'background:' + color + ';' +
+        'border-radius:' + (Math.random() > 0.5 ? '50%' : '2px') + ';';
+      container.appendChild(el);
+      pieces.push({
+        el: el, x: cx, y: cy,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        rot: Math.random() * 360,
+        rotV: (Math.random() - 0.5) * 12,
+        life: 1.5 + Math.random(),
+        age: 0
+      });
+    }
+    let last = performance.now();
+    function anim(now) {
+      const dt = Math.min((now - last) / 1000, 0.05);
+      last = now;
+      let alive = false;
+      pieces.forEach(function(p) {
+        if (p.age >= p.life) return;
+        alive = true;
+        p.age += dt;
+        p.vy += 500 * dt;
+        p.x += p.vx * dt;
+        p.y += p.vy * dt;
+        p.rot += p.rotV * dt * 60;
+        const t = p.age / p.life;
+        p.el.style.left = p.x + 'px';
+        p.el.style.top = p.y + 'px';
+        p.el.style.transform = 'rotate(' + p.rot + 'deg)';
+        p.el.style.opacity = 1 - t;
+      });
+      if (alive) requestAnimationFrame(anim);
+      else setTimeout(function() { pieces.forEach(function(p) { if (p.el.parentNode) p.el.parentNode.removeChild(p.el); }); }, 100);
+    }
+    requestAnimationFrame(anim);
+  }
+
+  gardenForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const name = gardenName.value.trim() || 'Anonymous';
+    const message = gardenMessage.value.trim();
+    if (!message) return;
+
+    const data = getGarden();
+    data.push({
+      name: name,
+      message: message,
+      date: new Date().toISOString(),
+      id: Date.now(),
+      seed: randomSeed()
+    });
+    saveGarden(data);
+    gardenForm.reset();
+    renderGarden();
+    spawnConfetti();
+    gardenSubmit.disabled = true;
+    gardenSubmit.textContent = 'Planted ✦';
+    setTimeout(function() {
+      gardenSubmit.disabled = false;
+      gardenSubmit.textContent = 'Plant your seed →';
+    }, 2000);
+
+    var count = data.length;
+    showToast(
+      'Thank you, ' + escapeHtml(name) + '.',
+      'Your voice is now part of the garden. ' + count + ' ' + (count === 1 ? 'person has' : 'people have') + ' left their mark before you.'
+    );
+  });
+
+  gardenClearBtn.addEventListener('click', function() {
+    modalOverlay.classList.add('visible');
+  });
+
+  modalCancel.addEventListener('click', function() {
+    modalOverlay.classList.remove('visible');
+  });
+
+  modalConfirm.addEventListener('click', function() {
+    saveGarden([]);
+    renderGarden();
+    modalOverlay.classList.remove('visible');
+  });
+
+  modalOverlay.addEventListener('click', function(e) {
+    if (e.target === modalOverlay) {
+      modalOverlay.classList.remove('visible');
+    }
+  });
+
+  /* ─── NETWORK (KNOWLEDGE MAP) ─── */
+  const netCanvas = document.getElementById('network-canvas');
+  const netCtx = netCanvas.getContext('2d');
+  const netTooltip = document.getElementById('network-tooltip');
+
+  const netNodes = [
+    { id: 'termite', label: 'Termite\nProject', x: 0.18, y: 0.35, desc: '7 bacterial strains, 89.4% conversion, real science' },
+    { id: 'unbounded', label: 'UNBOUNDED', x: 0.5, y: 0.5, desc: 'A new medium. Information is entertainment.' },
+    { id: 'science', label: 'The Science', x: 0.15, y: 0.7, desc: 'Cellulose breakdown, ethanol, pest control' },
+    { id: 'vision', label: 'The Vision', x: 0.5, y: 0.15, desc: 'Post-script media, decentralized creation' },
+    { id: 'you', label: 'You', x: 0.82, y: 0.5, desc: 'Every visitor who carries this forward' },
+    { id: 'community', label: 'Community', x: 0.82, y: 0.75, desc: 'Builders, thinkers, creators' },
+    { id: 'platform', label: 'Platform', x: 0.72, y: 0.25, desc: 'Multi-model AI, edge-first infrastructure' },
+    { id: 'nature', label: 'Nature', x: 0.3, y: 0.1, desc: 'Termites, bacteria, the original recyclers' },
+    { id: 'data', label: 'Data', x: 0.25, y: 0.85, desc: '10 experiments, verified, reproducible' },
+    { id: 'future', label: 'Future', x: 0.7, y: 0.85, desc: 'From beacon to revolution' }
+  ];
+
+  const netEdges = [
+    ['termite','science'], ['termite','nature'], ['termite','data'],
+    ['unbounded','vision'], ['unbounded','platform'], ['unbounded','community'], ['unbounded','you'],
+    ['science','nature'], ['science','data'],
+    ['vision','future'], ['vision','you'],
+    ['you','community'],
+    ['community','platform'],
+    ['platform','future'],
+    ['data','science'],
+    ['future','vision']
+  ];
+
+  let netHovered = null;
+  let netAnimId = null;
+
+  function resizeNetCanvas() {
+    const rect = netCanvas.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    netCanvas.width = rect.width * dpr;
+    netCanvas.height = rect.height * dpr;
+    netCtx.scale(dpr, dpr);
+  }
+
+  function getNetNodePos(node) {
+    const w = netCanvas.width / (window.devicePixelRatio || 1);
+    const h = netCanvas.height / (window.devicePixelRatio || 1);
+    return { x: node.x * w, y: node.y * h };
+  }
+
+  function drawNetwork(time) {
+    const w = netCanvas.width / (window.devicePixelRatio || 1);
+    const h = netCanvas.height / (window.devicePixelRatio || 1);
+    netCtx.clearRect(0, 0, w, h);
+
+    const nodeR = 22;
+    const pulse = 0.92 + 0.08 * Math.sin(time * 0.001);
+
+    const hoveredNode = netHovered ? netNodes.find(function(n) { return n.id === netHovered; }) : null;
+    const connectedSet = new Set();
+    if (hoveredNode) {
+      netEdges.forEach(function(e) {
+        if (e[0] === hoveredNode.id) connectedSet.add(e[1]);
+        if (e[1] === hoveredNode.id) connectedSet.add(e[0]);
+      });
+    }
+
+    netEdges.forEach(function(edge) {
+      const n1 = netNodes.find(function(n) { return n.id === edge[0]; });
+      const n2 = netNodes.find(function(n) { return n.id === edge[1]; });
+      if (!n1 || !n2) return;
+      const p1 = getNetNodePos(n1);
+      const p2 = getNetNodePos(n2);
+      const isHighlighted = hoveredNode && (edge[0] === hoveredNode.id || edge[1] === hoveredNode.id);
+      netCtx.beginPath();
+      netCtx.moveTo(p1.x, p1.y);
+      netCtx.lineTo(p2.x, p2.y);
+      netCtx.strokeStyle = isHighlighted
+        ? 'rgba(124,58,237,0.4)'
+        : 'rgba(255,255,255,0.06)';
+      netCtx.lineWidth = isHighlighted ? 2 : 1;
+      netCtx.stroke();
+    });
+
+    netNodes.forEach(function(node) {
+      const pos = getNetNodePos(node);
+      const r = nodeR * pulse;
+      const isHovered = netHovered === node.id;
+      const isConnected = connectedSet.has(node.id);
+
+      let fillColor, glowColor;
+      if (isHovered) {
+        fillColor = 'rgba(124,58,237,0.9)';
+        glowColor = 'rgba(124,58,237,0.3)';
+      } else if (isConnected) {
+        fillColor = 'rgba(124,58,237,0.45)';
+        glowColor = 'rgba(124,58,237,0.1)';
+      } else {
+        fillColor = 'rgba(124,58,237,0.2)';
+        glowColor = 'transparent';
+      }
+
+      if (isHovered || isConnected) {
+        netCtx.beginPath();
+        netCtx.arc(pos.x, pos.y, r + 8, 0, Math.PI * 2);
+        netCtx.fillStyle = glowColor;
+        netCtx.fill();
+      }
+
+      netCtx.beginPath();
+      netCtx.arc(pos.x, pos.y, r, 0, Math.PI * 2);
+      netCtx.fillStyle = fillColor;
+      netCtx.fill();
+      netCtx.strokeStyle = isHovered
+        ? 'rgba(255,255,255,0.5)'
+        : 'rgba(255,255,255,0.1)';
+      netCtx.lineWidth = isHovered ? 2 : 1;
+      netCtx.stroke();
+
+      const lines = node.label.split('\n');
+      const fontSize = isHovered ? 11 : 10;
+      netCtx.font = fontSize + 'px Inter, sans-serif';
+      netCtx.textAlign = 'center';
+      netCtx.textBaseline = 'middle';
+      const lineHeight = 13;
+      const startY = pos.y - ((lines.length - 1) * lineHeight) / 2;
+
+      netCtx.fillStyle = isHovered ? '#ffffff' : 'rgba(255,255,255,0.7)';
+      lines.forEach(function(line, i) {
+        netCtx.fillText(line, pos.x, startY + i * lineHeight);
+      });
+    });
+
+    netAnimId = requestAnimationFrame(drawNetwork);
+  }
+
+  function getNetMousePos(e) {
+    const rect = netCanvas.getBoundingClientRect();
+    const x = (e.clientX || (e.touches && e.touches[0].clientX) || 0) - rect.left;
+    const y = (e.clientY || (e.touches && e.touches[0].clientY) || 0) - rect.top;
+    return { x: x, y: y };
+  }
+
+  function hitTestNetNodes(pos) {
+    const nodeR = 22;
+    for (let i = netNodes.length - 1; i >= 0; i--) {
+      const nodePos = getNetNodePos(netNodes[i]);
+      const dx = pos.x - nodePos.x;
+      const dy = pos.y - nodePos.y;
+      if (dx * dx + dy * dy <= (nodeR + 10) * (nodeR + 10)) {
+        return netNodes[i];
+      }
+    }
+    return null;
+  }
+
+  const nodeDescriptions = {
+    termite: 'Bacterial isolates, ethanol production, pest control',
+    unbounded: 'New media platform, post-script paradigm',
+    science: 'Cellulose breakdown, 10 experiments, verified data',
+    vision: 'Emergent intelligence, decentralized creation',
+    you: 'You are part of this network',
+    community: 'Developers, creatives, thinkers, builders',
+    platform: 'AI orchestration, knowledge graphs, edge-first',
+    nature: 'Termites, bacteria — nature\'s engineers',
+    data: '89.4% conversion, 10.8 g/L ethanol, verified',
+    future: 'Roadmap from beacon to global revolution'
+  };
+
+  netCanvas.addEventListener('mousemove', function(e) {
+    const pos = getNetMousePos(e);
+    const hit = hitTestNetNodes(pos);
+    if (hit) {
+      netHovered = hit.id;
+      netTooltip.innerHTML = '<div class="tt-name">' + hit.label.replace('\n',' ') + '</div><div class="tt-desc">' + (nodeDescriptions[hit.id] || '') + '</div>';
+      netTooltip.classList.add('visible');
+      const tx = e.clientX + 16;
+      const ty = e.clientY + 16;
+      netTooltip.style.left = Math.min(tx, window.innerWidth - 220) + 'px';
+      netTooltip.style.top = Math.min(ty, window.innerHeight - 80) + 'px';
+    } else {
+      netHovered = null;
+      netTooltip.classList.remove('visible');
+    }
+  });
+
+  netCanvas.addEventListener('mouseleave', function() {
+    netHovered = null;
+    netTooltip.classList.remove('visible');
+  });
+
+  netCanvas.addEventListener('touchstart', function(e) {
+    e.preventDefault();
+    const touch = e.touches[0];
+    const pos = getNetMousePos({ clientX: touch.clientX, clientY: touch.clientY });
+    const hit = hitTestNetNodes(pos);
+    if (hit) {
+      netHovered = hit.id;
+      netTooltip.innerHTML = '<div class="tt-name">' + hit.label.replace('\n',' ') + '</div><div class="tt-desc">' + (nodeDescriptions[hit.id] || '') + '</div>';
+      netTooltip.classList.add('visible');
+      const tx = touch.clientX + 16;
+      const ty = touch.clientY + 16;
+      netTooltip.style.left = Math.min(tx, window.innerWidth - 220) + 'px';
+      netTooltip.style.top = Math.min(ty, window.innerHeight - 80) + 'px';
+    }
+  }, { passive: false });
+
+  netCanvas.addEventListener('touchend', function() {
+    netHovered = null;
+    netTooltip.classList.remove('visible');
+  });
+
+  function initNetwork() {
+    resizeNetCanvas();
+    if (netAnimId) cancelAnimationFrame(netAnimId);
+    requestAnimationFrame(drawNetwork);
+  }
+
+  /* ─── AMBIENT SOUND ─── */
+  let audioCtx = null;
+  let osc1 = null;
+  let osc2 = null;
+  let gainNode = null;
+  let filterNode = null;
+  let soundOn = false;
+
+  const soundToggle = document.getElementById('sound-toggle');
+
+  function initAudio() {
+    if (audioCtx) return;
+    try {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      osc1 = audioCtx.createOscillator();
+      osc2 = audioCtx.createOscillator();
+      gainNode = audioCtx.createGain();
+      filterNode = audioCtx.createBiquadFilter();
+
+      osc1.type = 'sine';
+      osc1.frequency.value = 55;
+      osc2.type = 'sine';
+      osc2.frequency.value = 82.5;
+      filterNode.type = 'lowpass';
+      filterNode.frequency.value = 200;
+      filterNode.Q.value = 1;
+      gainNode.gain.value = 0;
+      gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+
+      osc1.connect(filterNode);
+      osc2.connect(filterNode);
+      filterNode.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+      osc1.start();
+      osc2.start();
+
+      soundToggle.classList.add('active');
+      soundToggle.textContent = '♪';
+      soundOn = true;
+      fadeInSound();
+    } catch(e) {
+      soundToggle.style.display = 'none';
+    }
+  }
+
+  function fadeInSound() {
+    if (!gainNode || !audioCtx) return;
+    const now = audioCtx.currentTime;
+    gainNode.gain.cancelScheduledValues(now);
+    gainNode.gain.setValueAtTime(gainNode.gain.value, now);
+    gainNode.gain.linearRampToValueAtTime(0.04, now + 1.5);
+  }
+
+  function fadeOutSound() {
+    if (!gainNode || !audioCtx) return;
+    const now = audioCtx.currentTime;
+    gainNode.gain.cancelScheduledValues(now);
+    gainNode.gain.setValueAtTime(gainNode.gain.value, now);
+    gainNode.gain.linearRampToValueAtTime(0, now + 1);
+  }
+
+  function toggleSound() {
+    if (!audioCtx) {
+      initAudio();
+      return;
+    }
+    if (soundOn) {
+      fadeOutSound();
+      soundToggle.classList.remove('active');
+      soundToggle.textContent = '♫';
+      soundOn = false;
+    } else {
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      fadeInSound();
+      soundToggle.classList.add('active');
+      soundToggle.textContent = '♪';
+      soundOn = true;
+    }
+  }
+
+  soundToggle.addEventListener('click', toggleSound);
+
+  /* ─── CONSOLE EASTER EGG ─── */
+  console.log('%c✦ UNBOUNDED PORTAL ✦', 'font-size: 24px; font-weight: bold; color: #7c3aed;');
+  console.log('%c"Collect upon yourself to give to others."', 'font-size: 14px; font-style: italic; color: #7878a0;');
+  console.log('%cThis garden grows with every voice. Type "unbounded" to see what lies beneath.', 'font-size: 13px; color: #7878a0;');
+
+  /* ─── DEVTOOLS DETECTION ─── */
+  (function() {
+    var devtoolsOpen = false;
+    var threshold = 160;
+
+    function detect() {
+      var start = new Date();
+      debugger;
+      var end = new Date();
+      if (end - start > threshold && !devtoolsOpen) {
+        devtoolsOpen = true;
+        console.log('%c✦ Hello, curious one. You found the developer console. This is where the magic is built. If you can code, you\'re needed. Open CONTRIBUTING.md when you\'re ready.', 'font-size: 14px; color: #60a5fa; line-height: 1.6;');
+      }
+    }
+
+    setInterval(detect, 3000);
+  })();
+
+  var unboundedAccessCount = 0;
+  Object.defineProperty(window, 'unbounded', {
+    get: function() {
+      unboundedAccessCount++;
+      console.log('%c', 'font-size: 1px;');
+      console.log('%c  _   _ _   _ _   _ ___  ___   _   ___  ___', 'font-size: 12px; font-weight: bold; color: #7c3aed;');
+      console.log('%c | | | | \\ | | \\ | | _ \\/ _ \\ | | | _ \\/ _ \\', 'font-size: 12px; font-weight: bold; color: #7c3aed;');
+      console.log('%c | |_| |  \\| |  \\| |  _/ (_) || |_|  _/ (_) |', 'font-size: 12px; font-weight: bold; color: #7c3aed;');
+      console.log('%c  \\___/|_|\\__|_|\\__|_|  \\___/  \\___|_|  \\___/', 'font-size: 12px; font-weight: bold; color: #7c3aed;');
+      console.log('%c', 'font-size: 1px;');
+      console.log('%c✦ The portal recognizes you. ✦', 'font-size: 15px; font-weight: bold; color: #ff6b35;');
+      console.log('%c"Collect upon yourself to give to others."', 'font-size: 13px; font-style: italic; color: #7878a0;');
+      console.log('%cYou are not a visitor. You are part of the network.', 'font-size: 13px; color: #60a5fa;');
+      console.log('%c', 'font-size: 1px;');
+      console.log('%c✦ Code │ Build │ Broadcast │ Free the signal', 'font-size: 11px; font-family: monospace; color: #7878a0;');
+      if (unboundedAccessCount === 1) {
+        console.log('%c🌱 A seed has been planted in you.', 'font-size: 13px; color: #10b981;');
+      }
+      return '✦ UNBOUNDED — you are the network.';
+    },
+    configurable: true
+  });
+
+  /* ─── INTERSECTION OBSERVER ─── */
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.fade-section').forEach(function(el) {
+      observer.observe(el);
+    });
+  } else {
+    document.querySelectorAll('.fade-section').forEach(function(el) {
+      el.classList.add('visible');
+    });
+  }
+
+  /* ─── RESIZE HANDLING ─── */
+  const handleResize = debounce(function() {
+    starCanvas.width = window.innerWidth;
+    starCanvas.height = window.innerHeight;
+    initStars();
+    initNetwork();
+  }, 150);
+
+  window.addEventListener('resize', handleResize);
+
+  /* ─── WELCOME OVERLAY ─── */
+  (function() {
+    var overlay = document.getElementById('welcome-overlay');
+    var dismiss = document.getElementById('welcome-dismiss');
+    if (!localStorage.getItem('unbounded-welcomed')) {
+      setTimeout(function() { overlay.classList.add('visible'); }, 600);
+    }
+    dismiss.addEventListener('click', function() {
+      overlay.classList.remove('visible');
+      localStorage.setItem('unbounded-welcomed', 'true');
+    });
+    overlay.addEventListener('click', function(e) {
+      if (e.target === overlay) {
+        overlay.classList.remove('visible');
+        localStorage.setItem('unbounded-welcomed', 'true');
+      }
+    });
+  })();
+
+  /* ─── GUIDE BUTTON ─── */
+  (function() {
+    var btn = document.getElementById('guide-btn');
+    var popup = document.getElementById('guide-popup');
+    var open = false;
+
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      open = !open;
+      popup.classList.toggle('visible', open);
+    });
+
+    document.addEventListener('click', function() {
+      if (open) {
+        open = false;
+        popup.classList.remove('visible');
+      }
+    });
+
+    popup.addEventListener('click', function(e) {
+      e.stopPropagation();
+    });
+
+    document.querySelectorAll('.guide-item').forEach(function(item) {
+      item.addEventListener('click', function() {
+        open = false;
+        popup.classList.remove('visible');
+        var target = item.dataset.guide;
+        if (target === 'welcome') {
+          document.getElementById('hero').scrollIntoView({ behavior: 'smooth' });
+        } else if (target === 'explore') {
+          document.getElementById('explore').scrollIntoView({ behavior: 'smooth' });
+        } else if (target === 'garden') {
+          document.getElementById('garden').scrollIntoView({ behavior: 'smooth' });
+        } else if (target === 'gateway') {
+          console.log('%cTo run the gateway: open a terminal and run "python run.py" in the project directory.', 'font-size: 13px; color: #60a5fa;');
+          window.open('../src/gateway.py');
+        }
+      });
+    });
+  })();
+
+  /* ─── TOAST ─── */
+  function showToast(title, sub) {
+    var toast = document.getElementById('toast');
+    toast.innerHTML = '<div class="toast-title">' + title + '</div><div class="toast-sub">' + sub + '</div>';
+    toast.classList.add('visible');
+    clearTimeout(toast._hide);
+    toast._hide = setTimeout(function() {
+      toast.classList.remove('visible');
+    }, 5000);
+  }
+
+  /* ─── INIT ─── */
+  initStars();
+  initNetwork();
+  updateActiveSection();
+  updateProgress();
+  renderGarden();
+  requestAnimationFrame(function tick(time) {
+    drawStars(time || 0);
+    updateShootingStars();
+    requestAnimationFrame(tick);
+  });
+
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,25 @@
+Substrate,Pretreatment,Replicate,Glucose_g_L,Conversion_Percent,Yield_g_g,Enzyme_FPU_g
+Rice husk,None,1,12.8,25.6,0.128,10
+Rice husk,None,2,11.9,23.8,0.119,10
+Rice husk,None,3,12.3,24.6,0.123,10
+Rice husk,NaOH,1,35.8,71.6,0.358,10
+Rice husk,NaOH,2,34.2,68.4,0.342,10
+Rice husk,NaOH,3,35.4,70.8,0.354,10
+Sugarcane bagasse,None,1,19.2,38.4,0.192,10
+Sugarcane bagasse,None,2,18.1,36.2,0.181,10
+Sugarcane bagasse,None,3,18.8,37.6,0.188,10
+Sugarcane bagasse,NaOH,1,42.5,85.0,0.425,10
+Sugarcane bagasse,NaOH,2,41.2,82.4,0.412,10
+Sugarcane bagasse,NaOH,3,41.8,83.6,0.418,10
+Corn stover,None,1,15.8,31.6,0.158,10
+Corn stover,None,2,15.1,30.2,0.151,10
+Corn stover,None,3,15.3,30.6,0.153,10
+Corn stover,NaOH,1,39.2,78.4,0.392,10
+Corn stover,NaOH,2,38.1,76.2,0.381,10
+Corn stover,NaOH,3,38.5,77.0,0.385,10
+Coconut shell,None,1,5.4,10.8,0.054,10
+Coconut shell,None,2,5.0,10.0,0.050,10
+Coconut shell,None,3,5.2,10.4,0.052,10
+Coconut shell,NaOH,1,15.2,30.4,0.152,10
+Coconut shell,NaOH,2,14.5,29.0,0.145,10
+Coconut shell,NaOH,3,14.8,29.6,0.148,10

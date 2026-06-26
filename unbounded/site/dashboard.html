@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Biofuel Research Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root { --bg: #08080c; --surface: #0e0e16; --surface2: #14142e; --border: #1e1e3a; --accent: #7c3aed; --accent2: #ff6b35; --text: #e2e8f0; --text2: #94a3b8; --success: #10b981; --radius: 12px; }
+body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 20px; }
+body::before { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(ellipse at 50% 0%, rgba(124,58,237,0.06) 0%, transparent 70%); pointer-events: none; z-index: 0; }
+.container { max-width: 1400px; margin: 0 auto; position: relative; z-index: 1; }
+header { display: flex; align-items: center; gap: 20px; padding: 24px 32px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 16px; flex-wrap: wrap; }
+header h1 { font-size: 22px; font-weight: 700; background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; white-space: nowrap; }
+header .subtitle { color: var(--text2); font-size: 14px; margin-left: auto; }
+.file-selector { display: flex; align-items: center; gap: 12px; }
+.file-selector label { font-size: 13px; color: var(--text2); }
+.file-selector select { background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 8px 14px; font-size: 14px; cursor: pointer; outline: none; min-width: 240px; transition: border-color 0.2s; }
+.file-selector select:hover, .file-selector select:focus { border-color: var(--accent); }
+.export-btn { background: var(--accent); color: #fff; border: none; border-radius: 8px; padding: 8px 18px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px; }
+.export-btn:hover { background: #6d28d9; transform: translateY(-1px); box-shadow: 0 4px 20px rgba(124,58,237,0.3); }
+.export-btn svg { width: 16px; height: 16px; }
+.data-source { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 24px; margin-bottom: 16px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; font-size: 14px; }
+.data-source .badge { background: var(--accent); color: #fff; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; letter-spacing: 0.5px; text-transform: uppercase; }
+.data-source a { color: var(--accent2); text-decoration: none; font-weight: 600; transition: color 0.2s; }
+.data-source a:hover { color: #ff8a5c; text-decoration: underline; }
+.charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+.chart-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; position: relative; }
+.chart-card h3 { font-size: 14px; color: var(--text2); margin-bottom: 12px; font-weight: 500; letter-spacing: 0.3px; text-transform: uppercase; }
+.chart-card .chart-wrap { position: relative; width: 100%; height: 320px; }
+.chart-card .chart-wrap canvas { width: 100% !important; height: 100% !important; }
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-bottom: 20px; }
+.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 20px; transition: border-color 0.2s; }
+.stat-card:hover { border-color: var(--accent); }
+.stat-card .stat-label { font-size: 11px; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+.stat-card .stat-value { font-size: 20px; font-weight: 700; color: var(--text); }
+.stat-card .stat-value.accent { color: var(--accent); }
+.stat-card .stat-value.accent2 { color: var(--accent2); }
+.stat-card .stat-value.success { color: var(--success); }
+.table-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 0; overflow: hidden; margin-bottom: 20px; }
+.table-card .table-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 1px solid var(--border); }
+.table-card .table-header h3 { font-size: 14px; font-weight: 600; }
+.table-card .table-header .row-count { font-size: 12px; color: var(--text2); }
+.table-wrap { overflow-x: auto; max-height: 420px; overflow-y: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+thead { position: sticky; top: 0; z-index: 2; }
+th { background: var(--surface2); color: var(--text2); font-weight: 600; padding: 10px 16px; text-align: left; white-space: nowrap; cursor: pointer; user-select: none; transition: color 0.15s; border-bottom: 1px solid var(--border); }
+th:hover { color: var(--accent); }
+th .sort-icon { display: inline-block; margin-left: 4px; opacity: 0.3; font-size: 11px; }
+th.sorted .sort-icon { opacity: 1; color: var(--accent); }
+td { padding: 8px 16px; border-bottom: 1px solid rgba(30,30,58,0.5); color: var(--text); white-space: nowrap; }
+tr:hover td { background: rgba(124,58,237,0.05); }
+tr:nth-child(even) td { background: rgba(255,255,255,0.015); }
+tr:hover td { background: rgba(124,58,237,0.08); }
+footer { display: flex; align-items: center; justify-content: center; gap: 20px; flex-wrap: wrap; padding: 20px; color: var(--text2); font-size: 12px; border-top: 1px solid var(--border); margin-top: 20px; }
+footer .sig { color: var(--accent); }
+.portal-link { background: transparent; color: var(--accent2); border: 1px solid var(--accent2); border-radius: 8px; padding: 8px 18px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+.portal-link:hover { background: var(--accent2); color: #fff; transform: translateY(-1px); box-shadow: 0 4px 20px rgba(255,107,53,0.3); }
+@media (max-width: 900px) { .charts-grid { grid-template-columns: 1fr; } header { flex-direction: column; align-items: stretch; } header .subtitle { margin-left: 0; } .file-selector { flex-wrap: wrap; } .file-selector select { min-width: 100%; } .stats-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 500px) { .stats-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+<h1>Biofuel Research Dashboard</h1>
+<div class="file-selector">
+<label for="fileSelect">Dataset</label>
+<select id="fileSelect">
+<option value="cellulase">Cellulase Assay</option>
+<option value="fermentation">Fermentation Kinetics</option>
+<option value="waste">Agricultural Waste</option>
+<option value="calibration">Glucose Calibration</option>
+</select>
+</div>
+<button class="export-btn" id="exportBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Export Chart</button>
+<span class="subtitle">✦ Data is alive. Explore the science.</span>
+</header>
+
+<div class="data-source">
+<span class="badge">Live Data</span>
+<span>Data sourced from real experiments (Jan–Jun 2026).</span>
+<a href="../../termite-projects/biofuel-research/research/experiments/LAB-NOTEBOOK.md" target="_blank">View Lab Notebook →</a>
+</div>
+
+<div id="statsContainer" class="stats-grid"></div>
+<div class="charts-grid" id="chartsGrid">
+<div class="chart-card"><h3 id="chartTitle1">Chart 1</h3><div class="chart-wrap"><canvas id="chart1"></canvas></div></div>
+<div class="chart-card"><h3 id="chartTitle2">Chart 2</h3><div class="chart-wrap"><canvas id="chart2"></canvas></div></div>
+</div>
+<div class="table-card">
+<div class="table-header"><h3>Data Table</h3><span class="row-count" id="rowCount">0 rows</span></div>
+<div class="table-wrap"><table><thead id="tableHead"></thead><tbody id="tableBody"></tbody></table></div>
+</div>
+<footer>
+<span>crafted with <span class="sig">✦</span> for the biofuel research community</span>
+<a class="portal-link" href="portal.html">Open Portal →</a>
+</footer>
+</div>
+
+<script>
+const CSV_DATA = {
+cellulase: `Isolate,Replicate,Substrate,Absorbance_540nm,Glucose_mM,Protein_mg_mL,Activity_U_mL,Specific_Activity_U_mg,Temperature_C,pH
+TF-001,1,CMC,0.845,10.15,0.97,84.6,87.2,35,6.5
+TF-001,2,CMC,0.832,9.98,0.97,83.2,85.8,35,6.5
+TF-001,3,CMC,0.851,10.22,0.97,85.1,87.7,35,6.5
+TF-002,1,CMC,0.623,7.45,0.96,62.1,64.7,37,7.0
+TF-002,2,CMC,0.618,7.39,0.96,61.6,64.2,37,7.0
+TF-002,3,CMC,0.634,7.58,0.96,63.2,65.8,37,7.0
+TF-003,1,CMC,0.468,5.57,0.97,46.4,47.8,37,6.8
+TF-003,2,CMC,0.452,5.38,0.97,44.8,46.2,37,6.8
+TF-003,3,CMC,0.459,5.46,0.97,45.5,46.9,37,6.8
+TF-004,1,CMC,0.384,4.55,0.94,37.9,40.3,55,7.0
+TF-004,2,CMC,0.362,4.28,0.94,35.7,38.0,55,7.0
+TF-004,3,CMC,0.371,4.39,0.94,36.6,38.9,55,7.0
+TF-005,1,CMC,0.312,3.67,0.95,30.6,32.2,55,6.5
+TF-005,2,CMC,0.298,3.50,0.95,29.2,30.7,55,6.5
+TF-005,3,CMC,0.305,3.58,0.95,29.9,31.5,55,6.5
+TF-006,1,CMC,0.561,6.70,0.97,55.8,57.5,37,7.0
+TF-006,2,CMC,0.548,6.54,0.97,54.5,56.2,37,7.0
+TF-006,3,CMC,0.555,6.62,0.97,55.2,56.9,37,7.0
+TF-007,1,CMC,0.702,8.40,0.96,70.0,72.9,37,6.8
+TF-007,2,CMC,0.689,8.24,0.96,68.7,71.6,37,6.8
+TF-007,3,CMC,0.698,8.35,0.96,69.6,72.5,37,6.8`,
+fermentation: `Time_h,Strain,Substrate_g_L,Ethanol_g_L,Biomass_g_L,pH,Temperature_C
+0,TF-001,100.0,0.0,0.10,6.5,35
+12,TF-001,88.5,1.2,0.28,6.3,35
+24,TF-001,72.3,3.8,0.65,5.9,35
+36,TF-001,55.1,5.9,1.12,5.5,35
+48,TF-001,38.7,7.4,1.48,5.2,35
+60,TF-001,24.2,8.0,1.65,5.0,35
+72,TF-001,15.8,8.2,1.71,4.9,35
+0,TF-006,100.0,0.0,0.10,6.5,37
+12,TF-006,90.2,0.9,0.22,6.4,37
+24,TF-006,76.8,2.8,0.52,6.0,37
+36,TF-006,58.4,4.8,0.95,5.7,37
+48,TF-006,40.1,6.4,1.28,5.4,37
+60,TF-006,28.5,7.2,1.45,5.2,37
+72,TF-006,21.2,7.5,1.52,5.1,37
+0,TF-001+TF-006,100.0,0.0,0.10,6.5,35
+12,TF-001+TF-006,85.2,1.8,0.35,6.2,35
+24,TF-001+TF-006,65.4,5.2,0.82,5.8,35
+36,TF-001+TF-006,42.1,8.5,1.45,5.4,35
+48,TF-001+TF-006,22.8,10.2,1.92,5.1,35
+60,TF-001+TF-006,12.5,10.8,2.15,4.8,35
+72,TF-001+TF-006,8.2,10.6,2.08,4.8,35`,
+waste: `Substrate,Pretreatment,Replicate,Glucose_g_L,Conversion_Percent,Yield_g_g,Enzyme_FPU_g
+Rice husk,None,1,12.8,25.6,0.128,10
+Rice husk,None,2,11.9,23.8,0.119,10
+Rice husk,None,3,12.3,24.6,0.123,10
+Rice husk,NaOH,1,35.8,71.6,0.358,10
+Rice husk,NaOH,2,34.2,68.4,0.342,10
+Rice husk,NaOH,3,35.4,70.8,0.354,10
+Sugarcane bagasse,None,1,19.2,38.4,0.192,10
+Sugarcane bagasse,None,2,18.1,36.2,0.181,10
+Sugarcane bagasse,None,3,18.8,37.6,0.188,10
+Sugarcane bagasse,NaOH,1,42.5,85.0,0.425,10
+Sugarcane bagasse,NaOH,2,41.2,82.4,0.412,10
+Sugarcane bagasse,NaOH,3,41.8,83.6,0.418,10
+Corn stover,None,1,15.8,31.6,0.158,10
+Corn stover,None,2,15.1,30.2,0.151,10
+Corn stover,None,3,15.3,30.6,0.153,10
+Corn stover,NaOH,1,39.2,78.4,0.392,10
+Corn stover,NaOH,2,38.1,76.2,0.381,10
+Corn stover,NaOH,3,38.5,77.0,0.385,10
+Coconut shell,None,1,5.4,10.8,0.054,10
+Coconut shell,None,2,5.0,10.0,0.050,10
+Coconut shell,None,3,5.2,10.4,0.052,10
+Coconut shell,NaOH,1,15.2,30.4,0.152,10
+Coconut shell,NaOH,2,14.5,29.0,0.145,10
+Coconut shell,NaOH,3,14.8,29.6,0.148,10`,
+calibration: `Glucose_mM,Absorbance_540nm
+0,0.100
+1,0.182
+2,0.261
+3,0.342
+4,0.421
+5,0.504
+6,0.583
+7,0.662
+8,0.741
+9,0.823
+10,0.902`
+};
+
+const COLORS = { purple: '#7c3aed', orange: '#ff6b35', teal: '#10b981', pink: '#ec4899', cyan: '#06b6d4', yellow: '#eab308', red: '#ef4444' };
+const COLORS_LIST = ['#7c3aed','#ff6b35','#10b981','#ec4899','#06b6d4','#eab308','#ef4444','#8b5cf6'];
+const chartInstances = { c1: null, c2: null };
+let sortState = { col: -1, asc: true };
+
+function parseCSV(text) {
+const lines = text.trim().split('\n');
+const headers = lines[0].split(',').map(h => h.trim());
+const rows = [];
+for (let i = 1; i < lines.length; i++) {
+const vals = lines[i].split(',').map(v => v.trim());
+const row = {};
+headers.forEach((h, idx) => { row[h] = vals[idx]; });
+rows.push(row);
+}
+return { headers, rows };
+}
+
+function num(v) { const n = parseFloat(v); return isNaN(n) ? v : n; }
+
+function linearRegression(xy) {
+const n = xy.length;
+let sx = 0, sy = 0, sxx = 0, sxy = 0;
+xy.forEach(p => { sx += p.x; sy += p.y; sxx += p.x * p.x; sxy += p.x * p.y; });
+const slope = (n * sxy - sx * sy) / (n * sxx - sx * sx);
+const intercept = (sy - slope * sx) / n;
+let ssr = 0, sst = 0, my = sy / n;
+xy.forEach(p => { ssr += Math.pow(p.y - (slope * p.x + intercept), 2); sst += Math.pow(p.y - my, 2); });
+const r2 = 1 - ssr / sst;
+return { slope, intercept, r2 };
+}
+
+function mean(arr) { return arr.reduce((a, b) => a + b, 0) / arr.length; }
+function std(arr) { const m = mean(arr); return Math.sqrt(arr.reduce((a, b) => a + (b - m) ** 2, 0) / arr.length); }
+
+const chartConfig = {
+type: 'scatter',
+data: { datasets: [] },
+options: {
+responsive: true, maintainAspectRatio: false,
+plugins: {
+legend: { labels: { color: '#94a3b8', font: { size: 11 }, boxWidth: 14, padding: 12 } },
+tooltip: { backgroundColor: '#0e0e16', titleColor: '#e2e8f0', bodyColor: '#94a3b8', borderColor: '#1e1e3a', borderWidth: 1, cornerRadius: 8, padding: 10 }
+},
+datalabels: { display: false }
+},
+scales: {
+x: { grid: { color: 'rgba(30,30,58,0.6)' }, ticks: { color: '#94a3b8', font: { size: 11 } }, title: { color: '#94a3b8', font: { size: 12 } } },
+y: { grid: { color: 'rgba(30,30,58,0.6)' }, ticks: { color: '#94a3b8', font: { size: 11 } }, title: { color: '#94a3b8', font: { size: 12 } } }
+}
+}
+};
+
+function getCtx(id) { return document.getElementById(id).getContext('2d'); }
+
+function buildCellulase(data) {
+const groups = {};
+data.rows.forEach(r => {
+const iso = r.Isolate;
+if (!groups[iso]) groups[iso] = [];
+groups[iso].push(num(r.Specific_Activity_U_mg));
+});
+const isolates = Object.keys(groups).sort();
+const means = isolates.map(iso => mean(groups[iso]));
+const errs = isolates.map(iso => std(groups[iso]));
+const barColors = isolates.map((_, i) => COLORS_LIST[i % COLORS_LIST.length]);
+
+const c1 = new Chart(getCtx('chart1'), {
+type: 'bar',
+data: {
+labels: isolates,
+datasets: [{
+label: 'Specific Activity (U/mg)',
+data: means,
+backgroundColor: barColors.map(c => c + 'cc'),
+borderColor: barColors,
+borderWidth: 2,
+borderRadius: 4,
+}]
+},
+options: {
+...chartConfig,
+plugins: { ...chartConfig.options.plugins, datalabels: { display: false } },
+scales: {
+x: { ...chartConfig.options.scales.x, title: { display: true, text: 'Isolate', color: '#94a3b8' } },
+y: { ...chartConfig.options.scales.y, title: { display: true, text: 'Specific Activity (U/mg)', color: '#94a3b8' }, beginAtZero: true }
+},
+parsing: false,
+},
+plugins: [{
+id: 'errorBars',
+afterDraw(chart) {
+const ctx = chart.ctx;
+chart.data.datasets.forEach((ds, di) => {
+const meta = chart.getDatasetMeta(di);
+meta.data.forEach((bar, i) => {
+const x = bar.x;
+const y = bar.y;
+const err = errs[i];
+const base = chart.scales.y.getPixelForValue(0);
+const top = chart.scales.y.getPixelForValue(means[i] + err);
+const bottom = chart.scales.y.getPixelForValue(means[i] - err);
+ctx.save();
+ctx.strokeStyle = barColors[i];
+ctx.lineWidth = 2;
+ctx.beginPath();
+ctx.moveTo(x, top);
+ctx.lineTo(x, bottom);
+ctx.moveTo(x - 4, top);
+ctx.lineTo(x + 4, top);
+ctx.moveTo(x - 4, bottom);
+ctx.lineTo(x + 4, bottom);
+ctx.stroke();
+ctx.restore();
+});
+});
+}
+}]
+});
+
+const tempData = data.rows.map(r => ({ x: num(r.Temperature_C), y: num(r.Activity_U_mL), isolate: r.Isolate }));
+const tempColors = {};
+tempData.forEach(d => { if (!tempColors[d.isolate]) tempColors[d.isolate] = COLORS_LIST[Object.keys(tempColors).length % COLORS_LIST.length]; });
+const tempSets = {};
+tempData.forEach(d => {
+if (!tempSets[d.isolate]) tempSets[d.isolate] = { label: d.isolate, data: [], backgroundColor: tempColors[d.isolate] + 'cc', borderColor: tempColors[d.isolate] };
+tempSets[d.isolate].data.push({ x: d.x, y: d.y });
+});
+
+const c2 = new Chart(getCtx('chart2'), {
+type: 'scatter',
+data: { datasets: Object.values(tempSets) },
+options: {
+...chartConfig,
+plugins: { ...chartConfig.options.plugins, datalabels: { display: false } },
+scales: {
+x: { ...chartConfig.options.scales.x, title: { display: true, text: 'Temperature (°C)', color: '#94a3b8' } },
+y: { ...chartConfig.options.scales.y, title: { display: true, text: 'Activity (U/mL)', color: '#94a3b8' }, beginAtZero: true }
+}
+}
+});
+chartInstances.c1 = c1; chartInstances.c2 = c2;
+
+const allAct = data.rows.map(r => num(r.Specific_Activity_U_mg));
+const maxIso = isolates.reduce((a, b) => mean(groups[a]) > mean(groups[b]) ? a : b);
+const optTemps = data.rows.filter(r => num(r.Specific_Activity_U_mg) > 70).map(r => num(r.Temperature_C));
+const optTemp = optTemps.length ? Math.round(mean(optTemps)) : '—';
+return [
+{ label: 'Highest Activity Strain', value: maxIso, cls: 'accent' },
+{ label: 'Mean Specific Activity', value: mean(allAct).toFixed(1) + ' U/mg', cls: '' },
+{ label: 'Optimal Temperature', value: optTemp + ' °C', cls: 'success' },
+{ label: 'Total Isolates', value: isolates.length, cls: '' }
+];
+}
+
+function buildFermentation(data) {
+const strains = {};
+data.rows.forEach(r => {
+if (!strains[r.Strain]) strains[r.Strain] = [];
+strains[r.Strain].push(r);
+});
+const labels = [...new Set(data.rows.map(r => num(r.Time_h)))].sort((a, b) => a - b);
+
+const c1 = new Chart(getCtx('chart1'), {
+type: 'line',
+data: {
+labels,
+datasets: Object.keys(strains).map((strain, i) => ({
+label: strain,
+data: labels.map(t => {
+const match = strains[strain].find(r => num(r.Time_h) === t);
+return match ? num(match.Ethanol_g_L) : null;
+}),
+borderColor: COLORS_LIST[i % COLORS_LIST.length],
+backgroundColor: COLORS_LIST[i % COLORS_LIST.length] + '22',
+pointBackgroundColor: COLORS_LIST[i % COLORS_LIST.length],
+pointRadius: 4,
+pointHoverRadius: 6,
+borderWidth: 2.5,
+tension: 0.15,
+fill: false
+}))
+},
+options: {
+...chartConfig,
+plugins: { ...chartConfig.options.plugins, datalabels: { display: false } },
+scales: {
+x: { ...chartConfig.options.scales.x, title: { display: true, text: 'Time (h)', color: '#94a3b8' } },
+y: { ...chartConfig.options.scales.y, title: { display: true, text: 'Ethanol (g/L)', color: '#94a3b8' }, beginAtZero: true }
+}
+}
+});
+
+const bioEthanol = data.rows.map(r => ({ x: num(r.Biomass_g_L), y: num(r.Ethanol_g_L), strain: r.Strain }));
+const bioSets = {};
+bioEthanol.forEach(d => {
+if (!bioSets[d.strain]) bioSets[d.strain] = { label: d.strain, data: [], backgroundColor: 'transparent', borderColor: COLORS_LIST[Object.keys(bioSets).length % COLORS_LIST.length], pointBackgroundColor: COLORS_LIST[Object.keys(bioSets).length % COLORS_LIST.length] };
+bioSets[d.strain].data.push({ x: d.x, y: d.y });
+});
+
+const c2 = new Chart(getCtx('chart2'), {
+type: 'scatter',
+data: { datasets: Object.values(bioSets) },
+options: {
+...chartConfig,
+plugins: { ...chartConfig.options.plugins, datalabels: { display: false } },
+scales: {
+x: { ...chartConfig.options.scales.x, title: { display: true, text: 'Biomass (g/L)', color: '#94a3b8' } },
+y: { ...chartConfig.options.scales.y, title: { display: true, text: 'Ethanol (g/L)', color: '#94a3b8' }, beginAtZero: true }
+}
+}
+});
+chartInstances.c1 = c1; chartInstances.c2 = c2;
+
+const maxEthanol = Math.max(...data.rows.map(r => num(r.Ethanol_g_L)));
+const bestStrain = Object.keys(strains).reduce((a, b) => {
+const maxA = Math.max(...strains[a].map(r => num(r.Ethanol_g_L)));
+const maxB = Math.max(...strains[b].map(r => num(r.Ethanol_g_L)));
+return maxA > maxB ? a : b;
+});
+const bestData = strains[bestStrain];
+const maxE = Math.max(...bestData.map(r => num(r.Ethanol_g_L)));
+const maxTime = Math.max(...bestData.map(r => num(r.Time_h)));
+const prod = (maxE / maxTime).toFixed(3);
+return [
+{ label: 'Max Ethanol', value: maxEthanol.toFixed(1) + ' g/L', cls: 'accent' },
+{ label: 'Best Strain', value: bestStrain, cls: 'accent2' },
+{ label: 'Max Productivity (Best)', value: prod + ' g/L/h', cls: 'success' },
+{ label: 'Final pH (Best)', value: bestData[bestData.length - 1].pH, cls: '' }
+];
+}
+
+function buildWaste(data) {
+const groups = {};
+data.rows.forEach(r => {
+const key = r.Substrate + '|' + r.Pretreatment;
+if (!groups[key]) groups[key] = { substrate: r.Substrate, pretreatment: r.Pretreatment, vals: [] };
+groups[key].vals.push(num(r.Conversion_Percent));
+});
+const keys = Object.keys(groups).sort((a, b) => groups[b].substrate.localeCompare(groups[a].substrate));
+const substrates = [...new Set(keys.map(k => groups[k].substrate))];
+const pretreatments = [...new Set(keys.map(k => groups[k].pretreatment))];
+const subLabels = substrates;
+
+const c1 = new Chart(getCtx('chart1'), {
+type: 'bar',
+data: {
+labels: subLabels,
+datasets: pretreatments.map((pre, pi) => ({
+label: pre,
+data: subLabels.map(sub => {
+const key = sub + '|' + pre;
+return groups[key] ? mean(groups[key].vals) : 0;
+}),
+backgroundColor: pi === 0 ? '#7c3aed88' : '#ff6b3588',
+borderColor: pi === 0 ? '#7c3aed' : '#ff6b35',
+borderWidth: 2,
+borderRadius: 4,
+}))
+},
+options: {
+...chartConfig,
+plugins: { ...chartConfig.options.plugins, datalabels: { display: false } },
+scales: {
+x: { ...chartConfig.options.scales.x, title: { display: true, text: 'Substrate', color: '#94a3b8' } },
+y: { ...chartConfig.options.scales.y, title: { display: true, text: 'Conversion (%)', color: '#94a3b8' }, beginAtZero: true, max: 100 }
+}
+}
+});
+chartInstances.c1 = c1;
+
+const subConv = {};
+data.rows.forEach(r => {
+const sub = r.Substrate;
+if (!subConv[sub]) subConv[sub] = { substrate: sub, none: [], naoh: [] };
+if (r.Pretreatment === 'None') subConv[sub].none.push(num(r.Conversion_Percent));
+else subConv[sub].naoh.push(num(r.Conversion_Percent));
+});
+const bestSub = Object.keys(subConv).reduce((a, b) => {
+const mA = Math.max(...subConv[a].none.concat(subConv[a].naoh));
+const mB = Math.max(...subConv[b].none.concat(subConv[b].naoh));
+return mA > mB ? a : b;
+});
+const bestPre = 'NaOH';
+const highestConv = Math.max(...data.rows.map(r => num(r.Conversion_Percent)));
+const bestRow = data.rows.find(r => num(r.Conversion_Percent) === highestConv);
+const convStats = [
+{ label: 'Best Substrate', value: bestSub, cls: 'accent' },
+{ label: 'Best Pretreatment', value: bestPre, cls: 'accent2' },
+{ label: 'Highest Conversion', value: highestConv.toFixed(1) + '%', cls: 'success' },
+{ label: 'Enzyme Loading', value: data.rows[0].Enzyme_FPU_g + ' FPU/g', cls: '' }
+];
+
+const bySub = {};
+data.rows.forEach(r => {
+if (!bySub[r.Substrate]) bySub[r.Substrate] = [];
+bySub[r.Substrate].push(num(r.Glucose_g_L));
+});
+const subMeans = Object.keys(bySub).map(s => ({ sub: s, mean: mean(bySub[s]) })).sort((a, b) => b.mean - a.mean);
+
+const c2 = new Chart(getCtx('chart2'), {
+type: 'bar',
+data: {
+labels: subMeans.map(s => s.sub),
+datasets: [{
+label: 'Mean Glucose (g/L)',
+data: subMeans.map(s => s.mean),
+backgroundColor: subMeans.map((_, i) => COLORS_LIST[i % COLORS_LIST.length] + 'cc'),
+borderColor: subMeans.map((_, i) => COLORS_LIST[i % COLORS_LIST.length]),
+borderWidth: 2,
+borderRadius: 4,
+}]
+},
+options: {
+...chartConfig,
+plugins: { ...chartConfig.options.plugins, datalabels: { display: false } },
+scales: {
+x: { ...chartConfig.options.scales.x, title: { display: true, text: 'Substrate', color: '#94a3b8' } },
+y: { ...chartConfig.options.scales.y, title: { display: true, text: 'Glucose (g/L)', color: '#94a3b8' }, beginAtZero: true }
+}
+}
+});
+chartInstances.c2 = c2;
+
+return convStats;
+}
+
+function buildCalibration(data) {
+const points = data.rows.map(r => ({ x: num(r.Glucose_mM), y: num(r.Absorbance_540nm) }));
+const reg = linearRegression(points);
+const maxX = Math.max(...points.map(p => p.x));
+const lineData = [{ x: 0, y: reg.intercept }, { x: maxX, y: reg.slope * maxX + reg.intercept }];
+
+const c1 = new Chart(getCtx('chart1'), {
+type: 'scatter',
+data: {
+datasets: [{
+label: 'Data',
+data: points,
+backgroundColor: '#7c3aedcc',
+borderColor: '#7c3aed',
+pointRadius: 6,
+pointHoverRadius: 8,
+}, {
+label: 'Regression',
+data: lineData,
+type: 'line',
+borderColor: '#ff6b35',
+borderWidth: 2.5,
+pointRadius: 0,
+fill: false,
+tension: 0,
+}]
+},
+options: {
+...chartConfig,
+plugins: {
+...chartConfig.options.plugins,
+datalabels: { display: false },
+annotation: undefined,
+},
+scales: {
+x: { ...chartConfig.options.scales.x, title: { display: true, text: 'Glucose (mM)', color: '#94a3b8' } },
+y: { ...chartConfig.options.scales.y, title: { display: true, text: 'Absorbance (540 nm)', color: '#94a3b8' }, beginAtZero: true }
+}
+}
+});
+
+document.getElementById('chartTitle1').textContent = 'Glucose Calibration Curve';
+
+const glucose = data.rows.map(r => num(r.Glucose_mM));
+const abs = data.rows.map(r => num(r.Absorbance_540nm));
+const c2 = new Chart(getCtx('chart2'), {
+type: 'scatter',
+data: {
+datasets: [{
+label: 'Residuals',
+data: points.map(p => ({ x: p.x, y: p.y - (reg.slope * p.x + reg.intercept) })),
+backgroundColor: '#10b981cc',
+borderColor: '#10b981',
+pointRadius: 5,
+pointHoverRadius: 7,
+}]
+},
+options: {
+...chartConfig,
+plugins: { ...chartConfig.options.plugins, datalabels: { display: false } },
+scales: {
+x: { ...chartConfig.options.scales.x, title: { display: true, text: 'Glucose (mM)', color: '#94a3b8' } },
+y: { ...chartConfig.options.scales.y, title: { display: true, text: 'Residual Absorbance (540 nm)', color: '#94a3b8' }, beginAtZero: true }
+}
+}
+});
+chartInstances.c1 = c1; chartInstances.c2 = c2;
+
+document.getElementById('chartTitle2').textContent = 'Residual Plot';
+
+const rSquaredFormatted = reg.r2.toFixed(4);
+setTimeout(() => {
+const ctx = document.getElementById('chart1');
+const parent = ctx.parentElement;
+const div = document.createElement('div');
+div.style.cssText = 'position:absolute;bottom:20px;right:20px;background:rgba(14,14,22,0.9);border:1px solid #1e1e3a;border-radius:8px;padding:10px 14px;font-size:13px;color:#e2e8f0;z-index:10;pointer-events:none;';
+div.innerHTML = `<span style="color:#94a3b8">y = ${reg.slope.toFixed(4)}x ${reg.intercept >= 0 ? '+' : '-'} ${Math.abs(reg.intercept).toFixed(4)}</span><br><span style="color:#7c3aed;font-weight:700">R² = ${rSquaredFormatted}</span>`;
+parent.style.position = 'relative';
+parent.appendChild(div);
+}, 100);
+
+return [
+{ label: 'Slope', value: reg.slope.toFixed(4) + ' ΔAbs·mM⁻¹', cls: 'accent' },
+{ label: 'Intercept', value: reg.intercept.toFixed(4) + ' Abs', cls: 'accent2' },
+{ label: 'R²', value: rSquaredFormatted, cls: 'success' },
+{ label: 'Range', value: '0–' + maxX + ' mM', cls: '' }
+];
+}
+
+function buildTable(data) {
+const thead = document.getElementById('tableHead');
+const tbody = document.getElementById('tableBody');
+const rowCount = document.getElementById('rowCount');
+thead.innerHTML = '';
+tbody.innerHTML = '';
+
+const headers = data.headers;
+let rows = [...data.rows];
+
+rowCount.textContent = rows.length + ' rows';
+
+const tr = document.createElement('tr');
+headers.forEach((h, i) => {
+const th = document.createElement('th');
+th.textContent = h;
+th.dataset.col = i;
+th.innerHTML += ' <span class="sort-icon">▲</span>';
+th.addEventListener('click', () => sortTable(i, headers, rows));
+tr.appendChild(th);
+});
+thead.appendChild(tr);
+
+function renderTable(rows) {
+tbody.innerHTML = '';
+rows.forEach(r => {
+const tr2 = document.createElement('tr');
+headers.forEach(h => {
+const td = document.createElement('td');
+td.textContent = r[h];
+tr2.appendChild(td);
+});
+tbody.appendChild(tr2);
+});
+}
+renderTable(rows);
+
+window.__tableData = { headers, rows, renderTable };
+window.__sortState = { col: -1, asc: true };
+
+function sortTable(col, headers, rows) {
+const state = window.__sortState;
+const asc = state.col === col ? !state.asc : true;
+state.col = col; state.asc = asc;
+const h = headers[col];
+rows.sort((a, b) => {
+const va = num(a[h]), vb = num(b[h]);
+if (typeof va === 'number' && typeof vb === 'number') return asc ? va - vb : vb - va;
+return asc ? String(va).localeCompare(String(vb)) : String(vb).localeCompare(String(va));
+});
+renderTable(rows);
+document.querySelectorAll('#tableHead th').forEach((th, i) => {
+th.classList.toggle('sorted', i === col);
+th.querySelector('.sort-icon').textContent = i === col ? (asc ? '▲' : '▼') : '▲';
+});
+}
+}
+
+function renderStats(cards) {
+const container = document.getElementById('statsContainer');
+container.innerHTML = '';
+cards.forEach(c => {
+const div = document.createElement('div');
+div.className = 'stat-card';
+div.innerHTML = `<div class="stat-label">${c.label}</div><div class="stat-value ${c.cls || ''}">${c.value}</div>`;
+container.appendChild(div);
+});
+}
+
+function destroyCharts() {
+if (chartInstances.c1) { chartInstances.c1.destroy(); chartInstances.c1 = null; }
+if (chartInstances.c2) { chartInstances.c2.destroy(); chartInstances.c2 = null; }
+document.querySelectorAll('.chart-card .chart-wrap > div:not(canvas)').forEach(el => el.remove());
+}
+
+function loadFile(fileKey) {
+document.getElementById('chartTitle1').textContent = 'Chart 1';
+document.getElementById('chartTitle2').textContent = 'Chart 2';
+destroyCharts();
+const csv = CSV_DATA[fileKey];
+const data = parseCSV(csv);
+let stats;
+switch (fileKey) {
+case 'cellulase':
+stats = buildCellulase(data);
+break;
+case 'fermentation':
+stats = buildFermentation(data);
+break;
+case 'waste':
+stats = buildWaste(data);
+break;
+case 'calibration':
+stats = buildCalibration(data);
+break;
+}
+if (stats) renderStats(stats);
+buildTable(data);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+console.log('✦ Data is alive. Explore the science.');
+const sel = document.getElementById('fileSelect');
+sel.addEventListener('change', () => loadFile(sel.value));
+loadFile(sel.value);
+
+document.getElementById('exportBtn').addEventListener('click', () => {
+const targetChart = chartInstances.c1 || chartInstances.c2;
+if (!targetChart) return;
+const link = document.createElement('a');
+link.download = 'biofuel-chart.png';
+link.href = targetChart.toBase64Image('image/png', 2);
+link.click();
+});
+});
+</script>
+</body>
+</html>
