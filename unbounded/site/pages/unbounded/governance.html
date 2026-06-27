@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="UNBOUNDED Governance Model">
+<meta property="og:title" content="UNBOUNDED Governance Model">
+<meta property="og:description" content="UNBOUNDED Governance Model">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://Puronbo.github.io/termite-biotech-and-unbounded/unbounded/site/pages/unbounded/governance.html">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0e0e16">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<title>UNBOUNDED Governance Model</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #08080c; --surface: #0e0e16; --surface2: #14142e;
+  --border: rgba(255,255,255,0.05); --accent: #7c3aed; --accent2: #ff6b35;
+  --accent3: #60a5fa; --fg: #e0e0ec; --muted: #7878a0;
+  --radius: 12px;
+}
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: var(--bg); color: var(--fg); line-height: 1.7;
+  min-height: 100vh;
+}
+body::before {
+  content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: radial-gradient(ellipse at 50% 0%, rgba(124,58,237,0.06) 0%, transparent 70%);
+  pointer-events: none; z-index: 0;
+}
+.wrapper {
+  max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem 4rem;
+  position: relative; z-index: 1;
+}
+.top-nav {
+  display: flex; align-items: center; gap: 1rem; padding: 0.75rem 0;
+  margin-bottom: 2rem; border-bottom: 1px solid var(--border);
+  font-size: 0.85rem; flex-wrap: wrap;
+}
+.top-nav a {
+  color: var(--muted); text-decoration: none; transition: color 0.2s;
+  display: inline-flex; align-items: center; gap: 0.3rem;
+}
+.top-nav a:hover { color: var(--accent); }
+.top-nav .sep { color: var(--border); }
+h1 {
+  font-size: 2rem; font-weight: 700; margin-bottom: 1.5rem;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  line-height: 1.3;
+}
+h2 { font-size: 1.4rem; font-weight: 600; margin: 2rem 0 0.75rem; color: var(--fg); }
+h3 { font-size: 1.15rem; font-weight: 600; margin: 1.5rem 0 0.5rem; color: var(--accent3); }
+p { margin-bottom: 1rem; color: var(--fg); }
+a { color: var(--accent2); text-decoration: none; }
+a:hover { text-decoration: underline; }
+strong { color: #fff; }
+em { color: var(--muted); }
+ul, ol { margin: 0 0 1rem 1.5rem; }
+li { margin-bottom: 0.3rem; }
+code {
+  background: rgba(124,58,237,0.1); padding: 0.15rem 0.4rem;
+  border-radius: 4px; font-size: 0.85rem; color: var(--accent3);
+}
+pre {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 1rem; overflow-x: auto;
+  margin-bottom: 1rem;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  border-left: 3px solid var(--accent); padding-left: 1rem;
+  margin: 1rem 0; color: var(--muted); font-style: italic;
+}
+table {
+  width: 100%; border-collapse: collapse; margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+th, td {
+  padding: 0.5rem 0.75rem; text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+th { background: var(--surface2); color: var(--muted); font-weight: 600; }
+tr:hover td { background: rgba(124,58,237,0.05); }
+hr { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+img { max-width: 100%; border-radius: var(--radius); }
+.foot-nav {
+  margin-top: 3rem; padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+  display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
+}
+.foot-nav a {
+  color: var(--accent); font-size: 0.9rem; text-decoration: none;
+}
+.foot-nav a:hover { color: var(--accent2); }
+@media (max-width: 600px) {
+  .wrapper { padding: 1.5rem 1rem; }
+  h1 { font-size: 1.5rem; }
+}
+</style>
+</head>
+<body>
+<div class="wrapper">
+<div class="top-nav">
+  <a href="../../portal.html">&#9670; Portal</a>
+  <span class="sep">/</span>
+  <a href="unbounded/index.html">UNBOUNDED</a>
+  <span class="sep">/</span>
+  <span style="color:var(--fg)">UNBOUNDED Governance Model</span>
+</div>
+<h1>UNBOUNDED Governance Model</h1>
+<h2>1. Preamble: Why This Exists</h2>
+<p>UNBOUNDED is not a company. It is not a project. It is a current. A direction that enough people decided to walk in together. There is no leader because there is no follower — only people who see the same horizon.</p>
+<p>We build this because the existing models are broken. Centralized platforms concentrate power, extract value, and eventually rot from within. They begin as communities and end as products. They begin with dreams and end with quarterly earnings calls. We refuse that arc.</p>
+<p>This document is not a constitution. It is not a legal contract. It is a shared understanding — a description of how we choose to work together today. Tomorrow, if we find a better way, we will change it. The only rule worth keeping is this: the people who build it own it. Everyone else can fork.</p>
+<p>UNBOUNDED exists in the tension between chaos and structure. Too much structure and we become what we oppose. Too little and we dissolve into noise. This governance model is the sweet spot — enough shape to move together, enough freedom to move apart.</p>
+<p>We are not building a platform. We are building a pattern. A way of organizing creative and technical work that cannot be captured, cannot be sold, and cannot be controlled. If UNBOUNDED itself becomes a problem, UNBOUNDED can be forked. The idea survives the institution.</p>
+<p>Every line of this document was written by someone who showed up. That is the only qualification that matters.</p>
+<hr />
+<h2>2. The Core Agreement</h2>
+<p>Everyone who joins UNBOUNDED agrees to these foundational commitments. They are not negotiable. They are not subject to vote. They are the ground we stand on.</p>
+<h3>No Gatekeeping</h3>
+<p>Anyone can participate. There is no application process, no membership committee, no interview. If you want to contribute, you are a contributor. The only barrier to entry is willingness. Expertise is grown, not required.</p>
+<h3>No Surveillance</h3>
+<p>The platform does not track users. It does not profile them. It does not sell data. It does not harvest attention. Privacy is not a feature — it is a right. We build systems that collect the minimum information necessary to function and nothing more.</p>
+<h3>No Extraction</h3>
+<p>Value flows to the people who create it. No middlemen take a cut. No investors extract returns. No shareholders demand growth at the expense of community. If you contribute, you benefit. If you use the platform, you are not being used.</p>
+<h3>The Means of Production Belong to the Community</h3>
+<p>The code is open. The infrastructure is community-owned. The brand, the name, the domain names — all held in trust by stewards on behalf of the community. No single person can sell it, license it, or take it private. If someone tries, the community forks and the original becomes irrelevant.</p>
+<h3>Credit Where Credit Is Due</h3>
+<p>Every contribution is credited. Every contributor is named. We keep a public record of who built what, when, and why. Attribution is permanent. If you write code, your name stays in the history forever. If you design a logo, your name is on it. If you contribute an idea that shapes the direction, that contribution is acknowledged.</p>
+<hr />
+<h2>3. How Decisions Are Made</h2>
+<h3>3.1 Proposals</h3>
+<p>Anyone can propose anything. There is no permission required to suggest a change. Proposals can take many forms:</p>
+<ul>
+<li><strong>GitHub Issues</strong> — for ideas, bugs, feature requests, questions</li>
+<li><strong>Pull Requests</strong> — for concrete changes to code, documentation, or process</li>
+<li><strong>Community Calls</strong> — verbal proposals raised in synchronous discussion</li>
+<li><strong>Any medium</strong> — a forum post, a shared document, a napkin sketch posted in chat. If it communicates a proposal clearly, it counts.</li>
+</ul>
+<p>A proposal should answer three questions:<br />
+1. What is being proposed?<br />
+2. Why is it needed?<br />
+3. Who will do the work?</p>
+<p>The third question is the most important. Proposals without doers are dreams. Proposals with doers are plans.</p>
+<h3>3.2 Consent-Based Decision Making</h3>
+<p>We do not vote. Voting creates winners and losers. Winning and losing create division. Division creates factions. Factions create politics. Politics destroys communities.</p>
+<p>Instead, we use <strong>consent-based decision making</strong>. A proposal moves forward unless someone blocks it with a reasoned objection.</p>
+<p>The standard for blocking is not "I don't like it" or "I prefer a different approach." The standard is: <strong>"This proposal would cause harm to the community or violate our core agreement."</strong></p>
+<p>If no one blocks within a reasonable timeframe (typically 7 days for most proposals, longer for significant changes), consent is assumed and the proposal proceeds.</p>
+<h3>3.3 Escalation: When Someone Blocks</h3>
+<p>If a proposal is blocked:</p>
+<ol>
+<li>
+<p><strong>Cooling period</strong> — 7 days of silence. No debate, no lobbying, no pressure. Everyone sits with the objection.</p>
+</li>
+<li>
+<p><strong>Facilitated discussion</strong> — After the cooling period, a neutral facilitator (chosen by the parties, not by any authority) helps the blocker and the proposal author explore the objection. The goal is understanding, not persuasion.</p>
+</li>
+<li>
+<p><strong>Outcomes</strong> — The discussion may result in:<br />
+   - The proposal is modified to address the objection and proceeds<br />
+   - The blocker withdraws the objection after understanding the proposal better<br />
+   - The proposal is withdrawn by the author<br />
+   - The proposal and objection stand, and the community accepts the impasse</p>
+</li>
+<li>
+<p><strong>If impasse persists</strong> — The proposal can be deferred indefinitely. Or the proponents can fork. Forking is always an option. It is not a failure state. It is the pressure release valve that makes consent-based governance safe.</p>
+</li>
+</ol>
+<h3>3.4 Urgent Decisions</h3>
+<p>For urgent matters (security vulnerabilities, infrastructure outages, legal threats), any contributor with the relevant skills can act immediately. They must:<br />
+- Document what they did and why<br />
+- Post a public explanation within 24 hours<br />
+- Stand ready to reverse or defend the action in the next community discussion</p>
+<p>Urgency is not a loophole. It is a practical necessity. Abuse of urgency erodes trust. A pattern of unilateral urgent actions is grounds for the community to fork away from that person's influence.</p>
+<hr />
+<h2>4. Roles (Not Titles)</h2>
+<p>UNBOUNDED has no managers, no directors, no executives. It has roles — functions that need filling, not positions that confer power.</p>
+<p>Roles are:<br />
+- <strong>Temporary</strong> — held for a defined period (typically 3-6 months, renewable)<br />
+- <strong>Rotating</strong> — no one holds a role forever<br />
+- <strong>Self-selected</strong> — you step forward; you are not appointed<br />
+- <strong>Revocable</strong> — if the community loses trust in a role-holder, the role can be reassigned through the consent process</p>
+<p>No role gives anyone authority over anyone else. Roles give responsibility, not power. The person in a role serves the community, not the other way around.</p>
+<h3>Gardeners</h3>
+<p>Gardeners maintain the codebase, review contributions, and tend the infrastructure. They do not "own" the code — they care for it.</p>
+<p><strong>Responsibilities:</strong><br />
+- Review pull requests in a timely, respectful manner<br />
+- Merge approved changes<br />
+- Monitor infrastructure health<br />
+- Respond to security reports<br />
+- Onboard new contributors to the technical stack<br />
+- Keep dependencies updated</p>
+<p><strong>Rotation:</strong> 3 months. Any contributor with meaningful code contributions can declare themselves a Gardener. At least two Gardeners should be active at any time.</p>
+<h3>Wayfinders</h3>
+<p>Wayfinders help newcomers find their place in the community. They are the first point of contact for questions, the guides through unfamiliar territory.</p>
+<p><strong>Responsibilities:</strong><br />
+- Welcome new contributors<br />
+- Answer questions in community spaces<br />
+- Direct people to relevant documentation<br />
+- Pair new contributors with mentors<br />
+- Identify friction points in the onboarding process<br />
+- Feed insights back into documentation improvements</p>
+<p><strong>Rotation:</strong> 6 months. Empathy is the only qualification.</p>
+<h3>Chroniclers</h3>
+<p>Chroniclers document decisions, maintain the knowledge graph, and ensure the community's history is accurate and accessible.</p>
+<p><strong>Responsibilities:</strong><br />
+- Take notes at community calls<br />
+- Maintain the changelog<br />
+- Update governance and contribution docs<br />
+- Keep the decision log (a public record of every proposal and its outcome)<br />
+- Archive important discussions<br />
+- Ensure attribution records are complete</p>
+<p><strong>Rotation:</strong> 6 months. Attention to detail matters more than writing skill.</p>
+<h3>Stewards</h3>
+<p>Stewards hold the community's resources — donations, grants, infrastructure access, domain names, and legal entities (if any). They are trustees, not owners.</p>
+<p><strong>Responsibilities:</strong><br />
+- Manage community funds transparently<br />
+- Pay infrastructure costs<br />
+- Distribute revenue to contributors (see Section 6)<br />
+- Hold domain names and keys in trust<br />
+- Report financial status monthly<br />
+- Ensure legal compliance (if applicable)</p>
+<p><strong>Rotation:</strong> 6 months, mandatory. No one serves two consecutive terms as a Steward. Financial power centralizes naturally; rotation prevents entrenchment.</p>
+<p><strong>Trust requirements:</strong> Stewards must be known community members with a history of contributions. At least 3 Stewards must hold shared access (multi-signature for wallets, shared accounts for services, etc.). No single person can control the community's resources.</p>
+<h3>No Other Roles</h3>
+<p>These four roles are sufficient. If someone proposes a new role, they must demonstrate that:<br />
+1. The function is not being performed by existing roles<br />
+2. The function is recurring, not one-time<br />
+3. The role would not concentrate power</p>
+<hr />
+<h2>5. Contribution Model</h2>
+<h3>5.1 Anyone Can Contribute Anything, Anytime</h3>
+<p>Contribution is open. There is no assignment process, no ticket queue, no permission slip required. If you see something that needs doing, do it.</p>
+<p>The only constraint is the Core Agreement (Section 2). If your contribution violates those principles, it may be removed through the consent process.</p>
+<h3>5.2 What Counts as Contribution</h3>
+<p>Everything that moves the project forward:</p>
+<p><strong>Code:</strong><br />
+- Writing new features<br />
+- Fixing bugs<br />
+- Refactoring<br />
+- Writing tests<br />
+- Improving performance<br />
+- Security auditing</p>
+<p><strong>Design:</strong><br />
+- User interface design<br />
+- Visual identity<br />
+- Accessibility improvements<br />
+- User experience research</p>
+<p><strong>Writing:</strong><br />
+- Documentation<br />
+- Blog posts<br />
+- Tutorials<br />
+- Translation<br />
+- Copywriting</p>
+<p><strong>Ideas:</strong><br />
+- Feature proposals<br />
+- Design concepts<br />
+- Strategic thinking<br />
+- Problem identification</p>
+<p><strong>Community:</strong><br />
+- Answering questions<br />
+- Mentoring newcomers<br />
+- Organizing events<br />
+- Facilitating discussions</p>
+<p><strong>Infrastructure:</strong><br />
+- DevOps<br />
+- Moderation<br />
+- Legal review<br />
+- Financial management</p>
+<p><strong>Art:</strong><br />
+- Music<br />
+- Visual art<br />
+- Animation<br />
+- Sound design</p>
+<p>If it helps the project thrive, it's a contribution.</p>
+<h3>5.3 Contribution Is Its Own Reward</h3>
+<p>UNBOUNDED cannot promise payment. It can promise:</p>
+<ul>
+<li><strong>Recognition</strong> — your name on the work, in the credits, in the history</li>
+<li><strong>Portfolio</strong> — demonstrable impact you can show anywhere</li>
+<li><strong>Network</strong> — connections with everyone else who shows up</li>
+<li><strong>Growth</strong> — skills you develop by doing real work on real problems</li>
+<li><strong>Ownership</strong> — if the project generates revenue, you share in it</li>
+</ul>
+<p>Some contributors will never want or need payment. Some will contribute full-time and need the project to sustain them. Both are valid. The model must accommodate both.</p>
+<h3>5.4 Revenue Sharing</h3>
+<p>If and when UNBOUNDED generates revenue, it is distributed to contributors. The model:</p>
+<ol>
+<li><strong>Infrastructure costs</strong> are paid first (hosting, domains, tools, legal fees)</li>
+<li><strong>Operating reserve</strong> — 20% of remaining revenue is held for future costs, emergencies, or investment</li>
+<li><strong>Contributor pool</strong> — 80% of remaining revenue is distributed to active contributors</li>
+</ol>
+<p>Distribution is proportional to contribution, assessed by a simple system:</p>
+<ul>
+<li>Every contribution is logged (commit, PR, design asset, document, translation, etc.)</li>
+<li>A contribution score is calculated based on impact (not time spent)</li>
+<li>The pool is divided proportional to scores</li>
+<li>Distribution happens quarterly</li>
+</ul>
+<p>This system will evolve. The first version may use rough consensus on who contributed meaningfully. Future versions may use more sophisticated metrics. The goal is not perfect fairness — it is to ensure that when money flows in, it flows to the people who made it possible.</p>
+<hr />
+<h2>6. Revenue and Resources</h2>
+<h3>6.1 Principles</h3>
+<ul>
+<li><strong>No ads</strong> — advertising turns users into products. We refuse.</li>
+<li><strong>No surveillance</strong> — we do not track, profile, or monetize user data.</li>
+<li><strong>No investor control</strong> — no venture capital, no equity, no board of directors. Our only stakeholders are our users and contributors.</li>
+</ul>
+<h3>6.2 Revenue Sources</h3>
+<p><strong>Grants</strong> — from foundations, government agencies, or philanthropic organizations that align with our mission. Grants fund specific work and do not come with strings attached. Any grant agreement is public.</p>
+<p><strong>Donations</strong> — from users who believe in the platform. Donations are voluntary and do not unlock features. The platform is the same for everyone regardless of whether they donate.</p>
+<p><strong>Voluntary memberships</strong> — users can choose to support the platform with recurring contributions. Membership may include recognition (a badge, a thank-you page) but never exclusive access or features.</p>
+<p><strong>Paid services</strong> — hosting, support, custom development. These services are provided by community members, not by a central entity. The revenue flows to the service providers and a portion back to the community pool.</p>
+<p><strong>Merchandise</strong> — T-shirts, stickers, whatever. Fun revenue. Low pressure.</p>
+<h3>6.3 Financial Transparency</h3>
+<p>Every transaction involving community funds is public:</p>
+<ul>
+<li>A real-time ledger of income and expenses</li>
+<li>Monthly financial reports</li>
+<li>All wallet addresses and service accounts known</li>
+<li>All grant agreements published</li>
+<li>All Steward decisions about spending recorded</li>
+</ul>
+<p>Trust requires transparency. Transparency is not optional.</p>
+<hr />
+<h2>7. Forking and Exit</h2>
+<h3>7.1 Forking Is a Feature, Not a Bug</h3>
+<p>Any contributor can fork the entire project at any time. The code, the brand (subject to trademark considerations), the documentation — all of it. Forking is the ultimate check on power.</p>
+<p>If a group disagrees with a direction, they do not need to win an argument. They can fork. If the Stewards become corrupt, the community does not need to fight — they can fork. If the project stagnates, a fork can revive it.</p>
+<p>Forking is not failure. Forking is the immune system of decentralized projects. It is how the community self-corrects when centralization starts to creep in.</p>
+<h3>7.2 What Happens When Someone Forks</h3>
+<ol>
+<li>They take a copy of the codebase and all assets</li>
+<li>They rename and rebrand (to avoid confusion)</li>
+<li>They build their own community around the fork</li>
+<li>The original project continues</li>
+</ol>
+<p>The relationship between the original and the fork is not adversarial. Forks can share improvements. Forks can merge back. Forks can coexist peacefully.</p>
+<h3>7.3 The Original Project's Existence</h3>
+<p>The original UNBOUNDED exists only as long as people find it useful. If the community disperses, if interest wanes, if the world moves on — the project dies. That is natural. That is okay.</p>
+<p>But the code does not die. It lives in every fork, every clone, every archive. The ideas persist in every person who contributed and carried those lessons elsewhere.</p>
+<p>UNBOUNDED is not a monument. It is a moment. A good one, we hope. And when it passes, what we built together passes into the hands of whoever wants to carry it forward.</p>
+<h3>7.4 Dead Project Protocol</h3>
+<p>If no commits, no community activity, and no responses to inquiries occur for 6 months, the project is considered dormant. In that case:</p>
+<ol>
+<li>Stewards transfer domain names and keys to any group that requests them and demonstrates intent to revive the project</li>
+<li>The repository is archived but remains read-only</li>
+<li>Anyone can pick up the banner</li>
+</ol>
+<hr />
+<h2>8. Amendments</h2>
+<h3>8.1 This Document Is Not Sacred</h3>
+<p>This governance model is a living document. It can and should change as the community learns what works and what doesn't.</p>
+<h3>8.2 Amendment Process</h3>
+<ol>
+<li><strong>Proposal</strong> — Anyone proposes a change to this document (via pull request to GOVERNANCE.md)</li>
+<li><strong>Discussion period</strong> — 30 days of open discussion</li>
+<li><strong>Consent check</strong> — After 30 days, if no block stands (see Section 3.3), the amendment is adopted</li>
+<li><strong>Publication</strong> — The change is merged, and the community is notified</li>
+</ol>
+<h3>8.3 Amendments to the Amendment Process</h3>
+<p>The amendment process itself can be amended, but only with a 60-day discussion period and unanimous consent (no blocks from anyone who has contributed in the past year).</p>
+<hr />
+<h2>9. The Empty Throne</h2>
+<p>There is no CEO of UNBOUNDED. There is no board of directors. There is no benevolent dictator for life. There is no founder with special privileges. There is no committee that can override the community.</p>
+<p>The throne is empty.</p>
+<p>It will remain empty because filling it would defeat the purpose. UNBOUNDED exists to prove that people can build together without being ruled. That coordination does not require command. That a thousand people moving in the same direction because they chose to is more powerful than a thousand people herded by a leader.</p>
+<p>The empty throne is a reminder that power belongs nowhere. It is not held. It is not seized. It is not delegated. Power in UNBOUNDED is the ability to show up, do the work, and be heard. Everyone has that power. No one has more.</p>
+<p>If you find yourself wondering who is in charge, you have misunderstood the project. No one is in charge. Everyone is responsible.</p>
+<p>The throne is empty. It will stay empty. And that emptiness is the most radical thing about us.</p>
+<hr />
+<p><em>First drafted by contributors who showed up. Amended by contributors who cared enough to argue. Forked by anyone who saw a better way.</em></p>
+<p><em>This document is itself a contribution. Change it freely. That is the point.</em></p>
+<div class="foot-nav">
+  <a href="../../portal.html">&#9670; Back to Portal</a>
+  <a href="#">&#8593; Top</a>
+</div>
+</div>
+</body>
+</html>

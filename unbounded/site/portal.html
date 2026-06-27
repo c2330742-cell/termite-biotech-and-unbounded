@@ -834,6 +834,31 @@ body {
   transform: scale(1.05);
 }
 
+#browse-docs-btn {
+  position: fixed;
+  bottom: 24px;
+  right: 130px;
+  z-index: 51;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: rgba(8,8,12,0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: var(--muted);
+  font-size: 0.8rem;
+  cursor: pointer;
+  text-decoration: none;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.3s ease;
+}
+
+#browse-docs-btn:hover {
+  color: var(--fg);
+  border-color: var(--accent2);
+  transform: scale(1.05);
+}
+
 #guide-popup {
   position: fixed;
   bottom: 76px;
@@ -1044,6 +1069,13 @@ body {
     font-size: 1rem;
   }
 
+  #browse-docs-btn {
+    bottom: 16px;
+    right: 66px;
+    padding: 6px 10px;
+    font-size: 0.7rem;
+  }
+
   #guide-popup {
     bottom: 64px;
     right: 16px;
@@ -1203,11 +1235,16 @@ body {
     <span class="nav-icon">♾️</span>
     <span class="nav-label">Farewell</span>
   </button>
+  <a class="nav-item" href="pages/index.html" style="display:flex;">
+    <span class="nav-icon">📄</span>
+    <span class="nav-label">Docs</span>
+  </a>
 </nav>
 
 <button id="sound-toggle" title="Toggle ambient sound (M)">♫</button>
 <button id="search-toggle" title="Search page (/)">⌕</button>
 <button id="guide-btn" title="Guide">✦</button>
+<a href="pages/index.html" id="browse-docs-btn">Browse Docs</a>
 
 <div id="network-tooltip" class="network-tooltip"></div>
 
@@ -1273,28 +1310,28 @@ body {
       <p style="color: var(--muted); margin-bottom: 1rem;">Two projects, one thread: the belief that things can be different.</p>
 
       <div class="gift-grid">
-        <div class="gift-card" onclick="window.open('../../termite-projects/MASTER-PROJECT-SUMMARY.md')">
+        <div class="gift-card" onclick="window.open('pages/termite/master-summary.html')">
           <span class="icon">🔬</span>
           <h3>The Termite Project</h3>
           <p>7 bacterial strains isolated. 89.4% conversion. 10.8 g/L ethanol. 4 pest control formulations. 3 thriving colonies. Real science, real data, real results.</p>
           <span class="status">10 experiments · Jan–Jun 2026</span>
         </div>
 
-        <div class="gift-card" onclick="window.open('../docs/MANIFESTO.md')">
+        <div class="gift-card" onclick="window.open('pages/docs/manifesto.html')">
           <span class="icon">📡</span>
           <h3>UNBOUNDED</h3>
           <p>A new medium where information is entertainment, creation is consumption, and everyone is a broadcaster. The manifesto, the blueprint, the call.</p>
           <span class="status">559 lines · 77 KB</span>
         </div>
 
-        <div class="gift-card" onclick="window.open('../docs/PLATFORM-BLUEPRINT.md')">
+        <div class="gift-card" onclick="window.open('pages/docs/platform-blueprint.html')">
           <span class="icon">⚙️</span>
           <h3>The Blueprint</h3>
           <p>Technical architecture for a post-script media platform. Multi-model AI orchestration, living knowledge graphs, real-time co-creation, edge-first infrastructure.</p>
           <span class="status">479 lines · 27 KB</span>
         </div>
 
-        <div class="gift-card" onclick="window.open('../calls/OPEN-LETTER.md')">
+        <div class="gift-card" onclick="window.open('pages/calls/open-letter.html')">
           <span class="icon">📯</span>
           <h3>The Call</h3>
           <p>An open letter to everyone trapped in the old media. Invitations for developers, creatives, thinkers, builders. The beacon that says: you are needed.</p>
@@ -1308,7 +1345,7 @@ body {
           <span class="status">HTML · no build required</span>
         </div>
 
-        <div class="gift-card" onclick="window.open('../../termite-projects/presentations/SHARK-TANK-PITCH-SCRIPT.md')">
+        <div class="gift-card" onclick="window.open('pages/termite/pitch.html')">
           <span class="icon">🎤</span>
           <h3>The Pitch</h3>
           <p>Shark Tank script, investor Q&A prep, 20-slide deck, press release. Ready to walk into any room and make the case.</p>
@@ -1331,17 +1368,17 @@ body {
       </div>
 
       <div class="gift-grid" style="margin-top: 1rem;">
-        <div class="gift-card" onclick="window.open('../../termite-projects/MASTER-PROJECT-SUMMARY.md')">
+        <div class="gift-card" onclick="window.open('pages/termite/master-summary.html')">
           <span class="icon">🧬</span>
           <h3>From the soil</h3>
           <p>Termite gut bacteria that break down cellulose. The most efficient recyclers on Earth. We isolated them, grew them, measured them. That's where it started.</p>
         </div>
-        <div class="gift-card" onclick="window.open('../docs/MANIFESTO.md')">
+        <div class="gift-card" onclick="window.open('pages/docs/manifesto.html')">
           <span class="icon">🌱</span>
           <h3>To the screen</h3>
           <p>If nature can transform waste into value without a script, so can we. The same principle — emergent intelligence, decentralized creation — applied to media.</p>
         </div>
-        <div class="gift-card" onclick="window.open('../../termite-projects/CROSS-VERIFICATION.md')">
+        <div class="gift-card" onclick="window.open('pages/termite/cross-verification.html')">
           <span class="icon">♾️</span>
           <h3>And beyond</h3>
           <p>The termite project proves the method works. UNBOUNDED extends the method to culture. Science and vision, grounded together.</p>
@@ -1356,61 +1393,61 @@ body {
       <p style="color: var(--muted); margin-bottom: 1rem;">Every door opens to something built. Choose one.</p>
 
       <div class="explore-list">
-        <a class="explore-item" href="../../termite-projects/MASTER-PROJECT-SUMMARY.md">
+        <a class="explore-item" href="pages/termite/master-summary.html">
           <span>🔬</span>
           <span>The Termite Project — full summary</span>
           <span class="tag">science</span>
           <span class="arrow">→</span>
         </a>
-        <a class="explore-item" href="../docs/MANIFESTO.md">
+        <a class="explore-item" href="pages/docs/manifesto.html">
           <span>📡</span>
           <span>UNBOUNDED — the manifesto</span>
           <span class="tag">vision</span>
           <span class="arrow">→</span>
         </a>
-        <a class="explore-item" href="../docs/PLATFORM-BLUEPRINT.md">
+        <a class="explore-item" href="pages/docs/platform-blueprint.html">
           <span>⚙️</span>
           <span>Technical blueprint</span>
           <span class="tag">architecture</span>
           <span class="arrow">→</span>
         </a>
-        <a class="explore-item" href="../../termite-projects/biofuel-research/research/experiments/LAB-NOTEBOOK.md">
+        <a class="explore-item" href="pages/termite/lab-notebook.html">
           <span>📓</span>
           <span>Lab notebook — 10 experiments, full write-ups</span>
           <span class="tag">data</span>
           <span class="arrow">→</span>
         </a>
-        <a class="explore-item" href="../../termite-projects/presentations/SHARK-TANK-PITCH-SCRIPT.md">
+        <a class="explore-item" href="pages/termite/pitch.html">
           <span>🎤</span>
           <span>Shark Tank pitch script</span>
           <span class="tag">investor</span>
           <span class="arrow">→</span>
         </a>
-        <a class="explore-item" href="../calls/OPEN-LETTER.md">
+        <a class="explore-item" href="pages/calls/open-letter.html">
           <span>📯</span>
           <span>Open letter to the world</span>
           <span class="tag">call</span>
           <span class="arrow">→</span>
         </a>
-        <a class="explore-item" href="../calls/FOR-DEVELOPERS.md">
+        <a class="explore-item" href="pages/calls/for-developers.html">
           <span>🤖</span>
           <span>For developers — build the engine</span>
           <span class="tag">code</span>
           <span class="arrow">→</span>
         </a>
-        <a class="explore-item" href="../calls/FOR-CREATIVES.md">
+        <a class="explore-item" href="pages/calls/for-creatives.html">
           <span>🎨</span>
           <span>For creatives — shape the medium</span>
           <span class="tag">design</span>
           <span class="arrow">→</span>
         </a>
-        <a class="explore-item" href="../../termite-projects/CROSS-VERIFICATION.md">
+        <a class="explore-item" href="pages/termite/cross-verification.html">
           <span>✅</span>
           <span>Cross-verification — every claim checked</span>
           <span class="tag">integrity</span>
           <span class="arrow">→</span>
         </a>
-        <a class="explore-item" href="../docs/ROADMAP.md">
+        <a class="explore-item" href="pages/docs/roadmap.html">
           <span>🗺️</span>
           <span>Roadmap — from beacon to revolution</span>
           <span class="tag">future</span>

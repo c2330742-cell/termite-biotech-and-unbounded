@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="AEON — PLATFORM BLUEPRINT">
+<meta property="og:title" content="AEON — PLATFORM BLUEPRINT">
+<meta property="og:description" content="AEON — PLATFORM BLUEPRINT">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://Puronbo.github.io/termite-biotech-and-unbounded/unbounded/site/pages/docs/platform-blueprint.html">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0e0e16">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<title>AEON — PLATFORM BLUEPRINT</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #08080c; --surface: #0e0e16; --surface2: #14142e;
+  --border: rgba(255,255,255,0.05); --accent: #7c3aed; --accent2: #ff6b35;
+  --accent3: #60a5fa; --fg: #e0e0ec; --muted: #7878a0;
+  --radius: 12px;
+}
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: var(--bg); color: var(--fg); line-height: 1.7;
+  min-height: 100vh;
+}
+body::before {
+  content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: radial-gradient(ellipse at 50% 0%, rgba(124,58,237,0.06) 0%, transparent 70%);
+  pointer-events: none; z-index: 0;
+}
+.wrapper {
+  max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem 4rem;
+  position: relative; z-index: 1;
+}
+.top-nav {
+  display: flex; align-items: center; gap: 1rem; padding: 0.75rem 0;
+  margin-bottom: 2rem; border-bottom: 1px solid var(--border);
+  font-size: 0.85rem; flex-wrap: wrap;
+}
+.top-nav a {
+  color: var(--muted); text-decoration: none; transition: color 0.2s;
+  display: inline-flex; align-items: center; gap: 0.3rem;
+}
+.top-nav a:hover { color: var(--accent); }
+.top-nav .sep { color: var(--border); }
+h1 {
+  font-size: 2rem; font-weight: 700; margin-bottom: 1.5rem;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  line-height: 1.3;
+}
+h2 { font-size: 1.4rem; font-weight: 600; margin: 2rem 0 0.75rem; color: var(--fg); }
+h3 { font-size: 1.15rem; font-weight: 600; margin: 1.5rem 0 0.5rem; color: var(--accent3); }
+p { margin-bottom: 1rem; color: var(--fg); }
+a { color: var(--accent2); text-decoration: none; }
+a:hover { text-decoration: underline; }
+strong { color: #fff; }
+em { color: var(--muted); }
+ul, ol { margin: 0 0 1rem 1.5rem; }
+li { margin-bottom: 0.3rem; }
+code {
+  background: rgba(124,58,237,0.1); padding: 0.15rem 0.4rem;
+  border-radius: 4px; font-size: 0.85rem; color: var(--accent3);
+}
+pre {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 1rem; overflow-x: auto;
+  margin-bottom: 1rem;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  border-left: 3px solid var(--accent); padding-left: 1rem;
+  margin: 1rem 0; color: var(--muted); font-style: italic;
+}
+table {
+  width: 100%; border-collapse: collapse; margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+th, td {
+  padding: 0.5rem 0.75rem; text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+th { background: var(--surface2); color: var(--muted); font-weight: 600; }
+tr:hover td { background: rgba(124,58,237,0.05); }
+hr { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+img { max-width: 100%; border-radius: var(--radius); }
+.foot-nav {
+  margin-top: 3rem; padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+  display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
+}
+.foot-nav a {
+  color: var(--accent); font-size: 0.9rem; text-decoration: none;
+}
+.foot-nav a:hover { color: var(--accent2); }
+@media (max-width: 600px) {
+  .wrapper { padding: 1.5rem 1rem; }
+  h1 { font-size: 1.5rem; }
+}
+</style>
+</head>
+<body>
+<div class="wrapper">
+<div class="top-nav">
+  <a href="../../portal.html">&#9670; Portal</a>
+  <span class="sep">/</span>
+  <a href="docs/index.html">Documentation</a>
+  <span class="sep">/</span>
+  <span style="color:var(--fg)">AEON — PLATFORM BLUEPRINT</span>
+</div>
+<h1>AEON — PLATFORM BLUEPRINT</h1>
+<h2>Technical Architecture, Data Flow, and Implementation Strategy</h2>
+<hr />
+<h2>1. SYSTEM ARCHITECTURE DIAGRAM (ASCII)</h2>
+<pre class="codehilite"><code>┌─────────────────────────────────────────────────────────────────────────────┐
+│                            AEON PLATFORM ARCHITECTURE                        │
+│                        &quot;Living Content — Infinite Becoming&quot;                  │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+                                    ┌──────────────────┐
+                                    │    USER DEVICE    │
+                                    │  ┌──────────────┐ │
+                                    │  │  LOCAL MODELS │ │
+                                    │  │  - Empath     │ │
+                                    │  │  - Personalize│ │
+                                    │  │  - Whisper    │ │
+                                    │  └──────┬───────┘ │
+                                    │  ┌──────┴───────┐ │
+                                    │  │  EDGE ENGINE  │ │
+                                    │  │  (llama.cpp/  │ │
+                                    │  │   WebGPU)     │ │
+                                    │  └──────┬───────┘ │
+                                    └─────────┼─────────┘
+                                              │
+                    ┌─────────────────────────┼─────────────────────────┐
+                    │                         │                         │
+              ┌─────┴─────┐           ┌───────┴───────┐         ┌──────┴──────┐
+              │ P2P MESH   │           │   WEBSOCKET   │         │  WEBRTC     │
+              │ (Libp2p)   │           │   (Control)   │         │  (Media)    │
+              └─────┬─────┘           └───────┬───────┘         └──────┬──────┘
+                    │                         │                         │
+                    └─────────────────────────┼─────────────────────────┘
+                                              │
+                                    ┌─────────┴─────────┐
+                                    │   LOAD BALANCER    │
+                                    │   (NGINX / Envoy)  │
+                                    └─────────┬─────────┘
+                                              │
+                                    ┌─────────┴─────────┐
+                                    │   DIRECTOR AGENT   │
+                                    │   (Orchestrator)   │
+                                    │ ┌───────────────┐  │
+                                    │ │ Session Router │  │
+                                    │ │ Resource Alloc │  │
+                                    │ │ Quality Gate   │  │
+                                    │ └───────────────┘  │
+                                    └────┬──────┬────┬───┘
+                                         │      │    │
+                    ┌────────────────────┘      │    └────────────────────┐
+                    │                           │                        │
+              ┌─────┴──────┐          ┌─────────┴──────────┐   ┌────────┴────────┐
+              │  MODEL ORCH. │         │  KNOWLEDGE GRAPH   │   │  VALIDATION     │
+              │  (vLLM, Comfy)│        │  (Neo4j + Vectors) │   │  SERVICE        │
+              │ ┌──────────┐ │         │ ┌────────────────┐ │   │ ┌────────────┐  │
+              │ │Narrator  │ │         │ │Concept Nodes   │ │   │ │Logician    │  │
+              │ │Visualist │ │         │ │Relationship Edg│ │   │ │Cross-Ref   │  │
+              │ │Logician  │ │         │ │User Journeys   │ │   │ │Human Valid │  │
+              │ │Connector │ │         │ │Session Traces  │ │   │ │Appeal Proc│  │
+              │ │Critic    │ │         │ └────────────────┘ │   │ └────────────┘  │
+              │ └──────────┘ │         └────────────────────┘   └────────────────┘
+              └──────┬───────┘
+                     │
+        ┌────────────┼────────────┐
+        │            │            │
+   ┌────┴───┐  ┌────┴───┐  ┌────┴───┐
+   │Open    │  │CLOSED  │  │THIRD   │
+   │Models  │  │Fine-   │  │Party    │
+   │(LLaMA, │  │Tuned   │  │APIs    │
+   │SD, etc)│  │Models  │  │(Falcon,│
+   └────────┘  └────────┘  │Together)│
+                           └────────┘
+</code></pre>
+
+<hr />
+<h2>2. DATA FLOW</h2>
+<h3>2.1 Session Initialization</h3>
+<pre class="codehilite"><code>USER INPUT ──► Local Empath Model ──► Personalization Vector
+       │                                        │
+       └──────────────┬─────────────────────────┘
+                      │
+                      ▼
+              DIRECTOR AGENT
+                      │
+            ┌─────────┼─────────┐
+            │         │         │
+            ▼         ▼         ▼
+       Knowledge   User       Global
+       Graph Query History    Context
+            │         │         │
+            └─────────┼─────────┘
+                      │
+                      ▼
+           Session Blueprint Generated
+                      │
+            ┌─────────┼─────────┐
+            │         │         │
+            ▼         ▼         ▼
+        Narrator   Visualist  Logician
+        (Script    (Scenes)   (Facts)
+         Struct)
+</code></pre>
+
+<h3>2.2 Live Session Data Flow</h3>
+<pre class="codehilite"><code>                    ┌──────────────────────┐
+                    │   SESSION INSTANCE    │
+                    │   (Director Agent)    │
+                    └──────┬──────────┬────┘
+                           │          │
+              ┌────────────┘          └────────────┐
+              │                                     │
+         ┌────┴────┐                         ┌──────┴──────┐
+         │ OUTPUT  │                         │   INPUT      │
+         │ CHANNEL │                         │   CHANNEL   │
+         ├─────────┤                         ├─────────────┤
+         │Narrative│                         │User Queries  │
+         │Visuals  │                         │Votes/Redirect│
+         │Audio    │                         │Biometrics    │
+         │Spatial  │                         │Build Actions │
+         └─────────┘                         └──────┬──────┘
+                                                     │
+                                            ┌────────┴────────┐
+                                            │  FEEDBACK LOOP  │
+                                            │  (models adapt  │
+                                            │   every ~2s)    │
+                                            └─────────────────┘
+</code></pre>
+
+<h3>2.3 Post-Session Data Flow</h3>
+<pre class="codehilite"><code>SESSION ENDS
+      │
+      ├──► Knowledge Graph Update
+      │       ├── New concept nodes
+      │       ├── New relationship edges
+      │       ├── User journey appended
+      │       ├── Quality metrics logged
+      │       └── Cross-session connections identified
+      │
+      ├──► User Profile Update
+      │       ├── Skill progression
+      │       ├── Knowledge map refresh
+      │       ├── Interest vector update
+      │       └── Recommendation model update
+      │
+      ├──► Global Model Fine-Tuning
+      │       ├── Reinforcement learning from session outcomes
+      │       ├── Knowledge graph embeddings updated
+      │       └── Validator feedback incorporated
+      │
+      └──► Content Address (IPFS) created
+              ├── Session fingerprint (for dedup)
+              ├── Trace data (anonymized, opt-in)
+              └── Contribution attribution
+</code></pre>
+
+<hr />
+<h2>3. AI MODEL ORCHESTRATION</h2>
+<h3>3.1 Model Registry</h3>
+<table>
+<thead>
+<tr>
+<th>Model Role</th>
+<th>Base Architecture</th>
+<th>Fine-Tuning Data</th>
+<th>Inference Method</th>
+<th>Latency Budget</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Narrator</td>
+<td>LLaMA 4 70B</td>
+<td>Narrative structures, pedagogical transcripts, world literature</td>
+<td>vLLM with speculative decoding</td>
+<td>&lt;800ms</td>
+</tr>
+<tr>
+<td>Visualist</td>
+<td>SD4 + Flux.1 Pro</td>
+<td>Art history, scientific visualization, 3D scans</td>
+<td>ComfyUI + LCM LoRA</td>
+<td>&lt;2s per frame</td>
+</tr>
+<tr>
+<td>Logician</td>
+<td>Mistral Large</td>
+<td>Scientific papers, knowledge graph embeddings, formal logic</td>
+<td>vLLM with chain-of-thought</td>
+<td>&lt;1.5s</td>
+</tr>
+<tr>
+<td>Empath</td>
+<td>Qwen 3.5 7B (quantized)</td>
+<td>Affective computing datasets, HRI transcripts</td>
+<td>llama.cpp (local)</td>
+<td>&lt;200ms</td>
+</tr>
+<tr>
+<td>Connector</td>
+<td>Mixture: LLM + GraphNN</td>
+<td>Knowledge graph traversal traces</td>
+<td>Custom graph neural network + LLM reranking</td>
+<td>&lt;1s</td>
+</tr>
+<tr>
+<td>Critic</td>
+<td>Mixture: LLaMA 4 + Reward Model</td>
+<td>Quality ratings from human validators</td>
+<td>Ensemble</td>
+<td>&lt;2s</td>
+</tr>
+<tr>
+<td>Director</td>
+<td>LLaMA 4 8B (fine-tuned)</td>
+<td>Session logs, orchestration traces</td>
+<td>vLLM</td>
+<td>&lt;500ms</td>
+</tr>
+</tbody>
+</table>
+<h3>3.2 Orchestration Protocol</h3>
+<pre class="codehilite"><code>Director Agent uses a state machine with four phases:
+
+PHASE 1: BLUEPRINT
+  └► Assess user state (Empath)
+  └► Query knowledge graph for relevant context
+  └► Select session type and initial models
+  └► Generate session blueprint (concept map, learning objectives)
+
+PHASE 2: GENERATION
+  └► Narrator generates next narrative segment
+  └► Logician validates factual claims against KG
+  └► Visualist generates/retrieves supporting visuals
+  └► Connector suggests relevant tangents
+  └► Critic scores output quality
+  └► If score &lt; threshold → regenerate with new seed
+
+PHASE 3: INTERACTION
+  └► Process user input (query, gesture, vote, biometric)
+  └► Empath interprets user state (confused? bored? excited?)
+  └► Director decides: continue, redirect, dive deeper, simplify
+  └► Logician updates KG with new information from user
+  └► Loop back to PHASE 2
+
+PHASE 4: INTEGRATION
+  └► Finalize knowledge graph updates
+  └► Generate session summary and skill assessment
+  └► Update user model
+  └► Identify cross-session connections
+  └► Store session hash to IPFS
+</code></pre>
+
+<h3>3.3 Model Loading Strategy</h3>
+<pre class="codehilite"><code>Models are loaded on demand, not all at once.
+
+┌──────────────────────────────────────────┐
+│  MEMORY MANAGEMENT                       │
+│                                          │
+│  Always loaded:                          │
+│    - Director (8B, quantized to Q4)      │
+│    - Empath (7B, quantized to Q4_K_M)   │
+│    - Embedding model (for KG queries)    │
+│                                          │
+│  Loaded on demand:                       │
+│    - Narrator (for narrative sessions)   │
+│    - Logician (when fact-checking)       │
+│    - Visualist (when generating visuals) │
+│    - Connector (at session transitions)  │
+│    - Critic (every N generations)        │
+│                                          │
+│  Unloading:                              │
+│    - LRU eviction with priority scoring  │
+│    - Session-based caching TTL           │
+└──────────────────────────────────────────┘
+</code></pre>
+
+<hr />
+<h2>4. CONTENT MODERATION STRATEGY</h2>
+<h3>4.1 Principles</h3>
+<ul>
+<li><strong>Censorship is a tool of the old regime.</strong> AEON does not censor. It verifies, contextualizes, and labels.</li>
+<li><strong>Misinformation is a failure of provenance, not a crime.</strong> Every claim carries its source chain. Users can inspect and challenge.</li>
+<li><strong>Harmful content is defined narrowly:</strong> direct incitement to violence, doxxing, child exploitation, and platform sabotage. Everything else — no matter how uncomfortable — is welcome.</li>
+<li><strong>The goal is not safety. The goal is truth-seeking.</strong> Safety is a side effect of a well-functioning epistemic system.</li>
+</ul>
+<h3>4.2 Multi-Layer Moderation</h3>
+<pre class="codehilite"><code>LAYER 1: AI PRE-FILTER
+  ├── Logician checks generated content against knowledge graph
+  ├── Claims without KG support are flagged as &quot;Unverified&quot;
+  ├── Claims explicitly contradicted by KG are flagged as &quot;Disputed&quot;
+  ├── Incitement/harm detection model (separate, narrow scope)
+  └── No content is blocked at this layer — only labeled
+
+LAYER 2: HUMAN VALIDATOR REVIEW
+  ├── Flagged content enters validation queue
+  ├── Domain experts (tiered by reputation) review
+  ├── Validators can: Confirm, Correct, or Escalate
+  ├── Escalated content goes to multi-validator panel
+  └── Resolution updates the knowledge graph
+
+LAYER 3: COMMUNITY CHALLENGE
+  ├── Any user can challenge any content
+  ├── Challenge triggers structured debate (AI-moderated)
+  ├── Evidence must be provided with provenance
+  ├── Debate outcome recorded in knowledge graph
+  └── Successful challenges earn reputation
+
+LAYER 4: JUDICIAL PANEL
+  ├── For edge cases and appeals
+  ├── Randomly selected from top-tier validators
+  ├── Decisions are transparent and precedential
+  └── Panel decisions can be appealed to full community vote
+</code></pre>
+
+<h3>4.3 Provenance Chain</h3>
+<pre class="codehilite"><code>Every claim in every session carries:
+
+┌─────────────────────────────────────┐
+│ CLAIM: &quot;The MMR vaccine does not   │
+│ cause autism.&quot;                      │
+├─────────────────────────────────────┤
+│ SOURCES:                            │
+│ 1. Wakefield (1998) - RETRACTED     │
+│    → Reason: Fraudulent data        │
+│ 2. Madsen et al. (2002) - 537,303  │
+│    children study, no correlation   │
+│ 3. Taylor et al. (2014) - meta-     │
+│    analysis of 1.2M, no correlation │
+│ 4. CDC (2023) - updated guidelines  │
+├─────────────────────────────────────┤
+│ CONFIDENCE: 99.97%                  │
+│ STATUS: Verified (Peer-reviewed     │
+│ consensus, multiple large studies)  │
+│ LAST VALIDATED: 2026-04-15          │
+│ VALIDATOR: dr_elena_petrov (Rep: 92)│
+└─────────────────────────────────────┘
+</code></pre>
+
+<hr />
+<h2>5. SCALING ROADMAP</h2>
+<h3>Phase 0: Seed (0-6 months)</h3>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Scale</th>
+<th>Infrastructure</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Users</td>
+<td>5,000</td>
+<td>Single server (8x A100 80GB)</td>
+</tr>
+<tr>
+<td>Session types</td>
+<td>1 ("The Living Debate")</td>
+<td>Monorepo, Python + Rust</td>
+</tr>
+<tr>
+<td>Knowledge graph</td>
+<td>50K nodes, 200K edges</td>
+<td>Single Neo4j instance</td>
+</tr>
+<tr>
+<td>Models</td>
+<td>2 (Narrator, Logician)</td>
+<td>vLLM on dedicated GPU</td>
+</tr>
+<tr>
+<td>Team</td>
+<td>5-8 engineers</td>
+<td>All hands, no ops yet</td>
+</tr>
+<tr>
+<td>Storage</td>
+<td>500 GB</td>
+<td>Local RAID + S3</td>
+</tr>
+<tr>
+<td>Budget</td>
+<td>~$50K/mo</td>
+<td>Bootstrapped / grant funded</td>
+</tr>
+</tbody>
+</table>
+<h3>Phase 1: Garden (6-18 months)</h3>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Scale</th>
+<th>Infrastructure</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Users</td>
+<td>500,000</td>
+<td>50 GPU nodes (H100), global regions</td>
+</tr>
+<tr>
+<td>Session types</td>
+<td>6</td>
+<td>Microservices, Kubernetes</td>
+</tr>
+<tr>
+<td>Knowledge graph</td>
+<td>10M nodes, 50M edges</td>
+<td>Neo4j cluster (5 nodes) + vector DB</td>
+</tr>
+<tr>
+<td>Models</td>
+<td>6 active + fine-tunes</td>
+<td>Multi-node vLLM, ComfyUI farms</td>
+</tr>
+<tr>
+<td>Team</td>
+<td>25-40 engineers</td>
+<td>ML, infra, product, trust &amp; safety</td>
+</tr>
+<tr>
+<td>Storage</td>
+<td>50 TB</td>
+<td>Distributed (IPFS + S3)</td>
+</tr>
+<tr>
+<td>Budget</td>
+<td>~$500K/mo</td>
+<td>Subscriptions + early licensing</td>
+</tr>
+</tbody>
+</table>
+<h3>Phase 2: Network (18-36 months)</h3>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Scale</th>
+<th>Infrastructure</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Users</td>
+<td>50 million</td>
+<td>2,000 GPU nodes, 50 edge PoPs</td>
+</tr>
+<tr>
+<td>Session types</td>
+<td>20+ (community expanded)</td>
+<td>Service mesh (Istio), global CDN</td>
+</tr>
+<tr>
+<td>Knowledge graph</td>
+<td>500M nodes, 5B edges</td>
+<td>Sharded Neo4j + custom graph engine</td>
+</tr>
+<tr>
+<td>Models</td>
+<td>Fine-tuned per domain</td>
+<td>Model zoo with 200+ specialist models</td>
+</tr>
+<tr>
+<td>Team</td>
+<td>150-300 engineers</td>
+<td>Full org structure</td>
+</tr>
+<tr>
+<td>Storage</td>
+<td>5 PB</td>
+<td>Hybrid: IPFS + S3 + local edge cache</td>
+</tr>
+<tr>
+<td>Budget</td>
+<td>~$5M/mo</td>
+<td>Profitable from subs + licensing</td>
+</tr>
+</tbody>
+</table>
+<h3>Phase 3: Replacement (36-72 months)</h3>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Scale</th>
+<th>Infrastructure</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Users</td>
+<td>500 million+</td>
+<td>20,000 GPU nodes, 500 edge PoPs</td>
+</tr>
+<tr>
+<td>Session types</td>
+<td>Infinite (user-generated)</td>
+<td>Fully decentralized orchestration</td>
+</tr>
+<tr>
+<td>Knowledge graph</td>
+<td>10B+ nodes, 200B+ edges</td>
+<td>Distributed graph protocol (custom)</td>
+</tr>
+<tr>
+<td>Models</td>
+<td>Community-trained</td>
+<td>Open ecosystem of specialist models</td>
+</tr>
+<tr>
+<td>Team</td>
+<td>500-1,000</td>
+<td>Distributed, DAO-governed</td>
+</tr>
+<tr>
+<td>Storage</td>
+<td>Exabyte scale</td>
+<td>Fully decentralized (IPFS + Filecoin)</td>
+</tr>
+<tr>
+<td>Budget</td>
+<td>Self-sustaining</td>
+<td>Diversified revenue, Genesis Fund</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>6. OPEN-SOURCE CONTRIBUTION MODEL</h2>
+<h3>6.1 Philosophy</h3>
+<p>AEON is not a product to be sold. It is a protocol to be adopted. The platform succeeds when the ecosystem expands beyond any single company's control. Every component that can be open-source will be open-source.</p>
+<h3>6.2 Contribution Tiers</h3>
+<pre class="codehilite"><code>TIER 1: CORE PLATFORM (AGPL)
+  ├── Director Agent
+  ├── Session protocol (session templates spec)
+  ├── Knowledge graph schema and APIs
+  ├── Validator node software
+  └── Client SDKs (web, mobile, desktop)
+
+TIER 2: MODEL ECOSYSTEM (Various Open Licenses)
+  ├── Fine-tuned model weights (Apache 2.0 or CC-BY-SA)
+  ├── Training pipelines and datasets
+  ├── Reward model data
+  └── Quantization recipes
+
+TIER 3: CONTENT (CC-BY-SA or Custom)
+  ├── Session templates
+  ├── Knowledge graph contributions
+  ├── Validator reviews and resolutions
+  └── Educational materials
+
+TIER 4: INFRASTRUCTURE (MIT / Apache 2.0)
+  ├── Deployment scripts and Helm charts
+  ├── Monitoring and observability tools
+  ├── CI/CD pipelines
+  ├── Security audits and hardening
+  └── Client performance optimizations
+</code></pre>
+
+<h3>6.3 Incentive Structure</h3>
+<table>
+<thead>
+<tr>
+<th>Contribution Type</th>
+<th>Reward</th>
+<th>Mechanism</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Code contribution</td>
+<td>Reputation + token grants</td>
+<td>Git-based, reviewed, merged with bounty</td>
+</tr>
+<tr>
+<td>Model fine-tuning</td>
+<td>Reputation + compute credits</td>
+<td>Submitted to model zoo, benchmarked</td>
+</tr>
+<tr>
+<td>Dataset curation</td>
+<td>Reputation + tokens</td>
+<td>Verified, deduplicated, documented</td>
+</tr>
+<tr>
+<td>Session template</td>
+<td>Revenue share (70% to creator)</td>
+<td>Marketplace with usage tracking</td>
+</tr>
+<tr>
+<td>Knowledge graph edit</td>
+<td>Validator reputation</td>
+<td>Peer-reviewed, graph quality score</td>
+</tr>
+<tr>
+<td>Bug report</td>
+<td>Reputation + tokens</td>
+<td>Triaged, confirmed, fixed</td>
+</tr>
+<tr>
+<td>Security disclosure</td>
+<td>Bug bounty (tiered, up to $50K)</td>
+<td>HackerOne-style program</td>
+</tr>
+</tbody>
+</table>
+<h3>6.4 Governance (Long-Term)</h3>
+<pre class="codehilite"><code>┌──────────────────────────────────────────────────┐
+│  AEON DAO (target: Phase 3)                      │
+│                                                   │
+│  ├── Token holders vote on:                       │
+│  │   ├── Protocol upgrades                        │
+│  │   ├── Validator tier criteria                  │
+│  │   ├── Genesis Fund allocation                  │
+│  │   ├── Validator election                       │
+│  │   └── License changes                          │
+│  │                                                │
+│  ├── Technical Steering Committee (elected):      │
+│  │   ├── Core protocol decisions                  │
+│  │   ├── Security responses                       │
+│  │   ├── Model governance                         │
+│  │   └── Knowledge graph schema evolution         │
+│  │                                                │
+│  ├── Ethical Review Board (randomly selected):    │
+│  │   ├── Moderation appeals                       │
+│  │   ├── Edge case rulings                        │
+│  │   ├── Algorithmic audit                        │
+│  │   └── Consent framework updates                │
+│  │                                                │
+│  └── All decisions publicly transparent           │
+└──────────────────────────────────────────────────┘
+</code></pre>
+
+<hr />
+<h2>7. KEY METRICS &amp; KPIS</h2>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Target</th>
+<th>Why It Matters</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Session completion rate</td>
+<td>&gt;85%</td>
+<td>Content is engaging without tricks</td>
+</tr>
+<tr>
+<td>User skill progression</td>
+<td>+1 std dev / 6mo</td>
+<td>Platform actually makes you smarter</td>
+</tr>
+<tr>
+<td>Creator conversion</td>
+<td>&gt;25% of users</td>
+<td>Audience → Creator pipeline</td>
+</tr>
+<tr>
+<td>Knowledge graph accuracy</td>
+<td>&gt;99.5% verified</td>
+<td>Trust is the product</td>
+</tr>
+<tr>
+<td>Validator coverage</td>
+<td>&gt;3 validators per claim</td>
+<td>Multi-party verification</td>
+</tr>
+<tr>
+<td>Session uniqueness</td>
+<td>&gt;99.9%</td>
+<td>No two sessions are the same</td>
+</tr>
+<tr>
+<td>User lifetime value</td>
+<td>&gt;36 months</td>
+<td>Stickiness through growth, not addiction</td>
+</tr>
+<tr>
+<td>Net Promoter Score</td>
+<td>&gt;70</td>
+<td>Users love it enough to tell others</td>
+</tr>
+<tr>
+<td>Time-to-creator</td>
+<td>&lt;90 days</td>
+<td>Fast path from consumer to producer</td>
+</tr>
+<tr>
+<td>Knowledge graph growth</td>
+<td>2x nodes/year</td>
+<td>Living system, not static archive</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>8. RISK &amp; MITIGATION</h2>
+<table>
+<thead>
+<tr>
+<th>Risk</th>
+<th>Likelihood</th>
+<th>Impact</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AI generates harmful content</td>
+<td>Medium</td>
+<td>High</td>
+<td>Multi-layer moderation, provenance chains, narrow harm filter</td>
+</tr>
+<tr>
+<td>Model biases distort knowledge</td>
+<td>High</td>
+<td>Medium</td>
+<td>Diverse training data, validator oversight, bias audits</td>
+</tr>
+<tr>
+<td>Validator capture / corruption</td>
+<td>Low</td>
+<td>High</td>
+<td>Random selection, transparent records, appeal process</td>
+</tr>
+<tr>
+<td>Compute costs exceed revenue</td>
+<td>Medium</td>
+<td>High</td>
+<td>Edge-first architecture, model quantization, efficiency research</td>
+</tr>
+<tr>
+<td>Regulatory suppression (unwelcome content)</td>
+<td>Medium</td>
+<td>Medium</td>
+<td>Decentralized infrastructure, legal defense fund, jurisdiction diversity</td>
+</tr>
+<tr>
+<td>Centralization of creator economy</td>
+<td>Low</td>
+<td>Medium</td>
+<td>Open protocol, competing clients, data portability</td>
+</tr>
+<tr>
+<td>Knowledge graph quality degradation</td>
+<td>Medium</td>
+<td>High</td>
+<td>Continuous validation, automated anomaly detection, reward structure</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>9. IMMEDIATE NEXT STEPS</h2>
+<pre class="codehilite"><code>WEEK 1-2:
+  □ Finalize session protocol spec (v0.1)
+  □ Set up monorepo with CI/CD
+  □ Recruit founding team (ML, Rust, Graph, Product)
+
+WEEK 3-4:
+  □ Implement Director Agent core (state machine)
+  □ Deploy first model ensemble (Narrator + Logician)
+  □ Build minimal knowledge graph schema
+
+WEEK 5-8:
+  □ Ship &quot;The Living Debate&quot; as first session type
+  □ Implement basic provenance chain
+  □ Onboard 100 alpha users
+
+WEEK 9-12:
+  □ Collect feedback and iterate
+  □ Add Visualist model integration
+  □ Implement local Empath model (on-device)
+
+WEEK 13-24:
+  □ Open session template API
+  □ Launch validator program (invite-only)
+  □ Scale to 5,000 users
+  □ Begin knowledge graph growth flywheel
+</code></pre>
+
+<hr />
+<h2>APPENDIX: PROTOCOL SPECIFICATION (ABSTRACT)</h2>
+<pre class="codehilite"><code>Session Blueprint:
+  type: SessionBlueprint
+  version: &quot;0.1&quot;
+  fields:
+    - session_id: string (UUIDv7)
+    - session_type: enum (debate, build, unwelcome, ...)
+    - user_profile_hash: string (blake3)
+    - knowledge_graph_context: ConceptNode[]
+    - director_config: {
+        models: string[],
+        generation_params: {...},
+        interaction_thresholds: {...}
+      }
+    - provenance_chain: ProvenanceEntry[]
+    - quality_threshold: float (0.0-1.0)
+
+Session Instance:
+  type: SessionInstance
+  version: &quot;0.1&quot;
+  fields:
+    - session_id: string
+    - director_agent_id: string
+    - current_phase: enum (blueprint, generation, interaction, integration)
+    - generation_counter: uint64
+    - user_feedback_buffer: UserFeedback[]
+    - model_output_cache: ModelOutput[]
+    - session_trace: TraceEntry[]
+    - state_hash: string (for synchronization)
+
+Knowledge Graph Edge:
+  type: Edge
+  version: &quot;0.1&quot;
+  fields:
+    - source: ConceptNode
+    - target: ConceptNode
+    - relationship_type: enum (builds_on, contradicts, inspired_by,
+                                prerequisite, example, question, answer,
+                                synthesizes, explores, validates)
+    - weight: float (0.0-1.0)
+    - provenance: string (session_id or external source)
+    - validator_ids: string[]
+    - created: timestamp
+    - last_validated: timestamp
+</code></pre>
+
+<hr />
+<p><em>This blueprint is a living document. Like the platform it describes, it will evolve as we learn, build, and discover what works. The key is to start — the rest will emerge through the act of creation.</em></p>
+<p><strong>Begin building.</strong></p>
+<hr />
+<div class="foot-nav">
+  <a href="../../portal.html">&#9670; Back to Portal</a>
+  <a href="#">&#8593; Top</a>
+</div>
+</div>
+</body>
+</html>

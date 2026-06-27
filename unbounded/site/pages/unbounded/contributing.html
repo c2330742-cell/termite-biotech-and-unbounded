@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Contributing to UNBOUNDED">
+<meta property="og:title" content="Contributing to UNBOUNDED">
+<meta property="og:description" content="Contributing to UNBOUNDED">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://Puronbo.github.io/termite-biotech-and-unbounded/unbounded/site/pages/unbounded/contributing.html">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0e0e16">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<title>Contributing to UNBOUNDED</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #08080c; --surface: #0e0e16; --surface2: #14142e;
+  --border: rgba(255,255,255,0.05); --accent: #7c3aed; --accent2: #ff6b35;
+  --accent3: #60a5fa; --fg: #e0e0ec; --muted: #7878a0;
+  --radius: 12px;
+}
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: var(--bg); color: var(--fg); line-height: 1.7;
+  min-height: 100vh;
+}
+body::before {
+  content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: radial-gradient(ellipse at 50% 0%, rgba(124,58,237,0.06) 0%, transparent 70%);
+  pointer-events: none; z-index: 0;
+}
+.wrapper {
+  max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem 4rem;
+  position: relative; z-index: 1;
+}
+.top-nav {
+  display: flex; align-items: center; gap: 1rem; padding: 0.75rem 0;
+  margin-bottom: 2rem; border-bottom: 1px solid var(--border);
+  font-size: 0.85rem; flex-wrap: wrap;
+}
+.top-nav a {
+  color: var(--muted); text-decoration: none; transition: color 0.2s;
+  display: inline-flex; align-items: center; gap: 0.3rem;
+}
+.top-nav a:hover { color: var(--accent); }
+.top-nav .sep { color: var(--border); }
+h1 {
+  font-size: 2rem; font-weight: 700; margin-bottom: 1.5rem;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  line-height: 1.3;
+}
+h2 { font-size: 1.4rem; font-weight: 600; margin: 2rem 0 0.75rem; color: var(--fg); }
+h3 { font-size: 1.15rem; font-weight: 600; margin: 1.5rem 0 0.5rem; color: var(--accent3); }
+p { margin-bottom: 1rem; color: var(--fg); }
+a { color: var(--accent2); text-decoration: none; }
+a:hover { text-decoration: underline; }
+strong { color: #fff; }
+em { color: var(--muted); }
+ul, ol { margin: 0 0 1rem 1.5rem; }
+li { margin-bottom: 0.3rem; }
+code {
+  background: rgba(124,58,237,0.1); padding: 0.15rem 0.4rem;
+  border-radius: 4px; font-size: 0.85rem; color: var(--accent3);
+}
+pre {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 1rem; overflow-x: auto;
+  margin-bottom: 1rem;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  border-left: 3px solid var(--accent); padding-left: 1rem;
+  margin: 1rem 0; color: var(--muted); font-style: italic;
+}
+table {
+  width: 100%; border-collapse: collapse; margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+th, td {
+  padding: 0.5rem 0.75rem; text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+th { background: var(--surface2); color: var(--muted); font-weight: 600; }
+tr:hover td { background: rgba(124,58,237,0.05); }
+hr { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+img { max-width: 100%; border-radius: var(--radius); }
+.foot-nav {
+  margin-top: 3rem; padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+  display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
+}
+.foot-nav a {
+  color: var(--accent); font-size: 0.9rem; text-decoration: none;
+}
+.foot-nav a:hover { color: var(--accent2); }
+@media (max-width: 600px) {
+  .wrapper { padding: 1.5rem 1rem; }
+  h1 { font-size: 1.5rem; }
+}
+</style>
+</head>
+<body>
+<div class="wrapper">
+<div class="top-nav">
+  <a href="../../portal.html">&#9670; Portal</a>
+  <span class="sep">/</span>
+  <a href="unbounded/index.html">UNBOUNDED</a>
+  <span class="sep">/</span>
+  <span style="color:var(--fg)">Contributing to UNBOUNDED</span>
+</div>
+<h1>Contributing to UNBOUNDED</h1>
+<h2>1. Welcome</h2>
+<p>You are here. That is enough.</p>
+<p>You do not need permission. You do not need experience. You do not need to ask. If you want to help build a platform that belongs to its community — truly, actually belongs — then you are already a contributor. The only thing left is to figure out what you want to build.</p>
+<h2>2. First Steps</h2>
+<p>If you are new, start here:</p>
+<ol>
+<li><strong>WELCOME.md</strong> — a short hello and orientation to the project</li>
+<li><strong>MANIFESTO.md</strong> — what we believe and why we are building this</li>
+<li><strong>blueprint</strong> — the technical vision, architecture overview, and roadmap</li>
+</ol>
+<p>Read them in order. They will tell you where we are, where we are going, and whether you want to come along.</p>
+<p>Then browse the issues. Read some pull requests. Lurk in the community chat. Get a feel for how things move.</p>
+<p>Then do something. Anything. Fix a typo in the docs. Answer a question someone asked in an issue. Propose a feature you want to build. The way to become a contributor is to contribute.</p>
+<h2>3. Ways to Contribute</h2>
+<p><strong>Code</strong> — features, bug fixes, tests, performance, security. Any language, any layer of the stack.</p>
+<p><strong>Design</strong> — UI, visual identity, accessibility, UX research. Make things usable and beautiful.</p>
+<p><strong>Writing</strong> — documentation, blog posts, tutorials, copy. Help people understand what we are building and why.</p>
+<p><strong>Ideas</strong> — proposals, strategies, problem identification. Not everything is code. Sometimes the most valuable contribution is seeing the problem clearly.</p>
+<p><strong>Translations</strong> — bring UNBOUNDED to your language. The platform should speak to everyone.</p>
+<p><strong>Testing</strong> — break things on purpose. Report bugs. Write test cases. Make the project more robust.</p>
+<p><strong>Community</strong> — answer questions, welcome newcomers, organize events, facilitate discussions. The community is the product.</p>
+<p><strong>Art</strong> — music, illustration, animation, sound design. A platform has a soul. Help define ours.</p>
+<p>If it helps the project, it counts. If you are unsure whether something counts, it counts.</p>
+<h2>4. The Contribution Flow</h2>
+<h3>Propose</h3>
+<p>Open an issue or start a discussion. Say what you want to do and why. This is not permission-seeking — it is coordination. Someone else might be working on the same thing. Someone might have context that saves you time.</p>
+<h3>Discuss</h3>
+<p>Engage with feedback. Defend your approach or adjust it. The goal is not to win arguments — it is to find the best path forward together.</p>
+<h3>Build</h3>
+<p>Do the work. Work in the open if you can — a draft PR, a shared document, a branch. Let people see what you are doing as you do it.</p>
+<h3>Submit</h3>
+<p>Open a pull request or share your contribution. Gardeners will review it. They may ask questions or suggest changes. This is not rejection — it is collaboration.</p>
+<h3>Merge</h3>
+<p>Once the review is complete and any concerns are addressed, your contribution becomes part of UNBOUNDED. You are now in the history of the project permanently.</p>
+<h2>5. Communication</h2>
+<ul>
+<li><strong>Community Chat</strong> — day-to-day discussion, Q&amp;A, casual conversation</li>
+<li><strong>Community Calls</strong> — regular synchronous meetings for proposals, updates, and discussion (open to all)</li>
+<li><strong>Forum</strong> — longer-form discussions, proposals, governance topics</li>
+<li><strong>GitHub</strong> — issues, pull requests, project boards</li>
+</ul>
+<h2>6. Code of Conduct</h2>
+<p>Be excellent to each other. Full stop.</p>
+<p>We do not have a long list of prohibited behaviors. We have one standard: treat people with respect. If you cannot do that, this is not the place for you.</p>
+<p>If someone is making the community unsafe or unwelcoming, raise it in the community chat or contact a Wayfinder. Serious issues are handled through the consent process in the governance model.</p>
+<h2>7. Recognition</h2>
+<p>Every contributor is credited in the project's CONTRIBUTORS file. You can choose your name, your handle, or remain anonymous.</p>
+<p>Major contributions are called out in the changelog. Design contributions are attributed in the interface. Translations credit the translator. Code contributions live forever in the git history.</p>
+<p>If the project generates revenue, contributors share in it proportionally (see the governance model for details).</p>
+<p>Your work here is your work. It goes in your portfolio. It goes on your resume. It is real.</p>
+<h2>8. Questions</h2>
+<p><strong>Where do I ask?</strong><br />
+- General questions: community chat<br />
+- Technical questions: GitHub issues (tag with <code>question</code>)<br />
+- Governance questions: forum<br />
+- Private concerns: contact a Wayfinder or Steward directly</p>
+<p><strong>What if I am stuck?</strong><br />
+Ask. No one expects you to know everything. Everyone started somewhere.</p>
+<p><strong>What if I make a mistake?</strong><br />
+You will. We all do. Fix it, learn from it, move on. The only real mistake is hiding a mistake.</p>
+<p><strong>What if I want to leave?</strong><br />
+You can leave anytime. Your contributions remain credited. The door is always open if you want to come back.</p>
+<hr />
+<p><em>You are here. That is enough. Now let's build something that matters.</em></p>
+<div class="foot-nav">
+  <a href="../../portal.html">&#9670; Back to Portal</a>
+  <a href="#">&#8593; Top</a>
+</div>
+</div>
+</body>
+</html>
