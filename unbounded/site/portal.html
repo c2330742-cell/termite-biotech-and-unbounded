@@ -2,7 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="Enter the UNBOUNDED Portal — an interactive, generative space blending termite research, biofuel science, and new media into a single living experience.">
 <meta property="og:title" content="UNBOUNDED Portal — Termite Research & New Media">
 <meta property="og:description" content="Enter the UNBOUNDED Portal — an interactive, generative space blending termite research, biofuel science, and new media into a single living experience.">
@@ -17,7 +20,6 @@
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
 
 :root {
   --bg: #08080c;
@@ -1225,6 +1227,14 @@ body {
     min-width: 180px;
   }
 }
+:focus-visible {
+  outline: 2px solid var(--accent2);
+  outline-offset: 2px;
+}
+button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible {
+  outline: 2px solid var(--accent2);
+  outline-offset: 2px;
+}
 </style>
 </head>
 <body>
@@ -1268,11 +1278,11 @@ body {
   </a>
 </nav>
 
-<button id="sound-toggle" title="Toggle ambient sound (M)">♫</button>
-<button id="search-toggle" title="Search page (/)">⌕</button>
-<button id="guide-btn" title="Guide">✦</button>
-<button id="random-btn" title="Surprise me">🎲</button>
-<a href="pages/index.html" id="browse-docs-btn">Browse Docs</a>
+<button id="sound-toggle" title="Toggle ambient sound (M)" aria-label="Toggle ambient sound">♫</button>
+<button id="search-toggle" title="Search page (/)" aria-label="Search">⌕</button>
+<button id="guide-btn" title="Guide" aria-label="Guide menu">✦</button>
+<button id="random-btn" title="Surprise me" aria-label="Open random page">🎲</button>
+<a href="pages/index.html" id="browse-docs-btn" aria-label="Browse documentation">Browse Docs</a>
 
 <div id="network-tooltip" class="network-tooltip"></div>
 
@@ -1295,7 +1305,7 @@ body {
     <h2 id="welcome-title">Welcome, traveler</h2>
     <p id="welcome-message">This is a living garden. Explore at your own pace. Everything here is a gift.</p>
     <div id="welcome-stats" style="margin-bottom:1rem;font-size:0.8rem;color:var(--muted);opacity:0.7;"></div>
-    <button class="welcome-dismiss" id="welcome-dismiss">Enter the garden →</button>
+    <button class="welcome-dismiss" id="welcome-dismiss" aria-label="Close welcome message">Enter the garden →</button>
   </div>
 </div>
 
@@ -1499,7 +1509,7 @@ body {
 
       <div class="garden-header">
         <span class="garden-count" id="garden-count">0 local voices</span>
-        <button class="garden-clear-btn" id="garden-clear-btn">Clear local</button>
+        <button class="garden-clear-btn" id="garden-clear-btn" aria-label="Clear local garden entries">Clear local</button>
       </div>
 
       <div class="garden-entries" id="garden-entries">
@@ -1552,6 +1562,26 @@ body {
 
 </div>
 
+<div id="search-overlay">
+  <input type="text" id="search-input" placeholder="Search this page..." autocomplete="off" spellcheck="false">
+  <div class="sr-hint">Press <kbd>Enter</kbd> to navigate, <kbd>↑</kbd><kbd>↓</kbd> for results, <kbd>Esc</kbd> to close</div>
+  <div id="search-results"></div>
+</div>
+
+<div id="keyboard-help">
+  <div class="kh-header">Keyboard Shortcuts</div>
+  <div class="kh-row"><span class="kh-key">1</span> Welcome</div>
+  <div class="kh-row"><span class="kh-key">2</span> Gifts</div>
+  <div class="kh-row"><span class="kh-key">3</span> Guestbook</div>
+  <div class="kh-row"><span class="kh-key">4</span> Knowledge Map</div>
+  <div class="kh-row"><span class="kh-key">5</span> Explore</div>
+  <div class="kh-row"><span class="kh-key">0</span> Scroll to top</div>
+  <div class="kh-row"><span class="kh-key">R</span> Surprise me (random page)</div>
+  <div class="kh-row"><span class="kh-key">/</span> Search page</div>
+  <div class="kh-row"><span class="kh-key">M</span> Toggle ambient sound</div>
+  <div class="kh-row"><span class="kh-key">?</span> Toggle this help</div>
+</div>
+
 <script>
 (function() {
   'use strict';
@@ -1584,7 +1614,8 @@ body {
   function formatDate(iso) {
     try {
       const d = new Date(iso);
-      return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) +
+        ' at ' + d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
     } catch(e) {
       return iso;
     }
@@ -1609,7 +1640,7 @@ body {
       method: 'POST',
       headers: Object.assign({ Prefer: 'return=minimal' }, SB_HEADERS),
       body: JSON.stringify(data)
-    }).then(function(r) { return r.ok; });
+    });
   }
 
   function sbUpsert(table, data, conflict) {
@@ -1620,18 +1651,29 @@ body {
     }).then(function(r) { return r.ok; });
   }
 
+  /* ─── LOCALSTORAGE HELPERS (private-browsing safe) ─── */
+  function lsGet(key, def) {
+    try { var v = localStorage.getItem(key); return v !== null ? v : def; } catch(e) { return def; }
+  }
+  function lsSet(key, val) {
+    try { localStorage.setItem(key, val); } catch(e) { /* storage unavailable */ }
+  }
+  function lsRemove(key) {
+    try { localStorage.removeItem(key); } catch(e) { /* storage unavailable */ }
+  }
+
   /* ─── SESSION INIT ─── */
-  var sessionId = localStorage.getItem('unbounded-session');
+  var sessionId = lsGet('unbounded-session', '');
   if (!sessionId) {
     sessionId = 's_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-    localStorage.setItem('unbounded-session', sessionId);
+    lsSet('unbounded-session', sessionId);
   }
   sbPost('page_views', { page: 'portal', session_id: sessionId });
-  sbUpsert('sessions', { id: sessionId, page_views: 1, last_active: new Date().toISOString() }, 'id');
-  var lastBeat = localStorage.getItem('unbounded-heartbeat');
+  sbUpsert('sessions', { id: sessionId, last_active: new Date().toISOString() }, 'id');
+  var lastBeat = lsGet('unbounded-heartbeat', '');
   if (!lastBeat || Date.now() - parseInt(lastBeat) > 86400000) {
     sbPost('heartbeats', {});
-    localStorage.setItem('unbounded-heartbeat', '' + Date.now());
+    lsSet('unbounded-heartbeat', '' + Date.now());
   }
 
   /* ─── STARS ─── */
@@ -1806,15 +1848,15 @@ body {
   const modalConfirm = document.getElementById('modal-confirm');
 
   function getGarden() {
-    const data = JSON.parse(localStorage.getItem('unbounded-garden') || '[]');
-    data.forEach(function(e) {
-      if (!e.seed) e.seed = randomSeed();
-    });
-    return data;
+    try {
+      var d = JSON.parse(localStorage.getItem('unbounded-garden') || '[]');
+      d.forEach(function(e) { if (!e.seed) e.seed = randomSeed(); });
+      return d;
+    } catch(e) { return []; }
   }
 
   function saveGarden(data) {
-    localStorage.setItem('unbounded-garden', JSON.stringify(data));
+    try { localStorage.setItem('unbounded-garden', JSON.stringify(data)); } catch(e) {}
   }
 
   function renderGarden() {
@@ -1940,7 +1982,6 @@ body {
     );
 
     sbPost('guestbook_entries', { name: name, message: message, seed: seed });
-    sbPost('site_stats', { stat_name: 'guestbook_entries', stat_value: count });
   });
 
   gardenClearBtn.addEventListener('click', function() {
@@ -2400,8 +2441,8 @@ body {
     ];
     msgEl.textContent = messages[Math.floor(Math.random() * messages.length)];
 
-    var visits = parseInt(localStorage.getItem('unbounded-visits') || '0', 10) + 1;
-    localStorage.setItem('unbounded-visits', '' + visits);
+    var visits = parseInt(lsGet('unbounded-visits', '0'), 10) + 1;
+    lsSet('unbounded-visits', '' + visits);
     var visitMsg = 'Visit #' + visits;
     if (visits === 1) visitMsg = 'Your first visit. The garden remembers you.';
     else if (visits === 10) visitMsg = 'Visit #' + visits + ' — a decade in garden time.';
@@ -2409,17 +2450,17 @@ body {
     else if (visits % 25 === 0) visitMsg += ' — a milestone.';
     statsEl.textContent = visitMsg;
 
-    if (!localStorage.getItem('unbounded-welcomed')) {
+    if (!lsGet('unbounded-welcomed', '')) {
       setTimeout(function() { overlay.classList.add('visible'); }, 600);
     }
     dismiss.addEventListener('click', function() {
       overlay.classList.remove('visible');
-      localStorage.setItem('unbounded-welcomed', 'true');
+      lsSet('unbounded-welcomed', 'true');
     });
     overlay.addEventListener('click', function(e) {
       if (e.target === overlay) {
         overlay.classList.remove('visible');
-        localStorage.setItem('unbounded-welcomed', 'true');
+        lsSet('unbounded-welcomed', 'true');
       }
     });
   })();
@@ -2580,17 +2621,6 @@ body {
     else if (key === '?') showKeyboardHelp();
   });
 
-  /* ─── FEATURE 3: ENHANCED GUESTBOOK ─── */
-  formatDate = function(iso) {
-    try {
-      const d = new Date(iso);
-      return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) +
-        ' at ' + d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
-    } catch(e) {
-      return iso;
-    }
-  };
-
   gardenEmpty.textContent = 'Be the first to leave a mark';
 
   renderGarden();
@@ -2668,16 +2698,24 @@ body {
         sharedStatus.textContent = 'Could not reach the shared garden.';
       });
 
-    sbGet('site_stats').then(function(stats) {
+    Promise.all([
+      sbGet('guestbook_entries', {order: 'created_at.desc', limit: 50}),
+      fetch(SB_URL + '/rest/v1/guestbook_entries?select=count', {headers: SB_HEADERS}).then(function(r) { return r.json(); }),
+      fetch(SB_URL + '/rest/v1/page_views?select=count', {headers: SB_HEADERS}).then(function(r) { return r.json(); })
+    ]).then(function(results) {
+      var entries = results[0];
+      var gCount = results[1] && results[1][0] ? results[1][0].count : 0;
+      var pCount = results[2] && results[2][0] ? results[2][0].count : 0;
       var el = document.getElementById('site-stats');
-      if (!el || !Array.isArray(stats)) return;
-      var m = {};
-      stats.forEach(function(s) { m[s.stat_name] = s.stat_value; });
-      var parts = [];
-      if (m.total_visitors) parts.push(m.total_visitors + ' visitors');
-      if (m.total_page_views) parts.push(m.total_page_views + ' page views');
-      if (m.guestbook_entries) parts.push(m.guestbook_entries + ' entries');
-      if (parts.length) el.textContent = parts.join(' · ');
+      if (!el) return;
+      if (!Array.isArray(entries) || entries.length === 0) {
+        el.textContent = (gCount || '0') + ' entries · ' + (pCount || '0') + ' page views';
+        return;
+      }
+      el.textContent = entries.length + ' recent entries · ' + (gCount || '0') + ' total · ' + (pCount || '0') + ' page views';
+    }).catch(function() {
+      var el = document.getElementById('site-stats');
+      if (el) el.textContent = 'Garden stats unavailable';
     });
   })();
 
@@ -2782,26 +2820,6 @@ body {
     }
   });
 </script>
-
-<div id="search-overlay">
-  <input type="text" id="search-input" placeholder="Search this page..." autocomplete="off" spellcheck="false">
-  <div class="sr-hint">Press <kbd>Enter</kbd> to navigate, <kbd>↑</kbd><kbd>↓</kbd> for results, <kbd>Esc</kbd> to close</div>
-  <div id="search-results"></div>
-</div>
-
-<div id="keyboard-help">
-  <div class="kh-header">Keyboard Shortcuts</div>
-  <div class="kh-row"><span class="kh-key">1</span> Welcome</div>
-  <div class="kh-row"><span class="kh-key">2</span> Gifts</div>
-  <div class="kh-row"><span class="kh-key">3</span> Guestbook</div>
-  <div class="kh-row"><span class="kh-key">4</span> Knowledge Map</div>
-  <div class="kh-row"><span class="kh-key">5</span> Explore</div>
-  <div class="kh-row"><span class="kh-key">0</span> Scroll to top</div>
-  <div class="kh-row"><span class="kh-key">R</span> Surprise me (random page)</div>
-  <div class="kh-row"><span class="kh-key">/</span> Search page</div>
-  <div class="kh-row"><span class="kh-key">M</span> Toggle ambient sound</div>
-  <div class="kh-row"><span class="kh-key">?</span> Toggle this help</div>
-</div>
 
 </body>
 </html>
