@@ -121,9 +121,13 @@ img {{ max-width: 100%; border-radius: var(--radius); }}
 {content}
 <div class="foot-nav">
   <a href="../../portal.html">&#9670; Back to Portal</a>
+  <a href="https://github.com/Puronbo/termite-biotech-and-unbounded/blob/main/unbounded/{md_rel_path}" target="_blank">&#9998; Edit on GitHub</a>
   <a href="#">&#8593; Top</a>
 </div>
 </div>
+<script>
+(function(){{var p=location.pathname;var h=p.substring(p.lastIndexOf('/')+1);var r=JSON.parse(localStorage.getItem('unbounded-history')||'[]');if(!r.includes(h)){{r.unshift(h);if(r.length>20)r.length=20;localStorage.setItem('unbounded-history',JSON.stringify(r))}}}})();
+</script>
 </body>
 </html>'''
 
@@ -176,11 +180,19 @@ def convert_file(md_path, output_rel):
         html_body
     )
 
+    # Compute relative path from repo root for Edit on GitHub link
+    try:
+        md_rel_path = os.path.relpath(md_path, REPO_ROOT)
+    except ValueError:
+        md_rel_path = rel_path.replace('.html', '.md')
+    md_rel_path = md_rel_path.replace('\\', '/')
+
     # Render template
     page = TEMPLATE.format(
         title=title, title_short=title_short, meta_desc=meta_desc,
         content=html_body, section_name=section_name,
-        section_index=section_index, rel_path=rel_path.replace('\\', '/')
+        section_index=section_index, rel_path=rel_path.replace('\\', '/'),
+        md_rel_path=md_rel_path
     )
     return page
 

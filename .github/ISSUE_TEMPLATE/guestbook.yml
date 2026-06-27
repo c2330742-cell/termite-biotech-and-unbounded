@@ -1,0 +1,34 @@
+name: Guestbook Entry
+description: Leave a mark in the UNBOUNDED garden
+title: "Guestbook: [Your Name]"
+labels: [guestbook]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for visiting the garden. Leave a message for future travelers.
+  - type: input
+    id: name
+    attributes:
+      label: Your Name (or pseudonym)
+      placeholder: "e.g., Wanderer, A Student, CuriousMind"
+    validations:
+      required: true
+  - type: textarea
+    id: message
+    attributes:
+      label: Your Message
+      description: What brought you here? What will you take with you?
+      placeholder: "I came here looking for..."
+    validations:
+      required: true
+  - type: dropdown
+    id: found_via
+    attributes:
+      label: How did you find this garden?
+      options:
+        - GitHub
+        - Word of mouth
+        - Web search
+        - Social media
+        - Other
