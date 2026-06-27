@@ -1512,11 +1512,11 @@ body {
           <span id="shared-count" style="font-size:0.8rem;color:var(--muted);"></span>
         </div>
         <p style="font-size:0.85rem;color:var(--muted);margin-bottom:0.75rem;">
-          Entries from everyone who has visited — shared via GitHub Issues.
-          <a href="https://github.com/Puronbo/termite-biotech-and-unbounded/issues/new?template=guestbook.yml" target="_blank" style="color:var(--accent2);">Leave your mark on GitHub →</a>
+          Entries from everyone who has visited. Your message here reaches every traveler who follows.
         </p>
         <div id="shared-status" style="color:var(--muted);font-size:0.85rem;">Loading shared garden...</div>
         <div class="garden-entries" id="shared-entries"></div>
+        <div id="site-stats" style="margin-top:1rem;font-size:0.8rem;color:var(--muted);opacity:0.5;text-align:center;"></div>
       </div>
     </div>
   </section>
@@ -1588,6 +1588,50 @@ body {
     } catch(e) {
       return iso;
     }
+  }
+
+  /* ─── SUPABASE BACKEND ─── */
+  const SB_URL = 'https://aurxoemycvcywtdwahuc.supabase.co';
+  const SB_KEY = 'sb_publishable__bSnqp9ioikLs515Uxtudg_8HtvJPuE';
+  const SB_HEADERS = { apikey: SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Content-Type': 'application/json' };
+
+  function sbGet(table, opts) {
+    var params = 'select=*';
+    if (opts) {
+      if (opts.order) params += '&order=' + opts.order;
+      if (opts.limit) params += '&limit=' + opts.limit;
+    }
+    return fetch(SB_URL + '/rest/v1/' + table + '?' + params, { headers: SB_HEADERS }).then(function(r) { return r.json(); });
+  }
+
+  function sbPost(table, data) {
+    return fetch(SB_URL + '/rest/v1/' + table, {
+      method: 'POST',
+      headers: Object.assign({ Prefer: 'return=minimal' }, SB_HEADERS),
+      body: JSON.stringify(data)
+    }).then(function(r) { return r.ok; });
+  }
+
+  function sbUpsert(table, data, conflict) {
+    return fetch(SB_URL + '/rest/v1/' + table + '?on_conflict=' + conflict, {
+      method: 'POST',
+      headers: Object.assign({ Prefer: 'resolution=merge-duplicates' }, SB_HEADERS),
+      body: JSON.stringify(data)
+    }).then(function(r) { return r.ok; });
+  }
+
+  /* ─── SESSION INIT ─── */
+  var sessionId = localStorage.getItem('unbounded-session');
+  if (!sessionId) {
+    sessionId = 's_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    localStorage.setItem('unbounded-session', sessionId);
+  }
+  sbPost('page_views', { page: 'portal', session_id: sessionId });
+  sbUpsert('sessions', { id: sessionId, page_views: 1, last_active: new Date().toISOString() }, 'id');
+  var lastBeat = localStorage.getItem('unbounded-heartbeat');
+  if (!lastBeat || Date.now() - parseInt(lastBeat) > 86400000) {
+    sbPost('heartbeats', {});
+    localStorage.setItem('unbounded-heartbeat', '' + Date.now());
   }
 
   /* ─── STARS ─── */
@@ -1869,13 +1913,14 @@ body {
     const message = gardenMessage.value.trim();
     if (!message) return;
 
+    const seed = randomSeed();
     const data = getGarden();
     data.push({
       name: name,
       message: message,
       date: new Date().toISOString(),
       id: Date.now(),
-      seed: randomSeed()
+      seed: seed
     });
     saveGarden(data);
     gardenForm.reset();
@@ -1893,6 +1938,9 @@ body {
       'Thank you, ' + escapeHtml(name) + '.',
       'Your voice is now part of the garden. ' + count + ' ' + (count === 1 ? 'person has' : 'people have') + ' left their mark before you.'
     );
+
+    sbPost('guestbook_entries', { name: name, message: message, seed: seed });
+    sbPost('site_stats', { stat_name: 'guestbook_entries', stat_value: count });
   });
 
   gardenClearBtn.addEventListener('click', function() {
@@ -2587,43 +2635,50 @@ body {
     window.open(pages[Math.floor(Math.random() * pages.length)]);
   });
 
-  /* ─── SHARED GARDEN (GITHUB ISSUES) ─── */
+  /* ─── SHARED GARDEN (SUPABASE) ─── */
   (function() {
     var sharedList = document.getElementById('shared-entries');
     var sharedStatus = document.getElementById('shared-status');
     var sharedCount = document.getElementById('shared-count');
     if (!sharedList) return;
 
-    fetch('https://api.github.com/repos/Puronbo/termite-biotech-and-unbounded/issues?labels=guestbook&state=all&per_page=50')
-      .then(function(r) { return r.json(); })
-      .then(function(issues) {
-        if (!Array.isArray(issues) || issues.length === 0) {
+    sbGet('guestbook_entries', { order: 'created_at.desc', limit: 50 })
+      .then(function(entries) {
+        if (!Array.isArray(entries) || entries.length === 0) {
           sharedStatus.textContent = 'No shared entries yet. Be the first.';
           return;
         }
-        if (issues.message) { sharedStatus.textContent = 'Could not load shared garden.'; return; }
-        sharedCount.textContent = issues.length + ' traveler' + (issues.length !== 1 ? 's' : '') + ' from around the world';
+        sharedCount.textContent = entries.length + ' traveler' + (entries.length !== 1 ? 's' : '') + ' from around the world';
         sharedStatus.style.display = 'none';
-        issues.forEach(function(issue) {
+        var count = sharedList.children.length;
+        entries.forEach(function(entry) {
           var div = document.createElement('div');
           div.className = 'garden-entry';
-          var label = issue.user ? issue.user.login : 'Anonymous';
-          var date = issue.created_at ? formatDate(issue.created_at) : '';
-          var body = issue.body ? issue.body.substring(0, 300) : '';
-          var emoji = '🌱';
           div.innerHTML =
             '<div class="entry-header">' +
-              '<span class="entry-seed">' + emoji + '</span>' +
-              '<span class="entry-name">' + escapeHtml(label) + '</span>' +
-              '<span class="entry-date">' + date + '</span>' +
+              '<span class="entry-seed">' + (entry.seed || '🌱') + '</span>' +
+              '<span class="entry-name">' + escapeHtml(entry.name || 'Anonymous') + '</span>' +
+              '<span class="entry-date">' + formatDate(entry.created_at) + '</span>' +
             '</div>' +
-            '<div class="entry-message">' + escapeHtml(body) + '</div>';
+            '<div class="entry-message">' + escapeHtml(entry.message || '') + '</div>';
           sharedList.appendChild(div);
         });
       })
       .catch(function() {
         sharedStatus.textContent = 'Could not reach the shared garden.';
       });
+
+    sbGet('site_stats').then(function(stats) {
+      var el = document.getElementById('site-stats');
+      if (!el || !Array.isArray(stats)) return;
+      var m = {};
+      stats.forEach(function(s) { m[s.stat_name] = s.stat_value; });
+      var parts = [];
+      if (m.total_visitors) parts.push(m.total_visitors + ' visitors');
+      if (m.total_page_views) parts.push(m.total_page_views + ' page views');
+      if (m.guestbook_entries) parts.push(m.guestbook_entries + ' entries');
+      if (parts.length) el.textContent = parts.join(' · ');
+    });
   })();
 
 })();
