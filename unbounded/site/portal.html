@@ -19,28 +19,8 @@
 <title>UNBOUNDED Portal — Termite Research & New Media</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="styles.css">
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-
-:root {
-  --bg: #08080c;
-  --fg: #e0e0ec;
-  --muted: #7878a0;
-  --accent: #7c3aed;
-  --accent2: #ff6b35;
-  --accent3: #60a5fa;
-  --border: rgba(255,255,255,0.05);
-  --glow: rgba(124,58,237,0.15);
-}
-
-body {
-  background: var(--bg);
-  color: var(--fg);
-  font-family: 'Inter', sans-serif;
-  line-height: 1.7;
-  min-height: 100vh;
-  overflow-x: hidden;
-}
 
 /* ─── PROGRESS BAR ─── */
 #progress-bar {
@@ -692,7 +672,13 @@ body {
   border-radius: 12px;
   padding: 1.25rem 1.5rem;
   transition: all 0.3s ease;
-  animation: fadeIn 0.5s ease;
+  animation: fadeInUp 0.5s ease both;
+  transform-origin: top center;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .garden-entry:hover {
@@ -766,6 +752,31 @@ body {
   padding: 3rem 1rem;
   color: var(--muted);
   font-style: italic;
+}
+
+/* ─── LOADING STATE ─── */
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 2rem 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.loading::after {
+  content: '';
+  width: 10px;
+  height: 10px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
 /* ─── NETWORK (KNOWLEDGE MAP) ─── */
@@ -906,12 +917,19 @@ body {
   justify-content: center;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.6s ease;
+  transition: opacity 0.5s ease, transform 0.5s ease;
 }
 
 .welcome-overlay.visible {
   opacity: 1;
   pointer-events: all;
+}
+
+.welcome-overlay.dismissing {
+  opacity: 0;
+  transform: scale(1.04);
+  pointer-events: none;
+  transition: opacity 0.4s ease, transform 0.4s ease;
 }
 
 .welcome-box {
@@ -1187,17 +1205,6 @@ body {
   color: var(--accent2);
 }
 
-/* ─── KEYFRAMES ─── */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 0.6; }
-  50% { opacity: 1; }
-}
-
 /* ─── RESPONSIVE ─── */
 @media (max-width: 900px) {
   #section-nav {
@@ -1214,21 +1221,44 @@ body {
     border: none;
     border-top: 1px solid var(--border);
     gap: 0;
+    background: rgba(8,8,12,0.82);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow: 0 -2px 12px rgba(0,0,0,0.3), 0 -1px 0 rgba(124,58,237,0.08);
+  }
+
+  #section-nav::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(124,58,237,0.25), rgba(255,107,53,0.25), transparent);
+    pointer-events: none;
   }
 
   .nav-item {
     flex-direction: column;
-    padding: 6px 8px;
+    padding: 6px 4px;
     gap: 2px;
     font-size: 0.6rem;
     min-height: auto;
     flex: 1;
     border-radius: 6px;
+    text-align: center;
+  }
+
+  .nav-item.active {
+    background: rgba(124,58,237,0.15);
+    color: var(--accent2);
+    box-shadow: inset 0 0 0 1px rgba(124,58,237,0.15);
   }
 
   .nav-item .nav-icon {
     font-size: 1rem;
     width: auto;
+    line-height: 1;
   }
 
   .nav-item .nav-label {
@@ -1236,6 +1266,7 @@ body {
     width: auto;
     overflow: visible;
     font-size: 0.55rem;
+    line-height: 1;
   }
 
   #sound-toggle {
@@ -1265,6 +1296,14 @@ body {
     bottom: 64px;
     right: 16px;
     min-width: 180px;
+  }
+
+  #random-btn {
+    bottom: 16px;
+    right: 66px;
+    width: 36px;
+    height: 36px;
+    font-size: 0.9rem;
   }
 
   .section {
@@ -1307,6 +1346,57 @@ body {
   #network-canvas {
     height: 260px;
   }
+
+  /* Floating button reorg at 480px */
+  #sound-toggle {
+    bottom: 72px;
+    right: 16px;
+    width: 38px;
+    height: 38px;
+    font-size: 0.95rem;
+  }
+
+  #guide-btn {
+    bottom: 16px;
+    right: 16px;
+    width: 38px;
+    height: 38px;
+    font-size: 0.95rem;
+  }
+
+  #search-toggle {
+    bottom: 122px;
+    right: 16px;
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
+  }
+
+  #random-btn {
+    bottom: 66px;
+    right: 16px;
+    width: 34px;
+    height: 34px;
+    font-size: 0.85rem;
+  }
+
+  #browse-docs-btn {
+    display: none;
+  }
+
+  #guide-popup {
+    bottom: 58px;
+    right: 16px;
+    min-width: 160px;
+  }
+
+  #search-overlay {
+    padding: 0.75rem 0.75rem 0.5rem;
+  }
+
+  #sound-toggle, #guide-btn, #search-toggle, #random-btn {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
 }
 
 /* ─── PARTICLE CANVAS ─── */
@@ -1315,6 +1405,64 @@ body {
   width: 100%; height: 100%;
   pointer-events: none;
   z-index: 0;
+}
+
+/* ─── SCROLL TO TOP ─── */
+#scroll-top-btn {
+  position: fixed;
+  bottom: 80px;
+  right: 76px;
+  z-index: 51;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: rgba(8,8,12,0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: var(--muted);
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Inter', sans-serif;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(10px);
+}
+
+#scroll-top-btn.visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+#scroll-top-btn:hover {
+  color: var(--fg);
+  border-color: var(--accent);
+  transform: scale(1.05);
+}
+
+@media (max-width: 900px) {
+  #scroll-top-btn {
+    bottom: 76px;
+    right: 66px;
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  #scroll-top-btn {
+    bottom: 112px;
+    right: 16px;
+    width: 34px;
+    height: 34px;
+    font-size: 0.9rem;
+  }
 }
 
 /* ─── KEYBOARD HELP OVERLAY ─── */
@@ -1383,21 +1531,31 @@ body {
     min-width: 180px;
   }
 }
-:focus-visible {
-  outline: 2px solid var(--accent2);
-  outline-offset: 2px;
-}
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
-}
 @media print {
-  body { background: #fff; color: #000; }
-  #section-nav, #sound-toggle, #search-toggle, #guide-btn, #random-btn, #browse-docs-btn, #guide-popup, #keyboard-help, #progress-bar, #stars-canvas, #particle-canvas, #search-overlay, .welcome-overlay, .confetti-container, .network-tooltip { display: none !important; }
-  .hero-title, .welcome-box h2 { -webkit-text-fill-color: initial; background: none; color: #000; }
+  body { background: #fff !important; color: #000 !important; }
+  #section-nav, #sound-toggle, #search-toggle, #guide-btn, #random-btn, #browse-docs-btn, #guide-popup, #keyboard-help, #progress-bar, #stars-canvas, #particle-canvas, #search-overlay, .welcome-overlay, .confetti-container, .network-tooltip, #scroll-top-btn, #seed-modal, .modal-overlay, .install-prompt, .offline-indicator, .daily-discovery, .seed-share-btn, .garden-clear-btn { display: none !important; }
+  .hero-title, .welcome-box h2 { -webkit-text-fill-color: initial !important; background: none !important; color: #000 !important; }
+  .section { min-height: auto !important; padding: 2rem 1.5rem !important; page-break-inside: avoid; }
+  .section-inner { max-width: 100% !important; }
+  .garden-form, .garden-entries, .shared-garden-section { display: block !important; }
+  .garden-entry { background: #f5f5f7 !important; border: 1px solid #ddd !important; break-inside: avoid; }
+  .garden-entry .entry-message { color: #333 !important; }
+  .gift-card { background: #f5f5f7 !important; border: 1px solid #ddd !important; break-inside: avoid; }
+  .fade-section { opacity: 1 !important; transform: none !important; }
+  .scroll-container { min-height: auto !important; }
+  .portal-footer { color: #666 !important; }
+  .portal-footer .sig { color: #7c3aed !important; }
+  a { color: #7c3aed !important; text-decoration: underline; }
+  .hero-title { font-size: 2rem !important; }
+  #network-canvas { display: none !important; }
+  .explore-item { border: 1px solid #ddd !important; color: #000 !important; }
+  .explore-item .arrow { color: #999 !important; }
+  .garden-header { display: flex !important; }
 }
 </style>
 </head>
 <body>
+<a href="#main-content" class="skip-link">Skip to content</a>
 
 <div id="progress-bar"></div>
 <canvas id="stars-canvas"></canvas>
@@ -1488,7 +1646,9 @@ body {
   </button>
 </div>
 
-<div class="toast" id="toast" role="alert"></div>
+  <div class="toast" id="toast" role="alert"></div>
+
+  <button id="scroll-top-btn" title="Scroll to top" aria-label="Scroll to top">↑</button>
 
 <div id="install-prompt" class="install-prompt" hidden>
   <span>Install UNBOUNDED</span>
@@ -1515,7 +1675,7 @@ body {
 </div>
 <canvas id="seed-canvas"></canvas>
 
-<div class="scroll-container">
+<div class="scroll-container" id="main-content">
 
   <section class="section fade-section" id="hero">
     <div class="section-inner">
@@ -1680,6 +1840,18 @@ body {
           <span>🗺️</span>
           <span>Roadmap — from beacon to revolution</span>
           <span class="tag">future</span>
+          <span class="arrow">→</span>
+        </a>
+        <a class="explore-item" href="pages/pest-control/index.html">
+          <span>🧪</span>
+          <span>Natural pest control — formulations & research</span>
+          <span class="tag">biotech</span>
+          <span class="arrow">→</span>
+        </a>
+        <a class="explore-item" href="pages/termite-farming/index.html">
+          <span>🐜</span>
+          <span>Termite farming — colony management & processing</span>
+          <span class="tag">agriculture</span>
           <span class="arrow">→</span>
         </a>
       </div>
@@ -2057,9 +2229,10 @@ body {
       gardenEmpty.style.display = 'block';
     } else {
       gardenEmpty.style.display = 'none';
-      data.forEach(function(entry) {
+      data.forEach(function(entry, i) {
         const div = document.createElement('div');
         div.className = 'garden-entry';
+        div.style.animationDelay = (i * 0.08) + 's';
         div.innerHTML =
           '<div class="entry-header">' +
             '<span class="entry-seed">' + escapeHtml(entry.seed || '🌱') + '</span>' +
@@ -2610,6 +2783,22 @@ body {
     });
   }
 
+  /* ─── SCROLL TO TOP ─── */
+  (function() {
+    var scrollBtn = document.getElementById('scroll-top-btn');
+    if (!scrollBtn) return;
+    var scrollThreshold = 400;
+    function toggleScrollBtn() {
+      var scrollY = window.scrollY || document.documentElement.scrollTop;
+      scrollBtn.classList.toggle('visible', scrollY > scrollThreshold);
+    }
+    window.addEventListener('scroll', throttle(toggleScrollBtn, 200));
+    scrollBtn.addEventListener('click', function() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+    toggleScrollBtn();
+  })();
+
   /* ─── RESIZE HANDLING ─── */
   const handleResize = debounce(function() {
     starCanvas.width = window.innerWidth;
@@ -2659,14 +2848,17 @@ body {
     if (!lsGet('unbounded-welcomed', '')) {
       setTimeout(function() { overlay.classList.add('visible'); }, 600);
     }
-    dismiss.addEventListener('click', function() {
-      overlay.classList.remove('visible');
-      lsSet('unbounded-welcomed', 'true');
-    });
+    function dismissWelcome() {
+      overlay.classList.add('dismissing');
+      setTimeout(function() {
+        overlay.classList.remove('visible', 'dismissing');
+        lsSet('unbounded-welcomed', 'true');
+      }, 400);
+    }
+    dismiss.addEventListener('click', dismissWelcome);
     overlay.addEventListener('click', function(e) {
       if (e.target === overlay) {
-        overlay.classList.remove('visible');
-        lsSet('unbounded-welcomed', 'true');
+        dismissWelcome();
       }
     });
   })();
@@ -2863,7 +3055,13 @@ body {
       'pages/unbounded/contributing.html',
       'pages/calls/open-letter.html',
       'pages/calls/for-developers.html',
-      'pages/calls/for-creatives.html'
+      'pages/calls/for-creatives.html',
+      'pages/pest-control/index.html',
+      'pages/pest-control/manufacturing-guide.html',
+      'pages/pest-control/product-formulations.html',
+      'pages/termite-farming/index.html',
+      'pages/termite-farming/farming-methods.html',
+      'pages/termite-farming/processing-guide.html'
     ];
     window.open(pages[Math.floor(Math.random() * pages.length)]);
   });
@@ -2875,11 +3073,15 @@ body {
     var sharedCount = document.getElementById('shared-count');
     if (!sharedList) return;
 
+    sharedStatus.className = 'loading';
+    sharedStatus.textContent = 'Loading shared garden';
+
     Promise.all([
       sbGet('guestbook_entries', {order: 'created_at.desc', limit: 50}),
       fetch(SB_URL + '/rest/v1/guestbook_entries?select=count', {headers: SB_HEADERS}).then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); }),
       fetch(SB_URL + '/rest/v1/page_views?select=count', {headers: SB_HEADERS}).then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
     ]).then(function(results) {
+      sharedStatus.className = '';
       var entries = results[0];
       var gCount = results[1] && results[1][0] ? results[1][0].count : 0;
       var pCount = results[2] && results[2][0] ? results[2][0].count : 0;
@@ -2893,9 +3095,10 @@ body {
       }
       sharedCount.textContent = entries.length + ' traveler' + (entries.length !== 1 ? 's' : '') + ' from around the world';
       sharedStatus.style.display = 'none';
-      entries.forEach(function(entry) {
+      entries.forEach(function(entry, i) {
         var div = document.createElement('div');
         div.className = 'garden-entry';
+        div.style.animationDelay = (i * 0.06) + 's';
         div.innerHTML =
           '<div class="entry-header">' +
             '<span class="entry-seed">' + escapeHtml(entry.seed || '🌱') + '</span>' +
@@ -2913,6 +3116,7 @@ body {
         sharedList.appendChild(div);
       });
     }).catch(function() {
+      sharedStatus.className = '';
       sharedStatus.textContent = 'Could not reach the shared garden.';
       var statsEl = document.getElementById('site-stats');
       if (statsEl) statsEl.textContent = 'Garden stats unavailable';
@@ -2974,7 +3178,11 @@ body {
       { title: 'Contributing', url: 'pages/unbounded/contributing.html' },
       { title: 'Open Letter', url: 'pages/calls/open-letter.html' },
       { title: 'For Developers', url: 'pages/calls/for-developers.html' },
-      { title: 'For Creatives', url: 'pages/calls/for-creatives.html' }
+      { title: 'For Creatives', url: 'pages/calls/for-creatives.html' },
+      { title: 'Pest Control - Formulations', url: 'pages/pest-control/product-formulations.html' },
+      { title: 'Pest Control - Manufacturing', url: 'pages/pest-control/manufacturing-guide.html' },
+      { title: 'Termite Farming - Methods', url: 'pages/termite-farming/farming-methods.html' },
+      { title: 'Termite Farming - Processing', url: 'pages/termite-farming/processing-guide.html' }
     ];
     var today = new Date();
     var daySeed = today.getFullYear() * 1000 + today.getMonth() * 50 + today.getDate();

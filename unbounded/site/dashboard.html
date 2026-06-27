@@ -18,64 +18,104 @@
 <link rel="manifest" href="manifest.json">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-:root { --bg: #08080c; --surface: #0e0e16; --surface2: #14142e; --border: #1e1e3a; --accent: #7c3aed; --accent2: #ff6b35; --text: #e2e8f0; --text2: #94a3b8; --success: #10b981; --radius: 12px; }
-body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 20px; }
-body::before { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(ellipse at 50% 0%, rgba(124,58,237,0.06) 0%, transparent 70%); pointer-events: none; z-index: 0; }
-.container { max-width: 1400px; margin: 0 auto; position: relative; z-index: 1; }
-header { display: flex; align-items: center; gap: 20px; padding: 24px 32px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 16px; flex-wrap: wrap; }
+header { display: flex; align-items: center; gap: 12px; padding: 24px 32px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 16px; flex-wrap: wrap; }
 header h1 { font-size: 22px; font-weight: 700; background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; white-space: nowrap; }
-header .subtitle { color: var(--text2); font-size: 14px; margin-left: auto; }
+header .subtitle { color: var(--muted); font-size: 14px; margin-left: auto; }
 .file-selector { display: flex; align-items: center; gap: 12px; }
-.file-selector label { font-size: 13px; color: var(--text2); }
-.file-selector select { background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 8px 14px; font-size: 14px; cursor: pointer; outline: none; min-width: 240px; transition: border-color 0.2s; }
+.file-selector label { font-size: 13px; color: var(--muted); }
+.file-selector select { background: var(--bg); color: var(--fg); border: 1px solid var(--border); border-radius: 8px; padding: 8px 14px; font-size: 14px; cursor: pointer; outline: none; min-width: 240px; transition: border-color 0.2s; }
 .file-selector select:hover, .file-selector select:focus { border-color: var(--accent); }
-.export-btn { background: var(--accent); color: #fff; border: none; border-radius: 8px; padding: 8px 18px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px; }
-.export-btn:hover { background: #6d28d9; transform: translateY(-1px); box-shadow: 0 4px 20px rgba(124,58,237,0.3); }
-.export-btn svg { width: 16px; height: 16px; }
+.btn-header { background: var(--accent); color: #fff; border: none; border-radius: 8px; padding: 8px 16px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.btn-header:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(124,58,237,0.3); }
+.btn-header.accent2 { background: var(--accent2); }
+.btn-header.accent2:hover { box-shadow: 0 4px 20px rgba(255,107,53,0.3); }
+.btn-header.ghost { background: transparent; border: 1px solid var(--border); color: var(--muted); }
+.btn-header.ghost:hover { color: var(--fg); border-color: var(--border-light); background: rgba(255,255,255,0.03); box-shadow: none; }
+.btn-header.ghost.active { border-color: var(--accent); color: var(--accent); }
+.btn-header svg { width: 14px; height: 14px; flex-shrink: 0; }
+.btn-header .spinner-inline { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.6s linear infinite; }
 .data-source { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 24px; margin-bottom: 16px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; font-size: 14px; }
 .data-source .badge { background: var(--accent); color: #fff; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; letter-spacing: 0.5px; text-transform: uppercase; }
+.data-source .badge.live { background: var(--success); }
+.data-source .badge.embedded { background: var(--muted-dim); }
 .data-source a { color: var(--accent2); text-decoration: none; font-weight: 600; transition: color 0.2s; }
 .data-source a:hover { color: #ff8a5c; text-decoration: underline; }
+.data-source .fetch-status { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
+.data-source .fetch-status .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.data-source .fetch-status .dot.embedded { background: var(--muted-dim); }
+.data-source .fetch-status .dot.live { background: var(--success); }
+.data-source .fetch-status .dot.loading { background: var(--accent2); animation: pulse 0.8s infinite; }
+.data-source .fetch-status .dot.error { background: #ef4444; }
 .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
-.chart-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; position: relative; }
-.chart-card h3 { font-size: 14px; color: var(--text2); margin-bottom: 12px; font-weight: 500; letter-spacing: 0.3px; text-transform: uppercase; }
-.chart-card .chart-wrap { position: relative; width: 100%; height: 320px; }
+.chart-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; position: relative; display: flex; flex-direction: column; }
+.chart-card h3 { font-size: 14px; color: var(--muted); margin-bottom: 12px; font-weight: 500; letter-spacing: 0.3px; text-transform: uppercase; }
+.chart-card .chart-wrap { position: relative; width: 100%; flex: 1; min-height: 300px; }
 .chart-card .chart-wrap canvas { width: 100% !important; height: 100% !important; }
+.chart-card.loading .chart-wrap::after { content: ''; position: absolute; inset: 0; background: var(--surface); opacity: 0.6; z-index: 5; }
 .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-bottom: 20px; }
 .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 20px; transition: border-color 0.2s; }
 .stat-card:hover { border-color: var(--accent); }
-.stat-card .stat-label { font-size: 11px; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
-.stat-card .stat-value { font-size: 20px; font-weight: 700; color: var(--text); }
+.stat-card .stat-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+.stat-card .stat-value { font-size: 20px; font-weight: 700; color: var(--fg); }
 .stat-card .stat-value.accent { color: var(--accent); }
 .stat-card .stat-value.accent2 { color: var(--accent2); }
 .stat-card .stat-value.success { color: var(--success); }
+.stat-card .stat-value.gradient { background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.stat-card.skeleton .stat-value, .stat-card.skeleton .stat-label { display: inline-block; min-width: 60%; height: 14px; background: linear-gradient(90deg, var(--surface2) 25%, rgba(255,255,255,0.05) 50%, var(--surface2) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 4px; color: transparent !important; -webkit-text-fill-color: transparent !important; }
+.stat-card.skeleton .stat-label { height: 10px; min-width: 40%; margin-bottom: 8px; }
+.stat-card.skeleton .stat-value { height: 22px; }
 .table-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 0; overflow: hidden; margin-bottom: 20px; }
 .table-card .table-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 1px solid var(--border); }
 .table-card .table-header h3 { font-size: 14px; font-weight: 600; }
-.table-card .table-header .row-count { font-size: 12px; color: var(--text2); }
+.table-card .table-header .row-count { font-size: 12px; color: var(--muted); }
 .table-wrap { overflow-x: auto; max-height: 420px; overflow-y: auto; }
-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.table-empty { display: none; flex-direction: column; align-items: center; justify-content: center; padding: 48px 20px; text-align: center; }
+.table-empty.visible { display: flex; }
+.table-empty .empty-icon { font-size: 28px; margin-bottom: 12px; opacity: 0.4; }
+.table-empty .empty-text { font-size: 14px; color: var(--muted); }
+.table-empty .empty-sub { font-size: 12px; color: var(--muted-dim); margin-top: 4px; }
 thead { position: sticky; top: 0; z-index: 2; }
-th { background: var(--surface2); color: var(--text2); font-weight: 600; padding: 10px 16px; text-align: left; white-space: nowrap; cursor: pointer; user-select: none; transition: color 0.15s; border-bottom: 1px solid var(--border); }
+th { padding: 10px 16px; cursor: pointer; user-select: none; transition: color 0.15s; }
 th:hover { color: var(--accent); }
 th .sort-icon { display: inline-block; margin-left: 4px; opacity: 0.3; font-size: 11px; }
 th.sorted .sort-icon { opacity: 1; color: var(--accent); }
-td { padding: 8px 16px; border-bottom: 1px solid rgba(30,30,58,0.5); color: var(--text); white-space: nowrap; }
-tr:hover td { background: rgba(124,58,237,0.05); }
+td { padding: 8px 16px; color: var(--fg); white-space: nowrap; }
 tr:nth-child(even) td { background: rgba(255,255,255,0.015); }
 tr:hover td { background: rgba(124,58,237,0.08); }
-footer { display: flex; align-items: center; justify-content: center; gap: 20px; flex-wrap: wrap; padding: 20px; color: var(--text2); font-size: 12px; border-top: 1px solid var(--border); margin-top: 20px; }
+.toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+.toast { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 18px; font-size: 13px; color: var(--fg); box-shadow: 0 8px 32px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 10px; animation: toastIn 0.3s ease; pointer-events: auto; max-width: 360px; backdrop-filter: blur(12px); }
+.toast.error { border-color: #ef4444; }
+.toast.error .toast-icon { color: #ef4444; }
+.toast.success { border-color: var(--success); }
+.toast.success .toast-icon { color: var(--success); }
+.toast .toast-icon { font-size: 16px; flex-shrink: 0; line-height: 1; }
+.toast .toast-msg { flex: 1; line-height: 1.4; }
+footer { display: flex; align-items: center; justify-content: center; gap: 20px; flex-wrap: wrap; padding: 20px; color: var(--muted); font-size: 12px; border-top: 1px solid var(--border); margin-top: 20px; }
 footer .sig { color: var(--accent); }
 .portal-link { background: transparent; color: var(--accent2); border: 1px solid var(--accent2); border-radius: 8px; padding: 8px 18px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
 .portal-link:hover { background: var(--accent2); color: #fff; transform: translateY(-1px); box-shadow: 0 4px 20px rgba(255,107,53,0.3); }
-@media (max-width: 900px) { .charts-grid { grid-template-columns: 1fr; } header { flex-direction: column; align-items: stretch; } header .subtitle { margin-left: 0; } .file-selector { flex-wrap: wrap; } .file-selector select { min-width: 100%; } .stats-grid { grid-template-columns: 1fr 1fr; } }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+@keyframes toastIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+@keyframes fadeSlide { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.stat-card { animation: fadeSlide 0.3s ease both; }
+.stat-card:nth-child(1) { animation-delay: 0ms; }
+.stat-card:nth-child(2) { animation-delay: 60ms; }
+.stat-card:nth-child(3) { animation-delay: 120ms; }
+.stat-card:nth-child(4) { animation-delay: 180ms; }
+.chart-card { animation: fadeSlide 0.4s ease both; }
+@media (max-width: 900px) { .charts-grid { grid-template-columns: 1fr; } header { flex-direction: column; align-items: stretch; } header .subtitle { margin-left: 0; } .file-selector { flex-wrap: wrap; } .file-selector select { min-width: 100%; } .stats-grid { grid-template-columns: 1fr 1fr; } .btn-header { justify-content: center; } }
 @media (max-width: 500px) { .stats-grid { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
-<div class="container">
+<a href="#main-content" class="skip-link">Skip to content</a>
+<div class="container container-lg" id="main-content">
 <header>
 <h1>Biofuel Research Dashboard</h1>
 <div class="file-selector">
@@ -87,30 +127,39 @@ footer .sig { color: var(--accent); }
 <option value="calibration">Glucose Calibration</option>
 </select>
 </div>
-<button class="export-btn" id="exportBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Export Chart</button>
-<button class="export-btn" id="downloadCsvBtn" style="background:var(--accent2)">Download CSV</button>
-<span class="subtitle">✦ Data is alive. Explore the science.</span>
+<button class="btn-header ghost" id="fetchLiveBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg> Fetch live</button>
+<button class="btn-header" id="exportBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Export Chart</button>
+<button class="btn-header accent2" id="downloadCsvBtn">Download CSV</button>
+<button class="btn-header ghost" id="reportBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg> Report</button>
+<span class="subtitle">Data is alive. Explore the science.</span>
 </header>
 
 <div class="data-source">
-<span class="badge">Live Data</span>
-<span>Data sourced from real experiments (Jan–Jun 2026).</span>
-<a href="../../termite-projects/biofuel-research/research/experiments/LAB-NOTEBOOK.md" target="_blank">View Lab Notebook →</a>
+<span class="badge" id="sourceBadge">Embedded</span>
+<span id="sourceText">Data sourced from embedded cache.</span>
+<span class="fetch-status" id="fetchStatus"><span class="dot embedded" id="sourceDot"></span> <span id="sourceLabel">offline mode</span></span>
+<a href="../../termite-projects/biofuel-research/research/experiments/LAB-NOTEBOOK.md" target="_blank">View Lab Notebook</a>
 </div>
 
 <div id="statsContainer" class="stats-grid"></div>
+<div id="toastContainer" class="toast-container"></div>
 <div id="summaryPanel" class="data-source" style="display:none;flex-direction:column;align-items:flex-start;gap:4px;font-size:13px;margin-bottom:16px;"></div>
 <div class="charts-grid" id="chartsGrid">
-<div class="chart-card"><h3 id="chartTitle1">Chart 1</h3><div class="chart-wrap"><canvas id="chart1"></canvas></div></div>
-<div class="chart-card"><h3 id="chartTitle2">Chart 2</h3><div class="chart-wrap"><canvas id="chart2"></canvas></div></div>
+<div class="chart-card" id="chartCard1"><h3 id="chartTitle1">Chart 1</h3><div class="chart-wrap"><canvas id="chart1"></canvas></div></div>
+<div class="chart-card" id="chartCard2"><h3 id="chartTitle2">Chart 2</h3><div class="chart-wrap"><canvas id="chart2"></canvas></div></div>
 </div>
 <div class="table-card">
 <div class="table-header"><h3>Data Table</h3><span class="row-count" id="rowCount">0 rows</span></div>
+<div class="table-empty" id="tableEmpty">
+<div class="empty-icon">&#9678;</div>
+<div class="empty-text">No data to display</div>
+<div class="empty-sub">Try selecting a different dataset</div>
+</div>
 <div class="table-wrap"><table><thead id="tableHead"></thead><tbody id="tableBody"></tbody></table></div>
 </div>
 <footer>
-<span>crafted with <span class="sig">✦</span> for the biofuel research community</span>
-<a class="portal-link" href="portal.html">Open Portal →</a>
+<span>crafted with <span class="sig">*</span> for the biofuel research community</span>
+<a class="portal-link" href="portal.html">Open Portal</a>
 </footer>
 </div>
 
@@ -199,10 +248,18 @@ calibration: `Glucose_mM,Absorbance_540nm
 10,0.902`
 };
 
+const FETCH_PATHS = {
+cellulase: '../../termite-projects/biofuel-research/data/cellulase_assay_data.csv',
+fermentation: '../../termite-projects/biofuel-research/data/fermentation_results.csv',
+waste: '../../termite-projects/biofuel-research/data/agricultural_waste_test.csv',
+calibration: '../../termite-projects/biofuel-research/data/glucose_calibration.csv'
+};
+
 const COLORS = { purple: '#7c3aed', orange: '#ff6b35', teal: '#10b981', pink: '#ec4899', cyan: '#06b6d4', yellow: '#eab308', red: '#ef4444' };
 const COLORS_LIST = ['#7c3aed','#ff6b35','#10b981','#ec4899','#06b6d4','#eab308','#ef4444','#8b5cf6'];
 const chartInstances = { c1: null, c2: null };
-let sortState = { col: -1, asc: true };
+let dataSource = 'embedded';
+let chartResizeObserver = null;
 
 function parseCSV(text) {
 const lines = text.trim().split('\n');
@@ -210,6 +267,7 @@ const headers = lines[0].split(',').map(h => h.trim());
 const rows = [];
 for (let i = 1; i < lines.length; i++) {
 const vals = lines[i].split(',').map(v => v.trim());
+if (vals.length !== headers.length) continue;
 const row = {};
 headers.forEach((h, idx) => { row[h] = vals[idx]; });
 rows.push(row);
@@ -233,14 +291,18 @@ return { slope, intercept, r2 };
 
 function mean(arr) { return arr.reduce((a, b) => a + b, 0) / arr.length; }
 function std(arr) { const m = mean(arr); return Math.sqrt(arr.reduce((a, b) => a + (b - m) ** 2, 0) / arr.length); }
+function max(arr) { return Math.max(...arr); }
+function min(arr) { return Math.min(...arr); }
 
 const chartConfig = {
 type: 'scatter',
 data: { datasets: [] },
 options: {
 responsive: true, maintainAspectRatio: false,
+animation: { duration: 600, easing: 'easeOutQuart' },
+transitions: { show: { animations: { x: { from: 0 }, y: { from: 0 } } } },
 plugins: {
-legend: { labels: { color: '#94a3b8', font: { size: 11 }, boxWidth: 14, padding: 12 } },
+legend: { labels: { color: '#94a3b8', font: { size: 11 }, boxWidth: 14, padding: 12, usePointStyle: true }, onClick: function(e, legendItem, legend) { const index = legendItem.datasetIndex; const ci = legend.chart; if (ci.isDatasetVisible(index)) { ci.hide(index); legendItem.hidden = true; } else { ci.show(index); legendItem.hidden = false; } } },
 tooltip: { backgroundColor: '#0e0e16', titleColor: '#e2e8f0', bodyColor: '#94a3b8', borderColor: '#1e1e3a', borderWidth: 1, cornerRadius: 8, padding: 10 }
 },
 datalabels: { display: false }
@@ -249,9 +311,82 @@ scales: {
 x: { grid: { color: 'rgba(30,30,58,0.6)' }, ticks: { color: '#94a3b8', font: { size: 11 } }, title: { color: '#94a3b8', font: { size: 12 } } },
 y: { grid: { color: 'rgba(30,30,58,0.6)' }, ticks: { color: '#94a3b8', font: { size: 11 } }, title: { color: '#94a3b8', font: { size: 12 } } }
 }
-};
-
+}
 function getCtx(id) { return document.getElementById(id).getContext('2d'); }
+
+function showToast(message, type) {
+const container = document.getElementById('toastContainer');
+const toast = document.createElement('div');
+toast.className = 'toast ' + (type || '');
+const icon = type === 'error' ? '!' : type === 'success' ? 'ok' : 'i';
+toast.innerHTML = '<span class="toast-icon">' + icon + '</span><span class="toast-msg">' + message + '</span>';
+container.appendChild(toast);
+setTimeout(function() {
+toast.style.opacity = '0';
+toast.style.transform = 'translateX(100%)';
+toast.style.transition = 'all 0.3s ease';
+setTimeout(function() { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 300);
+}, 4000);
+}
+
+function setSourceBadge(mode) {
+const badge = document.getElementById('sourceBadge');
+const dot = document.getElementById('sourceDot');
+const label = document.getElementById('sourceLabel');
+const text = document.getElementById('sourceText');
+badge.className = 'badge ' + (mode === 'live' ? 'live' : 'embedded');
+dot.className = 'dot ' + mode;
+if (mode === 'live') {
+badge.textContent = 'Live';
+label.textContent = 'live data';
+text.textContent = 'Data sourced from live CSV files.';
+} else if (mode === 'embedded') {
+badge.textContent = 'Embedded';
+label.textContent = 'offline mode';
+text.textContent = 'Data sourced from embedded cache.';
+} else if (mode === 'loading') {
+badge.textContent = 'Fetching';
+label.textContent = 'fetching...';
+text.textContent = 'Fetching live data from CSV files...';
+} else if (mode === 'error') {
+badge.textContent = 'Offline';
+label.textContent = 'fetch failed';
+text.textContent = 'Could not fetch live data, using embedded cache.';
+}
+}
+
+function showSkeletons(count) {
+const container = document.getElementById('statsContainer');
+container.innerHTML = '';
+for (let i = 0; i < count; i++) {
+const div = document.createElement('div');
+div.className = 'stat-card skeleton';
+div.innerHTML = '<div class="stat-label">&nbsp;</div><div class="stat-value">&nbsp;</div>';
+container.appendChild(div);
+}
+document.getElementById('chartCard1').classList.add('loading');
+document.getElementById('chartCard2').classList.add('loading');
+}
+
+function hideSkeletons() {
+document.querySelectorAll('.stat-card.skeleton').forEach(function(el) {
+if (el.parentNode) el.parentNode.removeChild(el);
+});
+document.getElementById('chartCard1').classList.remove('loading');
+document.getElementById('chartCard2').classList.remove('loading');
+}
+
+function showEmptyState(visible) {
+const el = document.getElementById('tableEmpty');
+const wrap = document.querySelector('.table-wrap');
+if (visible) {
+el.classList.add('visible');
+if (wrap) wrap.style.display = 'none';
+} else {
+el.classList.remove('visible');
+if (wrap) wrap.style.display = '';
+}
+}
 
 function buildCellulase(data) {
 const groups = {};
@@ -334,7 +469,7 @@ options: {
 ...chartConfig,
 plugins: { ...chartConfig.options.plugins, datalabels: { display: false } },
 scales: {
-x: { ...chartConfig.options.scales.x, title: { display: true, text: 'Temperature (°C)', color: '#94a3b8' } },
+x: { ...chartConfig.options.scales.x, title: { display: true, text: 'Temperature (C)', color: '#94a3b8' } },
 y: { ...chartConfig.options.scales.y, title: { display: true, text: 'Activity (U/mL)', color: '#94a3b8' }, beginAtZero: true }
 }
 }
@@ -346,9 +481,9 @@ const maxIso = isolates.reduce((a, b) => mean(groups[a]) > mean(groups[b]) ? a :
 const optTemps = data.rows.filter(r => num(r.Specific_Activity_U_mg) > 70).map(r => num(r.Temperature_C));
 const optTemp = optTemps.length ? Math.round(mean(optTemps)) : '—';
 return [
-{ label: 'Highest Activity Strain', value: maxIso, cls: 'accent' },
-{ label: 'Mean Specific Activity', value: mean(allAct).toFixed(1) + ' U/mg', cls: '' },
-{ label: 'Optimal Temperature', value: optTemp + ' °C', cls: 'success' },
+{ label: 'Highest Activity Strain', value: maxIso, cls: 'gradient' },
+{ label: 'Mean Specific Activity', value: mean(allAct).toFixed(1) + ' U/mg', cls: 'accent' },
+{ label: 'Optimal Temperature', value: optTemp + ' C', cls: 'success' },
 { label: 'Total Isolates', value: isolates.length, cls: '' }
 ];
 }
@@ -412,20 +547,20 @@ y: { ...chartConfig.options.scales.y, title: { display: true, text: 'Ethanol (g/
 });
 chartInstances.c1 = c1; chartInstances.c2 = c2;
 
-const maxEthanol = Math.max(...data.rows.map(r => num(r.Ethanol_g_L)));
+const maxEthanol = max(data.rows.map(r => num(r.Ethanol_g_L)));
 const bestStrain = Object.keys(strains).reduce((a, b) => {
-const maxA = Math.max(...strains[a].map(r => num(r.Ethanol_g_L)));
-const maxB = Math.max(...strains[b].map(r => num(r.Ethanol_g_L)));
+const maxA = max(strains[a].map(r => num(r.Ethanol_g_L)));
+const maxB = max(strains[b].map(r => num(r.Ethanol_g_L)));
 return maxA > maxB ? a : b;
 });
 const bestData = strains[bestStrain];
-const maxE = Math.max(...bestData.map(r => num(r.Ethanol_g_L)));
-const maxTime = Math.max(...bestData.map(r => num(r.Time_h)));
+const maxE = max(bestData.map(r => num(r.Ethanol_g_L)));
+const maxTime = max(bestData.map(r => num(r.Time_h)));
 const prod = (maxE / maxTime).toFixed(3);
 return [
-{ label: 'Max Ethanol', value: maxEthanol.toFixed(1) + ' g/L', cls: 'accent' },
+{ label: 'Max Ethanol Yield', value: maxEthanol.toFixed(1) + ' g/L', cls: 'gradient' },
 { label: 'Best Strain', value: bestStrain, cls: 'accent2' },
-{ label: 'Max Productivity (Best)', value: prod + ' g/L/h', cls: 'success' },
+{ label: 'Productivity (Best)', value: prod + ' g/L/h', cls: 'success' },
 { label: 'Final pH (Best)', value: bestData[bestData.length - 1].pH, cls: '' }
 ];
 }
@@ -477,16 +612,14 @@ if (r.Pretreatment === 'None') subConv[sub].none.push(num(r.Conversion_Percent))
 else subConv[sub].naoh.push(num(r.Conversion_Percent));
 });
 const bestSub = Object.keys(subConv).reduce((a, b) => {
-const mA = Math.max(...subConv[a].none.concat(subConv[a].naoh));
-const mB = Math.max(...subConv[b].none.concat(subConv[b].naoh));
+const mA = max(subConv[a].none.concat(subConv[a].naoh));
+const mB = max(subConv[b].none.concat(subConv[b].naoh));
 return mA > mB ? a : b;
 });
-const bestPre = 'NaOH';
-const highestConv = Math.max(...data.rows.map(r => num(r.Conversion_Percent)));
-const bestRow = data.rows.find(r => num(r.Conversion_Percent) === highestConv);
+const highestConv = max(data.rows.map(r => num(r.Conversion_Percent)));
 const convStats = [
-{ label: 'Best Substrate', value: bestSub, cls: 'accent' },
-{ label: 'Best Pretreatment', value: bestPre, cls: 'accent2' },
+{ label: 'Best Substrate', value: bestSub, cls: 'gradient' },
+{ label: 'Best Pretreatment', value: 'NaOH', cls: 'accent2' },
 { label: 'Highest Conversion', value: highestConv.toFixed(1) + '%', cls: 'success' },
 { label: 'Enzyme Loading', value: data.rows[0].Enzyme_FPU_g + ' FPU/g', cls: '' }
 ];
@@ -528,7 +661,7 @@ return convStats;
 function buildCalibration(data) {
 const points = data.rows.map(r => ({ x: num(r.Glucose_mM), y: num(r.Absorbance_540nm) }));
 const reg = linearRegression(points);
-const maxX = Math.max(...points.map(p => p.x));
+const maxX = max(points.map(p => p.x));
 const lineData = [{ x: 0, y: reg.intercept }, { x: maxX, y: reg.slope * maxX + reg.intercept }];
 
 const c1 = new Chart(getCtx('chart1'), {
@@ -557,7 +690,6 @@ options: {
 plugins: {
 ...chartConfig.options.plugins,
 datalabels: { display: false },
-annotation: undefined,
 },
 scales: {
 x: { ...chartConfig.options.scales.x, title: { display: true, text: 'Glucose (mM)', color: '#94a3b8' } },
@@ -601,15 +733,15 @@ const ctx = document.getElementById('chart1');
 const parent = ctx.parentElement;
 const div = document.createElement('div');
 div.style.cssText = 'position:absolute;bottom:20px;right:20px;background:rgba(14,14,22,0.9);border:1px solid #1e1e3a;border-radius:8px;padding:10px 14px;font-size:13px;color:#e2e8f0;z-index:10;pointer-events:none;';
-div.innerHTML = `<span style="color:#94a3b8">y = ${reg.slope.toFixed(4)}x ${reg.intercept >= 0 ? '+' : '-'} ${Math.abs(reg.intercept).toFixed(4)}</span><br><span style="color:#7c3aed;font-weight:700">R² = ${rSquaredFormatted}</span>`;
+div.innerHTML = '<span style="color:#94a3b8">y = ' + reg.slope.toFixed(4) + 'x ' + (reg.intercept >= 0 ? '+' : '-') + ' ' + Math.abs(reg.intercept).toFixed(4) + '</span><br><span style="color:#7c3aed;font-weight:700">R² = ' + rSquaredFormatted + '</span>';
 parent.style.position = 'relative';
 parent.appendChild(div);
 }, 100);
 
 return [
-{ label: 'Slope', value: reg.slope.toFixed(4) + ' ΔAbs·mM⁻¹', cls: 'accent' },
+{ label: 'Slope', value: reg.slope.toFixed(4) + ' Abs/mM', cls: 'gradient' },
 { label: 'Intercept', value: reg.intercept.toFixed(4) + ' Abs', cls: 'accent2' },
-{ label: 'R²', value: rSquaredFormatted, cls: 'success' },
+{ label: 'R-Squared', value: rSquaredFormatted, cls: 'success' },
 { label: 'Range', value: '0–' + maxX + ' mM', cls: '' }
 ];
 }
@@ -624,6 +756,12 @@ tbody.innerHTML = '';
 const headers = data.headers;
 let rows = [...data.rows];
 
+if (!rows || rows.length === 0) {
+rowCount.textContent = '0 rows';
+showEmptyState(true);
+return;
+}
+showEmptyState(false);
 rowCount.textContent = rows.length + ' rows';
 
 const tr = document.createElement('tr');
@@ -643,7 +781,7 @@ rows.forEach(r => {
 const tr2 = document.createElement('tr');
 headers.forEach(h => {
 const td = document.createElement('td');
-td.textContent = r[h];
+td.textContent = r[h] !== undefined ? r[h] : '';
 tr2.appendChild(td);
 });
 tbody.appendChild(tr2);
@@ -675,10 +813,11 @@ th.querySelector('.sort-icon').textContent = i === col ? (asc ? '▲' : '▼') :
 function renderStats(cards) {
 const container = document.getElementById('statsContainer');
 container.innerHTML = '';
-cards.forEach(c => {
+cards.forEach((c, i) => {
 const div = document.createElement('div');
 div.className = 'stat-card';
-div.innerHTML = `<div class="stat-label">${c.label}</div><div class="stat-value ${c.cls || ''}">${c.value}</div>`;
+div.style.animationDelay = (i * 60) + 'ms';
+div.innerHTML = '<div class="stat-label">' + c.label + '</div><div class="stat-value ' + (c.cls || '') + '">' + c.value + '</div>';
 container.appendChild(div);
 });
 }
@@ -689,89 +828,240 @@ if (chartInstances.c2) { chartInstances.c2.destroy(); chartInstances.c2 = null; 
 document.querySelectorAll('.chart-card .chart-wrap > div:not(canvas)').forEach(el => el.remove());
 }
 
+function renderSummaryPanel(data, fileKey) {
+const panel = document.getElementById('summaryPanel');
+const rows = data.rows;
+const headers = data.headers;
+if (!rows || rows.length === 0) { panel.style.display = 'none'; return; }
+const totalRows = rows.length;
+let html = '<strong style="color:var(--accent);font-size:14px;">Data Summary</strong><br>';
+
+if (fileKey === 'cellulase') {
+const isolates = [...new Set(rows.map(r => r.Isolate))].sort();
+html += '<span>Dataset: <strong>Cellulase Assay</strong> | Isolates: <strong>' + isolates.length + '</strong></span><br>';
+html += '<span style="font-size:12px;color:var(--muted);">Per-isolate specific activity (U/mg):</span><br>';
+const groups = {};
+rows.forEach(r => {
+if (!groups[r.Isolate]) groups[r.Isolate] = [];
+groups[r.Isolate].push(num(r.Specific_Activity_U_mg));
+});
+isolates.forEach(iso => {
+const vals = groups[iso];
+const m = mean(vals).toFixed(1);
+const s = std(vals).toFixed(1);
+const lo = min(vals).toFixed(1);
+const hi = max(vals).toFixed(1);
+html += '<span style="font-size:12px;padding-left:12px;"><strong>' + iso + '</strong>: mean=' + m + ', std=' + s + ', range=[' + lo + ', ' + hi + '] U/mg</span><br>';
+});
+} else if (fileKey === 'fermentation') {
+const strains = [...new Set(rows.map(r => r.Strain))];
+html += '<span>Dataset: <strong>Fermentation Kinetics</strong> | Strains: <strong>' + strains.length + '</strong></span><br>';
+const maxEth = max(rows.map(r => num(r.Ethanol_g_L)));
+const theoretical = 51.1;
+const eff = ((maxEth / theoretical) * 100).toFixed(1);
+html += '<span>Max ethanol: <strong>' + maxEth.toFixed(1) + ' g/L</strong> | Fermentation efficiency: <strong>' + eff + '%</strong> (of theoretical max ' + theoretical + ' g/L)</span><br>';
+html += '<span style="font-size:12px;color:var(--muted);">Key parameters: Substrate consumption, biomass growth, pH profile</span>';
+} else if (fileKey === 'waste') {
+const subs = [...new Set(rows.map(r => r.Substrate))];
+const prets = [...new Set(rows.map(r => r.Pretreatment))];
+html += '<span>Dataset: <strong>Agricultural Waste</strong> | Substrates: <strong>' + subs.length + '</strong> | Pretreatments: <strong>' + prets.join(', ') + '</strong></span><br>';
+const convs = rows.map(r => num(r.Conversion_Percent));
+html += '<span>Mean conversion: <strong>' + mean(convs).toFixed(1) + '%</strong> | Range: [' + min(convs).toFixed(1) + ', ' + max(convs).toFixed(1) + '%]</span><br>';
+const improvement = {};
+rows.forEach(r => {
+if (r.Pretreatment === 'NaOH') {
+if (!improvement[r.Substrate]) improvement[r.Substrate] = { none: 0, naoh: 0 };
+improvement[r.Substrate].naoh = num(r.Conversion_Percent);
+} else {
+if (!improvement[r.Substrate]) improvement[r.Substrate] = { none: 0, naoh: 0 };
+improvement[r.Substrate].none = num(r.Conversion_Percent);
+}
+});
+const avgImprove = mean(Object.values(improvement).map(d => d.naoh - d.none));
+html += '<span>NaOH improvement: <strong style="color:var(--success)">+' + avgImprove.toFixed(1) + '%</strong> mean increase vs untreated</span>';
+} else if (fileKey === 'calibration') {
+const points = rows.map(r => ({ x: num(r.Glucose_mM), y: num(r.Absorbance_540nm) }));
+const reg = linearRegression(points);
+const resids = points.map(p => p.y - (reg.slope * p.x + reg.intercept));
+const rmse = Math.sqrt(mean(resids.map(r => r * r)));
+html += '<span>Dataset: <strong>Glucose Calibration</strong> | Points: <strong>' + points.length + '</strong></span><br>';
+html += '<span>Regression: <strong>y = ' + reg.slope.toFixed(4) + 'x ' + (reg.intercept >= 0 ? '+' : '-') + ' ' + Math.abs(reg.intercept).toFixed(4) + '</strong></span><br>';
+html += '<span>R-squared: <strong style="color:var(--success)">' + reg.r2.toFixed(4) + '</strong> | RMSE: <strong>' + rmse.toFixed(4) + '</strong></span>';
+} else {
+const numericCols = headers.filter(h => rows.some(r => !isNaN(parseFloat(r[h]))));
+html += '<span>Total rows: <strong>' + totalRows + '</strong> | Numeric columns: <strong>' + numericCols.length + '</strong></span><br>';
+numericCols.forEach(h => {
+const vals = rows.map(r => parseFloat(r[h])).filter(v => !isNaN(v));
+if (vals.length === 0) return;
+const mn = mean(vals);
+const lo = min(vals);
+const hi = max(vals);
+html += '<span><strong>' + h + '</strong>: mean=' + mn.toFixed(2) + ', range=[' + lo.toFixed(2) + ', ' + hi.toFixed(2) + ']</span><br>';
+});
+}
+let missing = 0;
+rows.forEach(r => { headers.forEach(h => { if (r[h] === undefined || r[h] === null || r[h].toString().trim() === '') missing++; }); });
+const quality = missing === 0 ? 'Complete' : missing + ' missing value(s)';
+const qc = missing === 0 ? 'var(--success)' : 'var(--accent2)';
+html += '<br><span>Data quality: <strong style="color:' + qc + '">' + quality + '</strong></span>';
+panel.innerHTML = html;
+panel.style.display = 'flex';
+}
+
 function loadFile(fileKey) {
 document.getElementById('chartTitle1').textContent = 'Chart 1';
 document.getElementById('chartTitle2').textContent = 'Chart 2';
+showSkeletons(4);
 destroyCharts();
 const csv = CSV_DATA[fileKey];
 const data = parseCSV(csv);
 let stats;
 switch (fileKey) {
-case 'cellulase':
-stats = buildCellulase(data);
-break;
-case 'fermentation':
-stats = buildFermentation(data);
-break;
-case 'waste':
-stats = buildWaste(data);
-break;
-case 'calibration':
-stats = buildCalibration(data);
-break;
+case 'cellulase': stats = buildCellulase(data); break;
+case 'fermentation': stats = buildFermentation(data); break;
+case 'waste': stats = buildWaste(data); break;
+case 'calibration': stats = buildCalibration(data); break;
 }
+setTimeout(function() {
+hideSkeletons();
 if (stats) renderStats(stats);
-  buildTable(data);
-  renderSummaryPanel(data);
+buildTable(data);
+renderSummaryPanel(data, fileKey);
+}, 350);
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+function fetchLiveData() {
+const sel = document.getElementById('fileSelect');
+const fileKey = sel.value;
+const fetchBtn = document.getElementById('fetchLiveBtn');
+setSourceBadge('loading');
+fetchBtn.disabled = true;
+fetchBtn.innerHTML = '<span class="spinner-inline"></span> Fetching...';
+
+fetch(FETCH_PATHS[fileKey])
+.then(function(response) {
+if (!response.ok) throw new Error('HTTP ' + response.status);
+return response.text();
+})
+.then(function(text) {
+if (!text || text.trim().length === 0) throw new Error('Empty response');
+const parsed = parseCSV(text);
+if (!parsed.rows || parsed.rows.length === 0) throw new Error('No data rows');
+CSV_DATA[fileKey] = text;
+dataSource = 'live';
+setSourceBadge('live');
+showToast('Loaded live data for ' + fileKey, 'success');
+loadFile(fileKey);
+})
+.catch(function(err) {
+dataSource = 'embedded';
+setSourceBadge('error');
+showToast('Could not fetch live data: ' + err.message + '. Using embedded fallback.', 'error');
+})
+.finally(function() {
+fetchBtn.disabled = false;
+fetchBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg> Fetch live';
+});
+}
+
+function downloadReport() {
+const sel = document.getElementById('fileSelect');
+const fileKey = sel.value;
+const data = parseCSV(CSV_DATA[fileKey]);
+const rows = data.rows;
+const headers = data.headers;
+
+let report = 'Biofuel Research Dashboard - Data Report\n';
+report += '========================================\n';
+report += 'Dataset: ' + fileKey + '\n';
+report += 'Generated: ' + new Date().toLocaleString() + '\n';
+report += 'Data source: ' + dataSource + '\n';
+report += 'Rows: ' + rows.length + ', Columns: ' + headers.length + '\n';
+report += '----------------------------------------\n\n';
+
+const numericCols = headers.filter(h => rows.some(r => !isNaN(parseFloat(r[h]))));
+numericCols.forEach(function(h) {
+const vals = rows.map(r => parseFloat(r[h])).filter(v => !isNaN(v));
+if (vals.length === 0) return;
+report += h + ':\n';
+report += '  Mean:   ' + mean(vals).toFixed(4) + '\n';
+report += '  Std:    ' + std(vals).toFixed(4) + '\n';
+report += '  Min:    ' + min(vals).toFixed(4) + '\n';
+report += '  Max:    ' + max(vals).toFixed(4) + '\n';
+report += '  Count:  ' + vals.length + '\n\n';
+});
+
+report += '----------------------------------------\n';
+report += 'Data quality check:\n';
+let missing = 0;
+rows.forEach(function(r) { headers.forEach(function(h) { if (r[h] === undefined || r[h] === null || r[h].toString().trim() === '') missing++; }); });
+report += '  Missing values: ' + missing + '\n';
+report += '========================================\n';
+report += 'Report generated by Biofuel Research Dashboard\n';
+
+const blob = new Blob([report], { type: 'text/plain;charset=utf-8' });
+const link = document.createElement('a');
+link.href = URL.createObjectURL(blob);
+link.download = fileKey + '-report.txt';
+link.click();
+URL.revokeObjectURL(link.href);
+}
+
+function setupResizeObserver() {
+if (chartResizeObserver) chartResizeObserver.disconnect();
+chartResizeObserver = new ResizeObserver(function(entries) {
+entries.forEach(function(entry) {
+const canvas = entry.target.querySelector('canvas');
+if (!canvas) return;
+const id = canvas.id;
+if (id === 'chart1' && chartInstances.c1) chartInstances.c1.resize();
+if (id === 'chart2' && chartInstances.c2) chartInstances.c2.resize();
+});
+});
+document.querySelectorAll('.chart-wrap').forEach(function(el) {
+chartResizeObserver.observe(el);
+});
+}
+
+document.addEventListener('DOMContentLoaded', function() {
 if ('serviceWorker' in navigator) {
 navigator.serviceWorker.register('sw.js')['catch'](function(){});
 }
-console.log('✦ Data is alive. Explore the science.');
+console.log('Data is alive. Explore the science.');
 const sel = document.getElementById('fileSelect');
-sel.addEventListener('change', () => loadFile(sel.value));
+sel.addEventListener('change', function() {
+dataSource = 'embedded';
+setSourceBadge('embedded');
 loadFile(sel.value);
+});
+loadFile(sel.value);
+setupResizeObserver();
 
-document.getElementById('exportBtn').addEventListener('click', () => {
-  const targetChart = chartInstances.c1 || chartInstances.c2;
-  if (!targetChart) return;
-  const canvas = targetChart.canvas;
-  const link = document.createElement('a');
-  link.download = 'biofuel-chart.png';
-  link.href = canvas.toDataURL('image/png');
-  link.click();
+document.getElementById('exportBtn').addEventListener('click', function() {
+const targetChart = chartInstances.c1 || chartInstances.c2;
+if (!targetChart) return;
+const canvas = targetChart.canvas;
+const link = document.createElement('a');
+link.download = 'biofuel-chart.png';
+link.href = canvas.toDataURL('image/png');
+link.click();
 });
 
-document.getElementById('downloadCsvBtn').addEventListener('click', () => {
-  const fileKey = document.getElementById('fileSelect').value;
-  const csv = CSV_DATA[fileKey];
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-  const link = document.createElement('a');
-  link.href = URL.createObjectURL(blob);
-  link.download = fileKey + '.csv';
-  link.click();
-  URL.revokeObjectURL(link.href);
+document.getElementById('downloadCsvBtn').addEventListener('click', function() {
+const fileKey = document.getElementById('fileSelect').value;
+const csv = CSV_DATA[fileKey];
+const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+const link = document.createElement('a');
+link.href = URL.createObjectURL(blob);
+link.download = fileKey + '.csv';
+link.click();
+URL.revokeObjectURL(link.href);
 });
 
-});
+document.getElementById('fetchLiveBtn').addEventListener('click', fetchLiveData);
 
-function renderSummaryPanel(data) {
-  const panel = document.getElementById('summaryPanel');
-  const rows = data.rows;
-  const headers = data.headers;
-  if (!rows || rows.length === 0) { panel.style.display = 'none'; return; }
-  const totalRows = rows.length;
-  const numericCols = headers.filter(h => rows.some(r => !isNaN(parseFloat(r[h]))));
-  let html = '<strong style="color:var(--accent);font-size:14px;">Data Summary</strong><br>';
-  html += '<span>Total rows: <strong>' + totalRows + '</strong></span><br>';
-  numericCols.forEach(h => {
-    const vals = rows.map(r => parseFloat(r[h])).filter(v => !isNaN(v));
-    if (vals.length === 0) return;
-    const mn = vals.reduce((a, b) => a + b, 0) / vals.length;
-    const lo = Math.min(...vals);
-    const hi = Math.max(...vals);
-    html += '<span><strong>' + h + '</strong>: mean=' + mn.toFixed(2) + ', range=[' + lo.toFixed(2) + ', ' + hi.toFixed(2) + ']</span><br>';
-  });
-  let missing = 0;
-  rows.forEach(r => { headers.forEach(h => { if (r[h] === undefined || r[h] === null || r[h].toString().trim() === '') missing++; }); });
-  const quality = missing === 0 ? 'Complete' : missing + ' missing value(s)';
-  const qc = missing === 0 ? 'var(--success)' : 'var(--accent2)';
-  html += '<span>Data quality: <strong style="color:' + qc + '">' + quality + '</strong></span>';
-  panel.innerHTML = html;
-  panel.style.display = 'flex';
-}
+document.getElementById('reportBtn').addEventListener('click', downloadReport);
+});
 </script>
 </body>
 </html>

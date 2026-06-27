@@ -1,0 +1,26 @@
+{
+  "analysis_date": "2026-06-27T12:19:13.464803",
+  "data_summary": {
+    "total_samples": 21,
+    "columns": [
+      "Isolate",
+      "Replicate",
+      "Substrate",
+      "Absorbance_540nm",
+      "Glucose_mM",
+      "Protein_mg_mL",
+      "Activity_U_mL",
+      "Specific_Activity_U_mg",
+      "Temperature_C",
+      "pH"
+    ]
+  },
+  "calibration_curve": {
+    "slope": 0.08014545454545455,
+    "intercept": 0.10118181818181815,
+    "r_squared": 0.9999850237420005,
+    "p_value": 5.036132047484978e-23,
+    "std_err": 0.00010338619460234372
+  },
+  "kinetic_parameters": {}
+}

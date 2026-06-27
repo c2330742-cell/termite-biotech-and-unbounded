@@ -16,109 +16,19 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
 <link rel="icon" type="image/svg+xml" href="../favicon.svg">
 <title>AEON — PLATFORM BLUEPRINT</title>
+<link rel="stylesheet" href="../styles.css">
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-:root {
-  --bg: #08080c; --surface: #0e0e16; --surface2: #14142e;
-  --border: rgba(255,255,255,0.05); --accent: #7c3aed; --accent2: #ff6b35;
-  --accent3: #60a5fa; --fg: #e0e0ec; --muted: #7878a0;
-  --radius: 12px;
-}
-body {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  background: var(--bg); color: var(--fg); line-height: 1.7;
-  min-height: 100vh;
-}
-body::before {
-  content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-  background: radial-gradient(ellipse at 50% 0%, rgba(124,58,237,0.06) 0%, transparent 70%);
-  pointer-events: none; z-index: 0;
-}
-.wrapper {
-  max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem 4rem;
-  position: relative; z-index: 1;
-}
-.top-nav {
-  display: flex; align-items: center; gap: 1rem; padding: 0.75rem 0;
-  margin-bottom: 2rem; border-bottom: 1px solid var(--border);
-  font-size: 0.85rem; flex-wrap: wrap;
-}
-.top-nav a {
-  color: var(--muted); text-decoration: none; transition: color 0.2s;
-  display: inline-flex; align-items: center; gap: 0.3rem;
-}
-.top-nav a:hover { color: var(--accent); }
-.top-nav .sep { color: var(--border); }
-h1 {
-  font-size: 2rem; font-weight: 700; margin-bottom: 1.5rem;
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-  line-height: 1.3;
-}
 h2 { font-size: 1.4rem; font-weight: 600; margin: 2rem 0 0.75rem; color: var(--fg); }
 h3 { font-size: 1.15rem; font-weight: 600; margin: 1.5rem 0 0.5rem; color: var(--accent3); }
-p { margin-bottom: 1rem; color: var(--fg); }
-a { color: var(--accent2); text-decoration: none; }
-a:hover { text-decoration: underline; }
-strong { color: #fff; }
 em { color: var(--muted); }
-ul, ol { margin: 0 0 1rem 1.5rem; }
-li { margin-bottom: 0.3rem; }
-code {
-  background: rgba(124,58,237,0.1); padding: 0.15rem 0.4rem;
-  border-radius: 4px; font-size: 0.85rem; color: var(--accent3);
-}
-pre {
-  background: var(--surface2); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 1rem; overflow-x: auto;
-  margin-bottom: 1rem;
-}
-pre code { background: none; padding: 0; }
-blockquote {
-  border-left: 3px solid var(--accent); padding-left: 1rem;
-  margin: 1rem 0; color: var(--muted); font-style: italic;
-}
-table {
-  width: 100%; border-collapse: collapse; margin-bottom: 1rem;
-  font-size: 0.9rem; display: block; overflow-x: auto;
-  -webkit-overflow-scrolling: touch; max-width: 100%;
-}
-th, td {
-  padding: 0.5rem 0.75rem; text-align: left;
-  border-bottom: 1px solid var(--border);
-}
-th { background: var(--surface2); color: var(--muted); font-weight: 600; }
-tr:hover td { background: rgba(124,58,237,0.05); }
-hr { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
-img { max-width: 100%; border-radius: var(--radius); }
-.foot-nav {
-  margin-top: 3rem; padding-top: 1.5rem;
-  border-top: 1px solid var(--border);
-  display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
-}
-.foot-nav a {
-  color: var(--accent); font-size: 0.9rem; text-decoration: none;
-}
-.foot-nav a:hover { color: var(--accent2); }
-@media (max-width: 600px) {
-  .wrapper { padding: 1.5rem 1rem; }
-  h1 { font-size: 1.5rem; }
-  pre { font-size: 0.8rem; }
-}
 a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-@media print {
-  body { background: #fff; color: #000; }
-  body::before { display: none; }
-  .top-nav, .foot-nav { display: none; }
-  h1 { -webkit-text-fill-color: initial; background: none; color: #000; }
-}
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
-}
+.skip-link { position: absolute; top: -100%; left: 0; padding: 0.5rem 1rem; background: var(--accent); color: var(--bg); z-index: 1000; font-size: 0.85rem; text-decoration: none; }
+.skip-link:focus { top: 0; }
 </style>
 </head>
 <body>
-<div class="wrapper">
+<a href="#main-content" class="skip-link">Skip to content</a>
+<div class="container" id="main-content">
 <div class="top-nav">
   <a href="../../portal.html">&#9670; Portal</a>
   <span class="sep">/</span>

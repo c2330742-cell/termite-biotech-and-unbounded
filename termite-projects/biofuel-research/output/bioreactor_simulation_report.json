@@ -1,0 +1,26 @@
+{
+  "simulation_date": "2026-06-27T12:19:32.695497",
+  "parameters": {
+    "S0": 100.0,
+    "E0": 10.0,
+    "Vmax": 0.85,
+    "Km": 15.0,
+    "Ki": 8.0,
+    "Yxs": 0.1,
+    "Yps": 0.11764705754197106,
+    "mu_max": 0.25,
+    "Ks": 5.0,
+    "V": 5.0,
+    "D": 0.0,
+    "T": 37.0,
+    "pH": 6.5,
+    "DO": 0.0
+  },
+  "results_summary": {
+    "final_product_concentration": 7.999623484416175,
+    "final_substrate_concentration": 32.00319964175667,
+    "final_cell_concentration": 23.16657658715826,
+    "product_yield": 0.11764705754179812,
+    "theoretical_yield": 0.5679012345679012
+  }
+}

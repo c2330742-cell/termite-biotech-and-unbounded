@@ -24,109 +24,19 @@ TEMPLATE = r'''<!DOCTYPE html>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
 <link rel="icon" type="image/svg+xml" href="../favicon.svg">
 <title>{title}</title>
+<link rel="stylesheet" href="../styles.css">
 <style>
-* {{ margin: 0; padding: 0; box-sizing: border-box; }}
-:root {{
-  --bg: #08080c; --surface: #0e0e16; --surface2: #14142e;
-  --border: rgba(255,255,255,0.05); --accent: #7c3aed; --accent2: #ff6b35;
-  --accent3: #60a5fa; --fg: #e0e0ec; --muted: #7878a0;
-  --radius: 12px;
-}}
-body {{
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  background: var(--bg); color: var(--fg); line-height: 1.7;
-  min-height: 100vh;
-}}
-body::before {{
-  content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-  background: radial-gradient(ellipse at 50% 0%, rgba(124,58,237,0.06) 0%, transparent 70%);
-  pointer-events: none; z-index: 0;
-}}
-.wrapper {{
-  max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem 4rem;
-  position: relative; z-index: 1;
-}}
-.top-nav {{
-  display: flex; align-items: center; gap: 1rem; padding: 0.75rem 0;
-  margin-bottom: 2rem; border-bottom: 1px solid var(--border);
-  font-size: 0.85rem; flex-wrap: wrap;
-}}
-.top-nav a {{
-  color: var(--muted); text-decoration: none; transition: color 0.2s;
-  display: inline-flex; align-items: center; gap: 0.3rem;
-}}
-.top-nav a:hover {{ color: var(--accent); }}
-.top-nav .sep {{ color: var(--border); }}
-h1 {{
-  font-size: 2rem; font-weight: 700; margin-bottom: 1.5rem;
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-  line-height: 1.3;
-}}
 h2 {{ font-size: 1.4rem; font-weight: 600; margin: 2rem 0 0.75rem; color: var(--fg); }}
 h3 {{ font-size: 1.15rem; font-weight: 600; margin: 1.5rem 0 0.5rem; color: var(--accent3); }}
-p {{ margin-bottom: 1rem; color: var(--fg); }}
-a {{ color: var(--accent2); text-decoration: none; }}
-a:hover {{ text-decoration: underline; }}
-strong {{ color: #fff; }}
 em {{ color: var(--muted); }}
-ul, ol {{ margin: 0 0 1rem 1.5rem; }}
-li {{ margin-bottom: 0.3rem; }}
-code {{
-  background: rgba(124,58,237,0.1); padding: 0.15rem 0.4rem;
-  border-radius: 4px; font-size: 0.85rem; color: var(--accent3);
-}}
-pre {{
-  background: var(--surface2); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 1rem; overflow-x: auto;
-  margin-bottom: 1rem;
-}}
-pre code {{ background: none; padding: 0; }}
-blockquote {{
-  border-left: 3px solid var(--accent); padding-left: 1rem;
-  margin: 1rem 0; color: var(--muted); font-style: italic;
-}}
-table {{
-  width: 100%; border-collapse: collapse; margin-bottom: 1rem;
-  font-size: 0.9rem; display: block; overflow-x: auto;
-  -webkit-overflow-scrolling: touch; max-width: 100%;
-}}
-th, td {{
-  padding: 0.5rem 0.75rem; text-align: left;
-  border-bottom: 1px solid var(--border);
-}}
-th {{ background: var(--surface2); color: var(--muted); font-weight: 600; }}
-tr:hover td {{ background: rgba(124,58,237,0.05); }}
-hr {{ border: none; border-top: 1px solid var(--border); margin: 2rem 0; }}
-img {{ max-width: 100%; border-radius: var(--radius); }}
-.foot-nav {{
-  margin-top: 3rem; padding-top: 1.5rem;
-  border-top: 1px solid var(--border);
-  display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
-}}
-.foot-nav a {{
-  color: var(--accent); font-size: 0.9rem; text-decoration: none;
-}}
-.foot-nav a:hover {{ color: var(--accent2); }}
-@media (max-width: 600px) {{
-  .wrapper {{ padding: 1.5rem 1rem; }}
-  h1 {{ font-size: 1.5rem; }}
-  pre {{ font-size: 0.8rem; }}
-}}
 a:focus-visible {{ outline: 2px solid var(--accent); outline-offset: 2px; }}
-@media print {{
-  body {{ background: #fff; color: #000; }}
-  body::before {{ display: none; }}
-  .top-nav, .foot-nav {{ display: none; }}
-  h1 {{ -webkit-text-fill-color: initial; background: none; color: #000; }}
-}}
-@media (prefers-reduced-motion: reduce) {{
-  *, *::before, *::after {{ animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }}
-}}
+.skip-link {{ position: absolute; top: -100%; left: 0; padding: 0.5rem 1rem; background: var(--accent); color: var(--bg); z-index: 1000; font-size: 0.85rem; text-decoration: none; }}
+.skip-link:focus {{ top: 0; }}
 </style>
 </head>
 <body>
-<div class="wrapper">
+<a href="#main-content" class="skip-link">Skip to content</a>
+<div class="container" id="main-content">
 <div class="top-nav">
   <a href="../../portal.html">&#9670; Portal</a>
   <span class="sep">/</span>
@@ -172,6 +82,8 @@ def convert_file(md_path, output_rel):
         'calls': 'Calls to Action',
         'termite': 'Termite Research',
         'unbounded': 'UNBOUNDED',
+        'pest-control': 'Natural Pest Control',
+        'termite-farming': 'Termite Farming',
         '': '',
     }
     section_name = section_names.get(section, section.capitalize())
@@ -214,18 +126,135 @@ def convert_file(md_path, output_rel):
     return page
 
 
-def generate_index(files, section_name, output_path):
-    """Generate an index page for a section."""
-    links = []
-    for f in files:
-        name = os.path.splitext(os.path.basename(f))[0]
-        label = name.replace('-', ' ').replace('_', ' ').title()
-        links.append((f, label))
+DOC_DESCRIPTIONS = {
+    'manifesto.html': 'The complete UNBOUNDED manifesto \u2014 11 categories of new media',
+    'platform-blueprint.html': 'Technical architecture, AI orchestration, and system design',
+    'roadmap.html': 'Development milestones and future plans',
+    'open-letter.html': 'An invitation to join the unbinding of media',
+    'for-developers.html': 'Technical contribution guide for engineers',
+    'for-creatives.html': 'Creative opportunities in the UNBOUNDED ecosystem',
+    'welcome.html': 'A guided tour of the UNBOUNDED project',
+    'governance.html': 'Decentralized governance model and community framework',
+    'contributing.html': 'How to contribute to UNBOUNDED',
+    'master-summary.html': 'Comprehensive overview of the Termite Research Initiative',
+    'cross-verification.html': 'Scientific validation of claims against literature',
+    'readme.html': 'Introduction to the Termite Research project',
+}
 
-    rows = '\n'.join(
-        f'<tr><td><a href="{f}">{label}</a></td></tr>'
-        for f, label in links
-    )
+DOC_EMOJIS = {
+    'manifesto.html': '\U0001f4dc',
+    'platform-blueprint.html': '\U0001f3d7\ufe0f',
+    'roadmap.html': '\U0001f5fa\ufe0f',
+    'open-letter.html': '\u2709\ufe0f',
+    'for-developers.html': '\U0001f4bb',
+    'for-creatives.html': '\U0001f3a8',
+    'welcome.html': '\U0001f44b',
+    'governance.html': '\U0001f3db\ufe0f',
+    'contributing.html': '\U0001f91d',
+    'master-summary.html': '\U0001f4cb',
+    'cross-verification.html': '\U0001f52c',
+    'readme.html': '\U0001f4d6',
+}
+
+DOC_DESCRIPTIONS.update({
+    # pest-control
+    'manufacturing-guide.html': 'Complete manufacturing setup and protocols',
+    'product-formulations.html': 'Product formulation recipes and specifications',
+    'research-literature.html': 'Scientific research and literature review',
+    'safety-data-sheets.html': 'Safety data sheets and handling guidelines',
+    'implementation-timeline.html': '12-month implementation timeline and milestones',
+    'manufacturing-setup.html': 'Manufacturing facility setup guide',
+    'certification-roadmap.html': 'FDA and DENR certification roadmap',
+    'formulation-recipes.html': 'Product formulation recipes and instructions',
+    'marketing-strategy.html': 'Marketing strategy and brand development',
+    'safety-testing.html': 'Safety testing protocols and procedures',
+    'distribution-strategy.html': 'Distribution channel strategy and logistics',
+    # termite-farming
+    'market-analysis.html': 'Market analysis and commercial opportunities',
+    'farming-methods.html': 'Termite farming methods and best practices',
+    'processing-guide.html': 'Processing guide for termite products',
+    'species-profiles.html': 'Species profiles and biological characteristics',
+    'implementation-summary.html': 'Implementation summary and action plan',
+    'colony-monitoring.html': 'Colony monitoring data and analysis',
+})
+
+DOC_EMOJIS.update({
+    # pest-control
+    'manufacturing-guide.html': '\U0001f9ea',
+    'product-formulations.html': '\U0001f9ea',
+    'research-literature.html': '\U0001f9ea',
+    'safety-data-sheets.html': '\U0001f9ea',
+    'implementation-timeline.html': '\U0001f9ea',
+    'manufacturing-setup.html': '\U0001f9ea',
+    'certification-roadmap.html': '\U0001f9ea',
+    'formulation-recipes.html': '\U0001f9ea',
+    'marketing-strategy.html': '\U0001f9ea',
+    'safety-testing.html': '\U0001f9ea',
+    'distribution-strategy.html': '\U0001f9ea',
+    # termite-farming
+    'market-analysis.html': '\U0001f41c',
+    'farming-methods.html': '\U0001f41c',
+    'processing-guide.html': '\U0001f41c',
+    'species-profiles.html': '\U0001f41c',
+    'implementation-summary.html': '\U0001f41c',
+    'colony-monitoring.html': '\U0001f41c',
+})
+
+DOC_READING_TIMES = {
+    'manifesto.html': '15 min read',
+    'platform-blueprint.html': '12 min read',
+    'roadmap.html': '10 min read',
+    'open-letter.html': '8 min read',
+    'for-developers.html': '10 min read',
+    'for-creatives.html': '8 min read',
+    'welcome.html': '6 min read',
+    'governance.html': '10 min read',
+    'contributing.html': '7 min read',
+    'master-summary.html': '20 min read',
+    'cross-verification.html': '12 min read',
+    'readme.html': '5 min read',
+    # pest-control
+    'manufacturing-guide.html': '12 min read',
+    'product-formulations.html': '10 min read',
+    'research-literature.html': '15 min read',
+    'safety-data-sheets.html': '8 min read',
+    'implementation-timeline.html': '10 min read',
+    'manufacturing-setup.html': '12 min read',
+    'certification-roadmap.html': '10 min read',
+    'formulation-recipes.html': '8 min read',
+    'marketing-strategy.html': '10 min read',
+    'safety-testing.html': '8 min read',
+    'distribution-strategy.html': '8 min read',
+    # termite-farming
+    'market-analysis.html': '10 min read',
+    'farming-methods.html': '12 min read',
+    'processing-guide.html': '10 min read',
+    'species-profiles.html': '12 min read',
+    'implementation-summary.html': '8 min read',
+    'colony-monitoring.html': '10 min read',
+}
+
+
+def generate_index(files, section_name, output_path):
+    """Generate an index page for a section with rich card layout."""
+    cards = []
+    for f in files:
+        basename = os.path.splitext(os.path.basename(f))[0]
+        label = basename.replace('-', ' ').replace('_', ' ').title()
+        emoji = DOC_EMOJIS.get(f, '\U0001f4c4')
+        desc = DOC_DESCRIPTIONS.get(f, '')
+        reading_time = DOC_READING_TIMES.get(f, '')
+        cards.append(f'''
+    <a href="{f}" class="doc-item">
+      <span class="doc-icon">{emoji}</span>
+      <span class="doc-info">
+        <span class="doc-title">{label}</span>
+        <span class="doc-desc">{desc}</span>
+        <span class="doc-meta">{reading_time}</span>
+      </span>
+    </a>''')
+
+    cards_html = '\n'.join(cards)
 
     html = f'''<!DOCTYPE html>
 <html lang="en">
@@ -233,36 +262,37 @@ def generate_index(files, section_name, output_path):
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{section_name} &mdash; UNBOUNDED</title>
-<meta name="description" content="{section_name} — documents and resources from the UNBOUNDED project.">
+<meta name="description" content="{section_name} \u2014 documents and resources from the UNBOUNDED project.">
 <meta property="og:title" content="{section_name} &mdash; UNBOUNDED">
-<meta property="og:description" content="{section_name} — documents and resources from the UNBOUNDED project.">
+<meta property="og:description" content="{section_name} \u2014 documents and resources from the UNBOUNDED project.">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://raw.githubusercontent.com/Puronbo/termite-biotech-and-unbounded/main/unbounded/site/favicon.svg">
 <meta name="theme-color" content="#0e0e16">
 <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="stylesheet" href="../styles.css">
 <style>
-* {{ margin: 0; padding: 0; box-sizing: border-box; }}
-:root {{ --bg: #08080c; --surface: #0e0e16; --surface2: #14142e; --border: rgba(255,255,255,0.05); --accent: #7c3aed; --accent2: #ff6b35; --fg: #e0e0ec; --muted: #7878a0; --radius: 12px; }}
-body {{ font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--fg); min-height: 100vh; }}
-body::before {{ content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(ellipse at 50% 0%, rgba(124,58,237,0.06) 0%, transparent 70%); pointer-events: none; z-index: 0; }}
-.wrapper {{ max-width: 700px; margin: 0 auto; padding: 3rem 1.5rem; position: relative; z-index: 1; }}
-h1 {{ font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem; background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }}
+.doc-list {{ display: flex; flex-direction: column; gap: 0.75rem; }}
+.doc-item {{ display: flex; align-items: flex-start; gap: 1rem; padding: 1.25rem 1.5rem; background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: var(--radius); text-decoration: none; color: var(--fg); transition: all 0.3s ease; }}
+.doc-item:hover {{ background: rgba(255,255,255,0.05); border-color: var(--accent2); transform: translateX(4px); }}
+.doc-item .doc-icon {{ font-size: 1.5rem; flex-shrink: 0; margin-top: 0.1rem; }}
+.doc-item .doc-info {{ flex: 1; }}
+.doc-item .doc-title {{ font-weight: 600; font-size: 1rem; margin-bottom: 0.2rem; }}
+.doc-item .doc-desc {{ font-size: 0.8rem; color: var(--muted); line-height: 1.4; }}
+.doc-item .doc-meta {{ font-size: 0.7rem; color: var(--muted-dim); margin-top: 0.3rem; font-family: var(--font-mono); }}
 .sub {{ color: var(--muted); margin-bottom: 2rem; font-size: 0.95rem; }}
 .back {{ display: inline-block; margin-bottom: 1.5rem; color: var(--accent); text-decoration: none; font-size: 0.85rem; }}
 .back:hover {{ color: var(--accent2); }}
-table {{ width: 100%; border-collapse: collapse; }}
-td {{ padding: 0.75rem 0; border-bottom: 1px solid var(--border); }}
-td a {{ color: var(--fg); text-decoration: none; font-size: 0.95rem; display: block; transition: color 0.15s; }}
-td a:hover {{ color: var(--accent); }}
-td .desc {{ color: var(--muted); font-size: 0.8rem; margin-top: 0.15rem; }}
+.skip-link {{ position: absolute; top: -100%; left: 0; padding: 0.5rem 1rem; background: var(--accent); color: var(--bg); z-index: 1000; font-size: 0.85rem; text-decoration: none; }}
+.skip-link:focus {{ top: 0; }}
 </style>
 </head>
 <body>
-<div class="wrapper">
+<a href="#main-content" class="skip-link">Skip to content</a>
+<div class="container container-sm" id="main-content">
 <a class="back" href="../../portal.html">&#9664; Back to Portal</a>
 <h1>{section_name}</h1>
 <p class="sub">Browse documents in this section.</p>
-<table>{rows}</table>
+<div class="doc-list">{cards_html}</div>
 </div>
 </body>
 </html>'''
@@ -297,6 +327,35 @@ def main():
         (os.path.join(ub_root, 'WELCOME.md'), 'unbounded/welcome.html'),
         (os.path.join(ub_root, 'GOVERNANCE.md'), 'unbounded/governance.html'),
         (os.path.join(ub_root, 'CONTRIBUTING.md'), 'unbounded/contributing.html'),
+    ]
+
+    # termite-projects/natural-pest-control/
+    npc_dir = os.path.join(REPO_ROOT, 'termite-projects', 'natural-pest-control')
+    conversions += [
+        (os.path.join(npc_dir, 'README.md'), 'pest-control/readme.html'),
+        (os.path.join(npc_dir, 'docs', 'manufacturing-guide.md'), 'pest-control/manufacturing-guide.html'),
+        (os.path.join(npc_dir, 'docs', 'product-formulations.md'), 'pest-control/product-formulations.html'),
+        (os.path.join(npc_dir, 'docs', 'research-literature.md'), 'pest-control/research-literature.html'),
+        (os.path.join(npc_dir, 'docs', 'safety-data-sheets.md'), 'pest-control/safety-data-sheets.html'),
+        (os.path.join(npc_dir, 'implementation', '12-month-implementation-timeline.md'), 'pest-control/implementation-timeline.html'),
+        (os.path.join(npc_dir, 'implementation', 'manufacturing-setup-guide.md'), 'pest-control/manufacturing-setup.html'),
+        (os.path.join(npc_dir, 'implementation', 'fda-denr-certification-roadmap.md'), 'pest-control/certification-roadmap.html'),
+        (os.path.join(npc_dir, 'implementation', 'product-formulation-recipes.md'), 'pest-control/formulation-recipes.html'),
+        (os.path.join(npc_dir, 'implementation', 'marketing-strategy-brand-development.md'), 'pest-control/marketing-strategy.html'),
+        (os.path.join(npc_dir, 'implementation', 'safety-testing-protocols.md'), 'pest-control/safety-testing.html'),
+        (os.path.join(npc_dir, 'implementation', 'distribution-channel-strategy.md'), 'pest-control/distribution-strategy.html'),
+    ]
+
+    # termite-projects/termite-farming/
+    tf_dir = os.path.join(REPO_ROOT, 'termite-projects', 'termite-farming')
+    conversions += [
+        (os.path.join(tf_dir, 'README.md'), 'termite-farming/readme.html'),
+        (os.path.join(tf_dir, 'business', 'market-analysis.md'), 'termite-farming/market-analysis.html'),
+        (os.path.join(tf_dir, 'docs', 'farming-methods.md'), 'termite-farming/farming-methods.html'),
+        (os.path.join(tf_dir, 'docs', 'processing-guide.md'), 'termite-farming/processing-guide.html'),
+        (os.path.join(tf_dir, 'docs', 'species-profiles.md'), 'termite-farming/species-profiles.html'),
+        (os.path.join(tf_dir, 'implementation', 'IMPLEMENTATION-SUMMARY.md'), 'termite-farming/implementation-summary.html'),
+        (os.path.join(tf_dir, 'research', 'colony-monitoring-data.md'), 'termite-farming/colony-monitoring.html'),
     ]
 
     # termite-projects/ root
@@ -335,6 +394,8 @@ def main():
         ('calls', 'Calls to Action', ['open-letter.html', 'for-developers.html', 'for-creatives.html']),
         ('unbounded', 'UNBOUNDED Project', ['welcome.html', 'governance.html', 'contributing.html']),
         ('termite', 'Termite Research', ['master-summary.html', 'cross-verification.html', 'readme.html']),
+        ('pest-control', 'Natural Pest Control', ['readme.html', 'manufacturing-guide.html', 'product-formulations.html', 'research-literature.html', 'safety-data-sheets.html', 'implementation-timeline.html', 'manufacturing-setup.html', 'certification-roadmap.html', 'formulation-recipes.html', 'marketing-strategy.html', 'safety-testing.html', 'distribution-strategy.html']),
+        ('termite-farming', 'Termite Farming', ['readme.html', 'market-analysis.html', 'farming-methods.html', 'processing-guide.html', 'species-profiles.html', 'implementation-summary.html', 'colony-monitoring.html']),
     ]
     for section, name, files in index_configs:
         html = generate_index(files, name, section)
@@ -344,9 +405,20 @@ def main():
         print(f"  INDEX: {section}/index.html")
 
     # Generate root pages index
+    SECTION_META = {
+        'docs': ('\U0001f4c4', 'Core UNBOUNDED documentation including the manifesto, platform blueprint, and roadmap.'),
+        'calls': ('\U0001f4e2', 'Calls to action for developers, creatives, and the broader community.'),
+        'unbounded': ('\U0001f310', 'Project overview, governance model, and contribution guidelines.'),
+        'termite': ('\U0001f52c', 'Scientific research documentation from the Termite Research Initiative.'),
+        'pest-control': ('\U0001f9ea', 'Natural pest control solutions, manufacturing guides, and certification roadmaps.'),
+        'termite-farming': ('\U0001f41c', 'Termite farming methods, market analysis, and species profiles.'),
+    }
     all_sections = []
     for section, name, files in index_configs:
-        all_sections.append(f'<tr><td><a href="{section}/index.html">{name}</a></td><td style="color:var(--muted);font-size:0.85rem">{len(files)} documents</td></tr>')
+        emoji, desc = SECTION_META.get(section, ('\U0001f4c4', ''))
+        count = len(files)
+        count_label = f'{count} document{"s" if count != 1 else ""}'
+        all_sections.append(f'<tr><td><span style="font-size:1.2rem;margin-right:0.5rem">{emoji}</span><a href="{section}/index.html" style="font-size:1rem;font-weight:600">{name}</a><br><span style="color:var(--muted);font-size:0.8rem;line-height:1.4">{desc}</span></td><td style="color:var(--muted-dim);font-size:0.8rem;white-space:nowrap;vertical-align:middle;font-family:var(--font-mono)">{count_label}</td></tr>')
     rows = '\n'.join(all_sections)
     root_index = f'''<!DOCTYPE html>
 <html lang="en">
@@ -361,24 +433,21 @@ def main():
 <meta property="og:image" content="https://raw.githubusercontent.com/Puronbo/termite-biotech-and-unbounded/main/unbounded/site/favicon.svg">
 <meta name="theme-color" content="#0e0e16">
 <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="stylesheet" href="../styles.css">
 <style>
-* {{ margin: 0; padding: 0; box-sizing: border-box; }}
-:root {{ --bg: #08080c; --surface: #0e0e16; --border: rgba(255,255,255,0.05); --accent: #7c3aed; --accent2: #ff6b35; --fg: #e0e0ec; --muted: #7878a0; --radius: 12px; }}
-body {{ font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--fg); min-height: 100vh; }}
-body::before {{ content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(ellipse at 50% 0%, rgba(124,58,237,0.06) 0%, transparent 70%); pointer-events: none; z-index: 0; }}
-.wrapper {{ max-width: 700px; margin: 0 auto; padding: 3rem 1.5rem; position: relative; z-index: 1; }}
-h1 {{ font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem; background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }}
 .sub {{ color: var(--muted); margin-bottom: 2rem; font-size: 0.95rem; }}
 .back {{ display: inline-block; margin-bottom: 1.5rem; color: var(--accent); text-decoration: none; font-size: 0.85rem; }}
 .back:hover {{ color: var(--accent2); }}
-table {{ width: 100%; border-collapse: collapse; }}
-td {{ padding: 0.75rem 0; border-bottom: 1px solid var(--border); }}
-td a {{ color: var(--accent); text-decoration: none; font-size: 1rem; display: block; }}
+td {{ padding: 0.9rem 0; border-bottom: 1px solid var(--border); vertical-align: top; }}
+td a {{ color: var(--accent); text-decoration: none; }}
 td a:hover {{ color: var(--accent2); }}
+.skip-link {{ position: absolute; top: -100%; left: 0; padding: 0.5rem 1rem; background: var(--accent); color: var(--bg); z-index: 1000; font-size: 0.85rem; text-decoration: none; }}
+.skip-link:focus {{ top: 0; }}
 </style>
 </head>
 <body>
-<div class="wrapper">
+<a href="#main-content" class="skip-link">Skip to content</a>
+<div class="container container-sm" id="main-content">
 <a class="back" href="../portal.html">&#9664; Back to Portal</a>
 <h1>Documentation</h1>
 <p class="sub">All project documents, organized by section.</p>

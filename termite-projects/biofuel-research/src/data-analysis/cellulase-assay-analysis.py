@@ -118,40 +118,56 @@ class CellulaseAssayAnalyzer:
             print("No data available for analysis")
             return None
         
-        # Calculate mean absorbance for each concentration
         results = []
         
-        for idx, row in sample_data.iterrows():
-            enzyme_conc = row['Enzyme_Concentration_U_mL']
-            
-            # Get replicate values
-            replicates = [row['Replicate_1'], row['Replicate_2'], row['Replicate_3']]
-            mean_abs = np.mean(replicates)
-            std_abs = np.std(replicates)
-            
-            # Convert to glucose concentration using calibration curve
-            if self.calibration_curve:
-                glucose_conc = (mean_abs - self.calibration_curve['intercept']) / self.calibration_curve['slope']
-            else:
-                glucose_conc = row['Glucose_Concentration_mM']
-            
-            # Calculate specific activity (units/mg protein)
-            # Assuming 1 unit = 1 μmol glucose released per minute
-            # Assuming 30 minute reaction time
-            reaction_time = 30  # minutes
-            volume = 10  # mL
-            protein_conc = 1.0  # mg/mL (assumed)
-            
-            activity = (glucose_conc * volume) / (reaction_time * protein_conc * enzyme_conc)
-            
-            results.append({
-                'Enzyme_Concentration': enzyme_conc,
-                'Mean_Absorbance': mean_abs,
-                'Std_Absorbance': std_abs,
-                'Glucose_Concentration': glucose_conc,
-                'Specific_Activity': activity,
-                'CV_Percent': (std_abs / mean_abs) * 100 if mean_abs > 0 else 0
-            })
+        # Detect data format: sample (Enzyme_Concentration_U_mL) vs real (Isolate + Replicate)
+        if 'Enzyme_Concentration_U_mL' in sample_data.columns:
+            # Sample data format
+            for idx, row in sample_data.iterrows():
+                enzyme_conc = row['Enzyme_Concentration_U_mL']
+                replicates = [row['Replicate_1'], row['Replicate_2'], row['Replicate_3']]
+                mean_abs = np.mean(replicates)
+                std_abs = np.std(replicates)
+                if self.calibration_curve:
+                    glucose_conc = (mean_abs - self.calibration_curve['intercept']) / self.calibration_curve['slope']
+                else:
+                    glucose_conc = row['Glucose_Concentration_mM']
+                reaction_time = 30
+                volume = 10
+                protein_conc = 1.0
+                activity = (glucose_conc * volume) / (reaction_time * protein_conc * enzyme_conc) if enzyme_conc > 0 else 0
+                results.append({
+                    'Enzyme_Concentration': enzyme_conc,
+                    'Mean_Absorbance': mean_abs,
+                    'Std_Absorbance': std_abs,
+                    'Glucose_Concentration': glucose_conc,
+                    'Specific_Activity': activity,
+                    'CV_Percent': (std_abs / mean_abs) * 100 if mean_abs > 0 else 0
+                })
+        else:
+            # Real assay data — group by isolate
+            for isolate, group in sample_data.groupby('Isolate'):
+                abs_vals = group['Absorbance_540nm'].values
+                glucose_vals = group['Glucose_mM'].values
+                mean_abs = np.mean(abs_vals)
+                std_abs = np.std(abs_vals)
+                mean_glucose = np.mean(glucose_vals)
+                mean_activity = group['Activity_U_mL'].mean() if 'Activity_U_mL' in group.columns else 0
+                mean_protein = group['Protein_mg_mL'].mean() if 'Protein_mg_mL' in group.columns else 1.0
+                specific_activity = mean_activity / mean_protein if mean_protein > 0 else 0
+                temp = group['Temperature_C'].iloc[0]
+                ph = group['pH'].iloc[0]
+                results.append({
+                    'Isolate': isolate,
+                    'Mean_Absorbance': mean_abs,
+                    'Std_Absorbance': std_abs,
+                    'Glucose_Concentration_mM': mean_glucose,
+                    'Activity_U_mL': mean_activity,
+                    'Specific_Activity_U_mg': specific_activity,
+                    'Temperature_C': temp,
+                    'pH': ph,
+                    'CV_Percent': (std_abs / mean_abs) * 100 if mean_abs > 0 else 0
+                })
         
         self.results['cellulase_activity'] = pd.DataFrame(results)
         return self.results['cellulase_activity']
@@ -164,30 +180,47 @@ class CellulaseAssayAnalyzer:
         
         data = self.results['cellulase_activity']
         
-        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
-        
-        # Plot 1: Absorbance vs Enzyme Concentration
-        ax1.errorbar(data['Enzyme_Concentration'], data['Mean_Absorbance'], 
-                    yerr=data['Std_Absorbance'], fmt='o-', capsize=5, 
-                    color='blue', ecolor='lightblue', label='Mean ± SD')
-        ax1.set_xlabel('Enzyme Concentration (U/mL)')
-        ax1.set_ylabel('Absorbance at 540 nm')
-        ax1.set_title('Absorbance vs Enzyme Concentration')
-        ax1.grid(True, alpha=0.3)
-        ax1.legend()
-        
-        # Plot 2: Specific Activity vs Enzyme Concentration
-        ax2.plot(data['Enzyme_Concentration'], data['Specific_Activity'], 
-                'o-', color='green', label='Specific Activity')
-        ax2.set_xlabel('Enzyme Concentration (U/mL)')
-        ax2.set_ylabel('Specific Activity (U/mg protein)')
-        ax2.set_title('Specific Activity vs Enzyme Concentration')
-        ax2.grid(True, alpha=0.3)
-        ax2.legend()
-        
-        plt.tight_layout()
-        plt.savefig('activity_vs_concentration.png', dpi=300, bbox_inches='tight')
-        plt.show()
+        if 'Enzyme_Concentration' in data.columns:
+            fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
+            ax1.errorbar(data['Enzyme_Concentration'], data['Mean_Absorbance'],
+                        yerr=data['Std_Absorbance'], fmt='o-', capsize=5,
+                        color='blue', ecolor='lightblue', label='Mean ± SD')
+            ax1.set_xlabel('Enzyme Concentration (U/mL)')
+            ax1.set_ylabel('Absorbance at 540 nm')
+            ax1.set_title('Absorbance vs Enzyme Concentration')
+            ax1.grid(True, alpha=0.3)
+            ax1.legend()
+            ax2.plot(data['Enzyme_Concentration'], data['Specific_Activity'],
+                    'o-', color='green', label='Specific Activity')
+            ax2.set_xlabel('Enzyme Concentration (U/mL)')
+            ax2.set_ylabel('Specific Activity (U/mg protein)')
+            ax2.set_title('Specific Activity vs Enzyme Concentration')
+            ax2.grid(True, alpha=0.3)
+            ax2.legend()
+            plt.tight_layout()
+            plt.savefig('activity_vs_concentration.png', dpi=300, bbox_inches='tight')
+            plt.show()
+        else:
+            # Real data — bar chart by isolate
+            fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
+            isolates = data['Isolate']
+            x = np.arange(len(isolates))
+            ax1.bar(x, data['Mean_Absorbance'], yerr=data['Std_Absorbance'],
+                    capsize=5, color='skyblue', edgecolor='navy')
+            ax1.set_xticks(x)
+            ax1.set_xticklabels(isolates, rotation=45)
+            ax1.set_ylabel('Mean Absorbance (540 nm)')
+            ax1.set_title('Absorbance by Isolate')
+            ax1.grid(True, alpha=0.3, axis='y')
+            ax2.bar(x, data['Specific_Activity_U_mg'], color='lightgreen', edgecolor='darkgreen')
+            ax2.set_xticks(x)
+            ax2.set_xticklabels(isolates, rotation=45)
+            ax2.set_ylabel('Specific Activity (U/mg)')
+            ax2.set_title('Cellulase Activity by Isolate')
+            ax2.grid(True, alpha=0.3, axis='y')
+            plt.tight_layout()
+            plt.savefig('activity_vs_concentration.png', dpi=300, bbox_inches='tight')
+            plt.show()
     
     def calculate_kinetic_parameters(self):
         """Calculate kinetic parameters (Km, Vmax) from Michaelis-Menten plot."""
@@ -197,11 +230,13 @@ class CellulaseAssayAnalyzer:
         
         data = self.results['cellulase_activity']
         
-        # Michaelis-Menten equation: v = Vmax * [S] / (Km + [S])
+        if 'Enzyme_Concentration' not in data.columns:
+            print("Kinetic parameter estimation requires enzyme concentration series (sample data). Skipping for real isolate data.")
+            return
+        
         def michaelis_menten(x, Vmax, Km):
             return Vmax * x / (Km + x)
         
-        # Filter out zero concentration
         data_filtered = data[data['Enzyme_Concentration'] > 0]
         
         if len(data_filtered) < 3:
@@ -212,8 +247,7 @@ class CellulaseAssayAnalyzer:
         y_data = data_filtered['Specific_Activity']
         
         try:
-            # Fit Michaelis-Menten equation
-            popt, pcov = curve_fit(michaelis_menten, x_data, y_data, 
+            popt, pcov = curve_fit(michaelis_menten, x_data, y_data,
                                   p0=[max(y_data), np.median(x_data)])
             
             Vmax, Km = popt
@@ -224,18 +258,15 @@ class CellulaseAssayAnalyzer:
                 'Km': Km,
                 'Vmax_se': perr[0],
                 'Km_se': perr[1],
-                'R_squared': 1 - np.sum((y_data - michaelis_menten(x_data, *popt))**2) / 
+                'R_squared': 1 - np.sum((y_data - michaelis_menten(x_data, *popt))**2) /
                             np.sum((y_data - np.mean(y_data))**2)
             }
             
-            # Plot Michaelis-Menten curve
             plt.figure(figsize=(10, 6))
             plt.scatter(x_data, y_data, label='Experimental data', color='blue')
-            
             x_fit = np.linspace(min(x_data), max(x_data), 100)
-            plt.plot(x_fit, michaelis_menten(x_fit, *popt), 'r-', 
+            plt.plot(x_fit, michaelis_menten(x_fit, *popt), 'r-',
                     label=f'Michaelis-Menten fit\nVmax = {Vmax:.2f} U/mg\nKm = {Km:.2f} U/mL\n$R^2$ = {self.results["kinetic_parameters"]["R_squared"]:.4f}')
-            
             plt.xlabel('Enzyme Concentration (U/mL)')
             plt.ylabel('Specific Activity (U/mg protein)')
             plt.title('Michaelis-Menten Kinetics')
@@ -258,7 +289,7 @@ class CellulaseAssayAnalyzer:
             'analysis_date': datetime.now().isoformat(),
             'data_summary': {
                 'total_samples': len(self.data) if self.data is not None else 0,
-                'enzyme_concentrations_tested': list(self.data['Enzyme_Concentration_U_mL']) if self.data is not None else []
+                'columns': list(self.data.columns) if self.data is not None else []
             },
             'calibration_curve': self.calibration_curve,
             'kinetic_parameters': self.results.get('kinetic_parameters', {})

@@ -82,9 +82,16 @@ class ResearchDataVisualizer:
         
         # Plot 4: Source distribution
         ax4 = axes[1, 1]
-        source_counts = data['Source'].value_counts()
-        ax4.pie(source_counts.values, labels=source_counts.index, autopct='%1.1f%%')
-        ax4.set_title('Enzyme Sources Distribution')
+        if 'Source' in data.columns:
+            source_counts = data['Source'].value_counts()
+            ax4.pie(source_counts.values, labels=source_counts.index, autopct='%1.1f%%')
+            ax4.set_title('Enzyme Sources Distribution')
+        else:
+            ax4.bar(data['Enzyme_Type'], data['Activity_U_mg'], color='lightgreen')
+            ax4.set_xlabel('Enzyme Type')
+            ax4.set_ylabel('Activity (U/mg)')
+            ax4.set_title('Enzyme Activity by Type')
+            ax4.tick_params(axis='x', rotation=45)
         
         plt.tight_layout()
         plt.savefig(os.path.join(self.output_dir, 'enzyme_activity_comparison.png'), 
