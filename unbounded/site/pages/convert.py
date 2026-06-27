@@ -21,7 +21,7 @@ TEMPLATE = r'''<!DOCTYPE html>
 <meta name="theme-color" content="#0e0e16">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="icon" type="image/svg+xml" href="../favicon.svg">
 <title>{title}</title>
 <link rel="stylesheet" href="../styles.css">
@@ -30,7 +30,6 @@ h2 {{ font-size: 1.4rem; font-weight: 600; margin: 2rem 0 0.75rem; color: var(--
 h3 {{ font-size: 1.15rem; font-weight: 600; margin: 1.5rem 0 0.5rem; color: var(--accent3); }}
 em {{ color: var(--muted); }}
 a:focus-visible {{ outline: 2px solid var(--accent); outline-offset: 2px; }}
-.skip-link {{ position: absolute; top: -100%; left: 0; padding: 0.5rem 1rem; background: var(--accent); color: var(--bg); z-index: 1000; font-size: 0.85rem; text-decoration: none; }}
 .skip-link:focus {{ top: 0; }}
 </style>
 </head>
@@ -280,16 +279,15 @@ def generate_index(files, section_name, output_path):
 .doc-item .doc-desc {{ font-size: 0.8rem; color: var(--muted); line-height: 1.4; }}
 .doc-item .doc-meta {{ font-size: 0.7rem; color: var(--muted-dim); margin-top: 0.3rem; font-family: var(--font-mono); }}
 .sub {{ color: var(--muted); margin-bottom: 2rem; font-size: 0.95rem; }}
-.back {{ display: inline-block; margin-bottom: 1.5rem; color: var(--accent); text-decoration: none; font-size: 0.85rem; }}
-.back:hover {{ color: var(--accent2); }}
-.skip-link {{ position: absolute; top: -100%; left: 0; padding: 0.5rem 1rem; background: var(--accent); color: var(--bg); z-index: 1000; font-size: 0.85rem; text-decoration: none; }}
+.back-link {{ display: inline-block; margin-bottom: 1.5rem; color: var(--accent); text-decoration: none; font-size: 0.85rem; }}
+.back-link:hover {{ color: var(--accent2); }}
 .skip-link:focus {{ top: 0; }}
 </style>
 </head>
 <body>
 <a href="#main-content" class="skip-link">Skip to content</a>
 <div class="container container-sm" id="main-content">
-<a class="back" href="../../portal.html">&#9664; Back to Portal</a>
+<a class="back-link" href="../../portal.html">&#9664; Back to Portal</a>
 <h1>{section_name}</h1>
 <p class="sub">Browse documents in this section.</p>
 <div class="doc-list">{cards_html}</div>
@@ -436,19 +434,18 @@ def main():
 <link rel="stylesheet" href="../styles.css">
 <style>
 .sub {{ color: var(--muted); margin-bottom: 2rem; font-size: 0.95rem; }}
-.back {{ display: inline-block; margin-bottom: 1.5rem; color: var(--accent); text-decoration: none; font-size: 0.85rem; }}
-.back:hover {{ color: var(--accent2); }}
+.back-link {{ display: inline-block; margin-bottom: 1.5rem; color: var(--accent); text-decoration: none; font-size: 0.85rem; }}
+.back-link:hover {{ color: var(--accent2); }}
 td {{ padding: 0.9rem 0; border-bottom: 1px solid var(--border); vertical-align: top; }}
 td a {{ color: var(--accent); text-decoration: none; }}
 td a:hover {{ color: var(--accent2); }}
-.skip-link {{ position: absolute; top: -100%; left: 0; padding: 0.5rem 1rem; background: var(--accent); color: var(--bg); z-index: 1000; font-size: 0.85rem; text-decoration: none; }}
 .skip-link:focus {{ top: 0; }}
 </style>
 </head>
 <body>
 <a href="#main-content" class="skip-link">Skip to content</a>
 <div class="container container-sm" id="main-content">
-<a class="back" href="../portal.html">&#9664; Back to Portal</a>
+<a class="back-link" href="../portal.html">&#9664; Back to Portal</a>
 <h1>Documentation</h1>
 <p class="sub">All project documents, organized by section.</p>
 <table>{rows}</table>

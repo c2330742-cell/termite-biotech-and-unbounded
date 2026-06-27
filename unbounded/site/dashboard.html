@@ -295,22 +295,22 @@ function max(arr) { return Math.max(...arr); }
 function min(arr) { return Math.min(...arr); }
 
 const chartConfig = {
-type: 'scatter',
-data: { datasets: [] },
-options: {
-responsive: true, maintainAspectRatio: false,
-animation: { duration: 600, easing: 'easeOutQuart' },
-transitions: { show: { animations: { x: { from: 0 }, y: { from: 0 } } } },
-plugins: {
-legend: { labels: { color: '#94a3b8', font: { size: 11 }, boxWidth: 14, padding: 12, usePointStyle: true }, onClick: function(e, legendItem, legend) { const index = legendItem.datasetIndex; const ci = legend.chart; if (ci.isDatasetVisible(index)) { ci.hide(index); legendItem.hidden = true; } else { ci.show(index); legendItem.hidden = false; } } },
-tooltip: { backgroundColor: '#0e0e16', titleColor: '#e2e8f0', bodyColor: '#94a3b8', borderColor: '#1e1e3a', borderWidth: 1, cornerRadius: 8, padding: 10 }
-},
-datalabels: { display: false }
-},
-scales: {
-x: { grid: { color: 'rgba(30,30,58,0.6)' }, ticks: { color: '#94a3b8', font: { size: 11 } }, title: { color: '#94a3b8', font: { size: 12 } } },
-y: { grid: { color: 'rgba(30,30,58,0.6)' }, ticks: { color: '#94a3b8', font: { size: 11 } }, title: { color: '#94a3b8', font: { size: 12 } } }
-}
+  type: 'scatter',
+  data: { datasets: [] },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    animation: { duration: 600, easing: 'easeOutQuart' },
+    transitions: { show: { animations: { x: { from: 0 }, y: { from: 0 } } } },
+    plugins: {
+      legend: { labels: { color: '#94a3b8', font: { size: 11 }, boxWidth: 14, padding: 12, usePointStyle: true }, onClick: function(e, legendItem, legend) { const index = legendItem.datasetIndex; const ci = legend.chart; if (ci.isDatasetVisible(index)) { ci.hide(index); legendItem.hidden = true; } else { ci.show(index); legendItem.hidden = false; } } },
+      tooltip: { backgroundColor: '#0e0e16', titleColor: '#e2e8f0', bodyColor: '#94a3b8', borderColor: '#1e1e3a', borderWidth: 1, cornerRadius: 8, padding: 10 }
+    },
+    datalabels: { display: false },
+    scales: {
+      x: { grid: { color: 'rgba(30,30,58,0.6)' }, ticks: { color: '#94a3b8', font: { size: 11 } }, title: { color: '#94a3b8', font: { size: 12 } } },
+      y: { grid: { color: 'rgba(30,30,58,0.6)' }, ticks: { color: '#94a3b8', font: { size: 11 } }, title: { color: '#94a3b8', font: { size: 12 } } }
+    }
+  }
 }
 function getCtx(id) { return document.getElementById(id).getContext('2d'); }
 
@@ -413,15 +413,15 @@ borderWidth: 2,
 borderRadius: 4,
 }]
 },
-options: {
-...chartConfig,
-plugins: { ...chartConfig.options.plugins, datalabels: { display: false } },
-scales: {
-x: { ...chartConfig.options.scales.x, title: { display: true, text: 'Isolate', color: '#94a3b8' } },
-y: { ...chartConfig.options.scales.y, title: { display: true, text: 'Specific Activity (U/mg)', color: '#94a3b8' }, beginAtZero: true }
-},
-parsing: false,
-},
+    options: {
+      ...chartConfig.options,
+      plugins: { ...chartConfig.options.plugins, datalabels: { display: false } },
+      scales: {
+        x: { ...chartConfig.options.scales.x, title: { display: true, text: 'Isolate', color: '#94a3b8' } },
+        y: { ...chartConfig.options.scales.y, title: { display: true, text: 'Specific Activity (U/mg)', color: '#94a3b8' }, beginAtZero: true }
+      },
+      parsing: false,
+    },
 plugins: [{
 id: 'errorBars',
 afterDraw(chart) {
@@ -465,14 +465,14 @@ tempSets[d.isolate].data.push({ x: d.x, y: d.y });
 const c2 = new Chart(getCtx('chart2'), {
 type: 'scatter',
 data: { datasets: Object.values(tempSets) },
-options: {
-...chartConfig,
-plugins: { ...chartConfig.options.plugins, datalabels: { display: false } },
-scales: {
-x: { ...chartConfig.options.scales.x, title: { display: true, text: 'Temperature (C)', color: '#94a3b8' } },
-y: { ...chartConfig.options.scales.y, title: { display: true, text: 'Activity (U/mL)', color: '#94a3b8' }, beginAtZero: true }
-}
-}
+        options: {
+          ...chartConfig.options,
+          plugins: { ...chartConfig.options.plugins, datalabels: { display: false } },
+          scales: {
+            x: { ...chartConfig.options.scales.x, title: { display: true, text: 'Temperature (C)', color: '#94a3b8' } },
+            y: { ...chartConfig.options.scales.y, title: { display: true, text: 'Activity (U/mL)', color: '#94a3b8' }, beginAtZero: true }
+          }
+        }
 });
 chartInstances.c1 = c1; chartInstances.c2 = c2;
 
@@ -516,17 +516,17 @@ tension: 0.15,
 fill: false
 }))
 },
-options: {
-...chartConfig,
-plugins: { ...chartConfig.options.plugins, datalabels: { display: false } },
-scales: {
-x: { ...chartConfig.options.scales.x, title: { display: true, text: 'Time (h)', color: '#94a3b8' } },
-y: { ...chartConfig.options.scales.y, title: { display: true, text: 'Ethanol (g/L)', color: '#94a3b8' }, beginAtZero: true }
-}
-}
-});
+      options: {
+        ...chartConfig.options,
+        plugins: { ...chartConfig.options.plugins, datalabels: { display: false } },
+        scales: {
+          x: { ...chartConfig.options.scales.x, title: { display: true, text: 'Time (h)', color: '#94a3b8' } },
+          y: { ...chartConfig.options.scales.y, title: { display: true, text: 'Ethanol (g/L)', color: '#94a3b8' }, beginAtZero: true }
+        }
+      }
+    });
 
-const bioEthanol = data.rows.map(r => ({ x: num(r.Biomass_g_L), y: num(r.Ethanol_g_L), strain: r.Strain }));
+    const bioEthanol = data.rows.map(r => ({ x: num(r.Biomass_g_L), y: num(r.Ethanol_g_L), strain: r.Strain }));
 const bioSets = {};
 bioEthanol.forEach(d => {
 if (!bioSets[d.strain]) bioSets[d.strain] = { label: d.strain, data: [], backgroundColor: 'transparent', borderColor: COLORS_LIST[Object.keys(bioSets).length % COLORS_LIST.length], pointBackgroundColor: COLORS_LIST[Object.keys(bioSets).length % COLORS_LIST.length] };
@@ -536,16 +536,16 @@ bioSets[d.strain].data.push({ x: d.x, y: d.y });
 const c2 = new Chart(getCtx('chart2'), {
 type: 'scatter',
 data: { datasets: Object.values(bioSets) },
-options: {
-...chartConfig,
-plugins: { ...chartConfig.options.plugins, datalabels: { display: false } },
-scales: {
-x: { ...chartConfig.options.scales.x, title: { display: true, text: 'Biomass (g/L)', color: '#94a3b8' } },
-y: { ...chartConfig.options.scales.y, title: { display: true, text: 'Ethanol (g/L)', color: '#94a3b8' }, beginAtZero: true }
-}
-}
-});
-chartInstances.c1 = c1; chartInstances.c2 = c2;
+      options: {
+        ...chartConfig.options,
+        plugins: { ...chartConfig.options.plugins, datalabels: { display: false } },
+        scales: {
+          x: { ...chartConfig.options.scales.x, title: { display: true, text: 'Biomass (g/L)', color: '#94a3b8' } },
+          y: { ...chartConfig.options.scales.y, title: { display: true, text: 'Ethanol (g/L)', color: '#94a3b8' }, beginAtZero: true }
+        }
+      }
+    });
+    chartInstances.c1 = c1; chartInstances.c2 = c2;
 
 const maxEthanol = max(data.rows.map(r => num(r.Ethanol_g_L)));
 const bestStrain = Object.keys(strains).reduce((a, b) => {
@@ -593,16 +593,16 @@ borderWidth: 2,
 borderRadius: 4,
 }))
 },
-options: {
-...chartConfig,
-plugins: { ...chartConfig.options.plugins, datalabels: { display: false } },
-scales: {
-x: { ...chartConfig.options.scales.x, title: { display: true, text: 'Substrate', color: '#94a3b8' } },
-y: { ...chartConfig.options.scales.y, title: { display: true, text: 'Conversion (%)', color: '#94a3b8' }, beginAtZero: true, max: 100 }
-}
-}
-});
-chartInstances.c1 = c1;
+      options: {
+        ...chartConfig.options,
+        plugins: { ...chartConfig.options.plugins, datalabels: { display: false } },
+        scales: {
+          x: { ...chartConfig.options.scales.x, title: { display: true, text: 'Substrate', color: '#94a3b8' } },
+          y: { ...chartConfig.options.scales.y, title: { display: true, text: 'Conversion (%)', color: '#94a3b8' }, beginAtZero: true, max: 100 }
+        }
+      }
+    });
+    chartInstances.c1 = c1;
 
 const subConv = {};
 data.rows.forEach(r => {
@@ -644,16 +644,16 @@ borderWidth: 2,
 borderRadius: 4,
 }]
 },
-options: {
-...chartConfig,
-plugins: { ...chartConfig.options.plugins, datalabels: { display: false } },
-scales: {
-x: { ...chartConfig.options.scales.x, title: { display: true, text: 'Substrate', color: '#94a3b8' } },
-y: { ...chartConfig.options.scales.y, title: { display: true, text: 'Glucose (g/L)', color: '#94a3b8' }, beginAtZero: true }
-}
-}
-});
-chartInstances.c2 = c2;
+      options: {
+        ...chartConfig.options,
+        plugins: { ...chartConfig.options.plugins, datalabels: { display: false } },
+        scales: {
+          x: { ...chartConfig.options.scales.x, title: { display: true, text: 'Substrate', color: '#94a3b8' } },
+          y: { ...chartConfig.options.scales.y, title: { display: true, text: 'Glucose (g/L)', color: '#94a3b8' }, beginAtZero: true }
+        }
+      }
+    });
+    chartInstances.c2 = c2;
 
 return convStats;
 }
@@ -685,20 +685,20 @@ fill: false,
 tension: 0,
 }]
 },
-options: {
-...chartConfig,
-plugins: {
-...chartConfig.options.plugins,
-datalabels: { display: false },
-},
-scales: {
-x: { ...chartConfig.options.scales.x, title: { display: true, text: 'Glucose (mM)', color: '#94a3b8' } },
-y: { ...chartConfig.options.scales.y, title: { display: true, text: 'Absorbance (540 nm)', color: '#94a3b8' }, beginAtZero: true }
-}
-}
-});
+      options: {
+        ...chartConfig.options,
+        plugins: {
+          ...chartConfig.options.plugins,
+          datalabels: { display: false },
+        },
+        scales: {
+          x: { ...chartConfig.options.scales.x, title: { display: true, text: 'Glucose (mM)', color: '#94a3b8' } },
+          y: { ...chartConfig.options.scales.y, title: { display: true, text: 'Absorbance (540 nm)', color: '#94a3b8' }, beginAtZero: true }
+        }
+      }
+    });
 
-document.getElementById('chartTitle1').textContent = 'Glucose Calibration Curve';
+    document.getElementById('chartTitle1').textContent = 'Glucose Calibration Curve';
 
 const glucose = data.rows.map(r => num(r.Glucose_mM));
 const abs = data.rows.map(r => num(r.Absorbance_540nm));
@@ -714,16 +714,16 @@ pointRadius: 5,
 pointHoverRadius: 7,
 }]
 },
-options: {
-...chartConfig,
-plugins: { ...chartConfig.options.plugins, datalabels: { display: false } },
-scales: {
-x: { ...chartConfig.options.scales.x, title: { display: true, text: 'Glucose (mM)', color: '#94a3b8' } },
-y: { ...chartConfig.options.scales.y, title: { display: true, text: 'Residual Absorbance (540 nm)', color: '#94a3b8' }, beginAtZero: true }
-}
-}
-});
-chartInstances.c1 = c1; chartInstances.c2 = c2;
+      options: {
+        ...chartConfig.options,
+        plugins: { ...chartConfig.options.plugins, datalabels: { display: false } },
+        scales: {
+          x: { ...chartConfig.options.scales.x, title: { display: true, text: 'Glucose (mM)', color: '#94a3b8' } },
+          y: { ...chartConfig.options.scales.y, title: { display: true, text: 'Residual Absorbance (540 nm)', color: '#94a3b8' }, beginAtZero: true }
+        }
+      }
+    });
+    chartInstances.c1 = c1; chartInstances.c2 = c2;
 
 document.getElementById('chartTitle2').textContent = 'Residual Plot';
 

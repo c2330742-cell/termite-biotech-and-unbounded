@@ -71,7 +71,7 @@
   font-weight: 500;
   letter-spacing: 0.03em;
   border-radius: 8px;
-  transition: all 0.3s ease;
+  transition: color 0.3s ease, background 0.3s ease;
   white-space: nowrap;
   cursor: pointer;
   border: none;
@@ -103,7 +103,7 @@
   opacity: 0;
   width: 0;
   overflow: hidden;
-  transition: all 0.3s ease;
+  transition: opacity 0.3s ease;
 }
 
 #section-nav:hover .nav-item .nav-label {
@@ -254,7 +254,7 @@
   font-size: 0.8rem;
   color: var(--muted);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
   text-decoration: none;
 }
 .daily-discovery:hover {
@@ -510,7 +510,7 @@
   border: 1px solid var(--border);
   border-radius: 16px;
   padding: 2rem;
-  transition: all 0.4s ease;
+  transition: transform 0.4s ease, border-color 0.4s ease;
   cursor: pointer;
   position: relative;
   overflow: hidden;
@@ -582,7 +582,7 @@
   border-radius: 10px;
   text-decoration: none;
   color: var(--fg);
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease, border-color 0.3s ease, background 0.3s ease;
 }
 
 .explore-item:hover {
@@ -644,7 +644,7 @@
   font-weight: 700;
   border-radius: 8px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
   font-family: 'Inter', sans-serif;
 }
 
@@ -671,7 +671,7 @@
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 1.25rem 1.5rem;
-  transition: all 0.3s ease;
+  transition: border-color 0.3s ease, background 0.3s ease;
   animation: fadeInUp 0.5s ease both;
   transform-origin: top center;
 }
@@ -738,7 +738,7 @@
   font-size: 0.75rem;
   border-radius: 6px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: color 0.3s ease, border-color 0.3s ease;
   font-family: 'Inter', sans-serif;
 }
 
@@ -1354,22 +1354,25 @@
     width: 38px;
     height: 38px;
     font-size: 0.95rem;
+    z-index: 52;
   }
 
   #guide-btn {
-    bottom: 16px;
+    bottom: 18px;
     right: 16px;
     width: 38px;
     height: 38px;
     font-size: 0.95rem;
+    z-index: 52;
   }
 
   #search-toggle {
-    bottom: 122px;
+    bottom: 130px;
     right: 16px;
     width: 36px;
     height: 36px;
     font-size: 1rem;
+    z-index: 51;
   }
 
   #random-btn {
@@ -1457,11 +1460,12 @@
 
 @media (max-width: 480px) {
   #scroll-top-btn {
-    bottom: 112px;
+    bottom: 80px;
     right: 16px;
     width: 34px;
     height: 34px;
     font-size: 0.9rem;
+    z-index: 51;
   }
 }
 
@@ -1531,6 +1535,9 @@
     min-width: 180px;
   }
 }
+/* ─── WILL-ANIMATE HINT ─── */
+.garden-entry, .gift-card, .explore-item { will-change: transform, opacity; }
+
 @media print {
   body { background: #fff !important; color: #000 !important; }
   #section-nav, #sound-toggle, #search-toggle, #guide-btn, #random-btn, #browse-docs-btn, #guide-popup, #keyboard-help, #progress-bar, #stars-canvas, #particle-canvas, #search-overlay, .welcome-overlay, .confetti-container, .network-tooltip, #scroll-top-btn, #seed-modal, .modal-overlay, .install-prompt, .offline-indicator, .daily-discovery, .seed-share-btn, .garden-clear-btn { display: none !important; }
@@ -2040,8 +2047,12 @@
   let stars = [];
   let shootingStars = [];
   let mouseX = 0, mouseY = 0;
-  starCanvas.width = window.innerWidth;
-  starCanvas.height = window.innerHeight;
+  var starDpr = window.devicePixelRatio || 1;
+  starCanvas.width = window.innerWidth * starDpr;
+  starCanvas.height = window.innerHeight * starDpr;
+  starCanvas.style.width = window.innerWidth + 'px';
+  starCanvas.style.height = window.innerHeight + 'px';
+  starCtx.setTransform(starDpr, 0, 0, starDpr, 0, 0);
 
   const starColors = [
     { r: 255, g: 255, b: 255 },
@@ -2052,9 +2063,9 @@
 
   function initStars() {
     stars = [];
-    const w = starCanvas.width;
-    const h = starCanvas.height;
-    const count = Math.floor((w * h) / 5000);
+    const w = starCanvas.width / starDpr;
+    const h = starCanvas.height / starDpr;
+    const count = Math.min(Math.floor((w * h) / 5000), 600);
     for (let i = 0; i < count; i++) {
       const c = starColors[Math.floor(Math.random() * starColors.length)];
       stars.push({
@@ -2071,8 +2082,8 @@
   }
 
   function spawnShootingStar() {
-    const w = starCanvas.width;
-    const h = starCanvas.height;
+    const w = starCanvas.width / starDpr;
+    const h = starCanvas.height / starDpr;
     const angle = Math.PI * 0.25 + Math.random() * Math.PI * 0.15;
     const speed = 4 + Math.random() * 6;
     shootingStars.push({
@@ -2086,29 +2097,33 @@
     });
   }
 
+  var lastTime;
   let shootingStarTimer = 0;
 
-  function updateShootingStars() {
-    shootingStarTimer++;
+  function updateShootingStars(dt) {
+    if (typeof dt === 'undefined') dt = 1;
+    shootingStarTimer += 1 * dt;
     if (shootingStarTimer > 120 + Math.random() * 200) {
       spawnShootingStar();
       shootingStarTimer = 0;
     }
     for (let i = shootingStars.length - 1; i >= 0; i--) {
       const s = shootingStars[i];
-      s.x += s.vx;
-      s.y += s.vy;
-      s.life++;
-      if (s.life >= s.maxLife || s.x > starCanvas.width + 50 || s.y > starCanvas.height + 50) {
+      s.x += s.vx * dt;
+      s.y += s.vy * dt;
+      s.life += 1 * dt;
+      if (s.life >= s.maxLife || s.x > starCanvas.width / starDpr + 50 || s.y > starCanvas.height / starDpr + 50) {
         shootingStars.splice(i, 1);
       }
     }
   }
 
   function drawStars(time) {
-    starCtx.clearRect(0, 0, starCanvas.width, starCanvas.height);
-    const cx = starCanvas.width / 2;
-    const cy = starCanvas.height / 2;
+    var cssW = starCanvas.width / starDpr;
+    var cssH = starCanvas.height / starDpr;
+    starCtx.clearRect(0, 0, cssW, cssH);
+    const cx = cssW / 2;
+    const cy = cssH / 2;
     const px = (mouseX - cx) / cx * 8;
     const py = (mouseY - cy) / cy * 8;
 
@@ -2407,6 +2422,8 @@
   netNodes.forEach(function(n) { nodeMap[n.id] = n; });
 
   let netHovered = null;
+  var netDirty = true;
+  var netLastDraw = 0;
   function resizeNetCanvas() {
     if (!netCanvas || !netCtx) return;
     const rect = netCanvas.getBoundingClientRect();
@@ -2545,6 +2562,7 @@
     const hit = hitTestNetNodes(pos);
     if (hit) {
       netHovered = hit.id;
+      netDirty = true;
       netTooltip.textContent = '';
       var ttName = document.createElement('div'); ttName.className = 'tt-name'; ttName.textContent = hit.label.replace('\n',' ');
       var ttDesc = document.createElement('div'); ttDesc.className = 'tt-desc'; ttDesc.textContent = nodeDescriptions[hit.id] || '';
@@ -2556,12 +2574,14 @@
       netTooltip.style.top = Math.min(ty, window.innerHeight - 80) + 'px';
     } else {
       netHovered = null;
+      netDirty = true;
       netTooltip.classList.remove('visible');
     }
   });
 
   netCanvas.addEventListener('mouseleave', function() {
     netHovered = null;
+    netDirty = true;
     netTooltip.classList.remove('visible');
   });
 
@@ -2572,6 +2592,7 @@
     const hit = hitTestNetNodes(pos);
     if (hit) {
       netHovered = hit.id;
+      netDirty = true;
       netTooltip.textContent = '';
       var ttName = document.createElement('div'); ttName.className = 'tt-name'; ttName.textContent = hit.label.replace('\n',' ');
       var ttDesc = document.createElement('div'); ttDesc.className = 'tt-desc'; ttDesc.textContent = nodeDescriptions[hit.id] || '';
@@ -2586,6 +2607,7 @@
 
   netCanvas.addEventListener('touchend', function() {
     netHovered = null;
+    netDirty = true;
     netTooltip.classList.remove('visible');
   });
 
@@ -2771,6 +2793,7 @@
       entries.forEach(function(entry) {
         if (entry.isIntersecting) {
           entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
         }
       });
     }, { threshold: 0.1 });
@@ -2801,12 +2824,20 @@
 
   /* ─── RESIZE HANDLING ─── */
   const handleResize = debounce(function() {
-    starCanvas.width = window.innerWidth;
-    starCanvas.height = window.innerHeight;
+    starDpr = window.devicePixelRatio || 1;
+    starCanvas.width = window.innerWidth * starDpr;
+    starCanvas.height = window.innerHeight * starDpr;
+    starCanvas.style.width = window.innerWidth + 'px';
+    starCanvas.style.height = window.innerHeight + 'px';
+    starCtx.setTransform(starDpr, 0, 0, starDpr, 0, 0);
     initStars();
     initNetwork();
-    particleCanvas.width = window.innerWidth;
-    particleCanvas.height = window.innerHeight;
+    particleDpr = window.devicePixelRatio || 1;
+    particleCanvas.width = window.innerWidth * particleDpr;
+    particleCanvas.height = window.innerHeight * particleDpr;
+    particleCanvas.style.width = window.innerWidth + 'px';
+    particleCanvas.style.height = window.innerHeight + 'px';
+    particleCtx.setTransform(particleDpr, 0, 0, particleDpr, 0, 0);
     initParticles();
   }, 150);
 
@@ -2930,9 +2961,18 @@
   updateActiveSection();
   updateProgress();
   function mainLoop(time) {
+    if (typeof lastTime === 'undefined') lastTime = time;
+    var dt = (time - lastTime) / 16.67;
+    lastTime = time;
     drawStars(time);
-    updateShootingStars();
-    if (netCanvas) drawNetwork(time);
+    updateShootingStars(dt);
+    if (netCanvas) {
+      if (netDirty || time - netLastDraw > 250) {
+        drawNetwork(time);
+        netLastDraw = time;
+        netDirty = false;
+      }
+    }
     drawParticles();
     requestAnimationFrame(mainLoop);
   }
@@ -2942,8 +2982,12 @@
   const particleCanvas = document.getElementById('particle-canvas');
   const particleCtx = particleCanvas ? particleCanvas.getContext('2d') : null;
 
-  particleCanvas.width = window.innerWidth;
-  particleCanvas.height = window.innerHeight;
+  var particleDpr = window.devicePixelRatio || 1;
+  particleCanvas.width = window.innerWidth * particleDpr;
+  particleCanvas.height = window.innerHeight * particleDpr;
+  particleCanvas.style.width = window.innerWidth + 'px';
+  particleCanvas.style.height = window.innerHeight + 'px';
+  particleCtx.setTransform(particleDpr, 0, 0, particleDpr, 0, 0);
 
   const PARTICLES = [];
   const PARTICLE_COUNT = 90;
@@ -2951,8 +2995,8 @@
 
   function initParticles() {
     PARTICLES.length = 0;
-    const w = particleCanvas.width;
-    const h = particleCanvas.height;
+    const w = particleCanvas.width / particleDpr;
+    const h = particleCanvas.height / particleDpr;
     for (let i = 0; i < PARTICLE_COUNT; i++) {
       PARTICLES.push({
         x: Math.random() * w,
@@ -2971,8 +3015,8 @@
 
 
   function drawParticles() {
-    const w = particleCanvas.width;
-    const h = particleCanvas.height;
+    const w = particleCanvas.width / particleDpr;
+    const h = particleCanvas.height / particleDpr;
     particleCtx.clearRect(0, 0, w, h);
 
     const cx = w / 2, cy = h / 2;
@@ -3034,11 +3078,6 @@
     ? 'You are visitor #' + gd.length
     : 'Be the first to leave a mark';
 
-  /* ─── PARTICLE ANIMATION LOOP ─── */
-  function particleLoop() {
-    drawParticles();
-  }
-
   /* ─── RANDOM EXPLORE ─── */
   document.getElementById('random-btn').addEventListener('click', function() {
     var pages = [
@@ -3067,60 +3106,107 @@
   });
 
   /* ─── SHARED GARDEN (SUPABASE) ─── */
+  function fetchWithTimeout(url, options, timeoutMs) {
+    return new Promise(function(resolve, reject) {
+      var timer = setTimeout(function() { reject(new Error('timeout')); }, timeoutMs || 10000);
+      fetch(url, options).then(function(r) {
+        clearTimeout(timer);
+        resolve(r);
+      })['catch'](function(e) {
+        clearTimeout(timer);
+        reject(e);
+      });
+    });
+  }
+
+  function renderSharedEntries(entries) {
+    var sharedList = document.getElementById('shared-entries');
+    var sharedStatus = document.getElementById('shared-status');
+    var sharedCount = document.getElementById('shared-count');
+    if (!sharedList) return;
+    sharedStatus.className = '';
+    if (!Array.isArray(entries) || entries.length === 0) {
+      sharedStatus.textContent = 'No shared entries yet. Be the first.';
+      return;
+    }
+    sharedCount.textContent = entries.length + ' traveler' + (entries.length !== 1 ? 's' : '') + ' from around the world';
+    sharedStatus.style.display = 'none';
+    entries.forEach(function(entry, i) {
+      var div = document.createElement('div');
+      div.className = 'garden-entry';
+      div.style.animationDelay = (i * 0.06) + 's';
+      div.innerHTML =
+        '<div class="entry-header">' +
+          '<span class="entry-seed">' + escapeHtml(entry.seed || '🌱') + '</span>' +
+          '<span class="entry-name">' + escapeHtml(entry.name || 'Anonymous') + '</span>' +
+          '<span class="entry-date">' + formatDate(entry.created_at) + '</span>' +
+        '</div>' +
+        '<div class="entry-message">' + escapeHtml(entry.message || '') + '</div>';
+      var shareBtn = document.createElement('button');
+      shareBtn.className = 'seed-share-btn';
+      shareBtn.textContent = '✦ Share this seed';
+      shareBtn.addEventListener('click', function() {
+        openSeedModal(entry.seed || '🌱', entry.name || 'Anonymous', entry.message || '');
+      });
+      div.appendChild(shareBtn);
+      sharedList.appendChild(div);
+    });
+  }
+
   (function() {
     var sharedList = document.getElementById('shared-entries');
     var sharedStatus = document.getElementById('shared-status');
     var sharedCount = document.getElementById('shared-count');
     if (!sharedList) return;
 
-    sharedStatus.className = 'loading';
-    sharedStatus.textContent = 'Loading shared garden';
-
-    Promise.all([
-      sbGet('guestbook_entries', {order: 'created_at.desc', limit: 50}),
-      fetch(SB_URL + '/rest/v1/guestbook_entries?select=count', {headers: SB_HEADERS}).then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); }),
-      fetch(SB_URL + '/rest/v1/page_views?select=count', {headers: SB_HEADERS}).then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
-    ]).then(function(results) {
-      sharedStatus.className = '';
-      var entries = results[0];
-      var gCount = results[1] && results[1][0] ? results[1][0].count : 0;
-      var pCount = results[2] && results[2][0] ? results[2][0].count : 0;
-
-      var statsEl = document.getElementById('site-stats');
-      if (statsEl) statsEl.textContent = (gCount || '0') + ' total entries · ' + (pCount || '0') + ' page views';
-
-      if (!Array.isArray(entries) || entries.length === 0) {
-        sharedStatus.textContent = 'No shared entries yet. Be the first.';
-        return;
+    var cachedEntries = null;
+    try {
+      var cached = localStorage.getItem('unbounded-garden-cache');
+      if (cached) {
+        var parsed = JSON.parse(cached);
+        if (Date.now() - parsed.ts < 300000) {
+          cachedEntries = parsed.data;
+        }
       }
-      sharedCount.textContent = entries.length + ' traveler' + (entries.length !== 1 ? 's' : '') + ' from around the world';
-      sharedStatus.style.display = 'none';
-      entries.forEach(function(entry, i) {
-        var div = document.createElement('div');
-        div.className = 'garden-entry';
-        div.style.animationDelay = (i * 0.06) + 's';
-        div.innerHTML =
-          '<div class="entry-header">' +
-            '<span class="entry-seed">' + escapeHtml(entry.seed || '🌱') + '</span>' +
-            '<span class="entry-name">' + escapeHtml(entry.name || 'Anonymous') + '</span>' +
-            '<span class="entry-date">' + formatDate(entry.created_at) + '</span>' +
-          '</div>' +
-          '<div class="entry-message">' + escapeHtml(entry.message || '') + '</div>';
-        var shareBtn = document.createElement('button');
-        shareBtn.className = 'seed-share-btn';
-        shareBtn.textContent = '✦ Share this seed';
-        shareBtn.addEventListener('click', function() {
-          openSeedModal(entry.seed || '🌱', entry.name || 'Anonymous', entry.message || '');
-        });
-        div.appendChild(shareBtn);
-        sharedList.appendChild(div);
-      });
-    }).catch(function() {
+    } catch(e) {}
+
+    if (cachedEntries) {
       sharedStatus.className = '';
-      sharedStatus.textContent = 'Could not reach the shared garden.';
-      var statsEl = document.getElementById('site-stats');
-      if (statsEl) statsEl.textContent = 'Garden stats unavailable';
-    });
+      sharedStatus.textContent = 'Loaded from cache — refreshing';
+      renderSharedEntries(cachedEntries);
+    } else {
+      sharedStatus.className = 'loading';
+      sharedStatus.textContent = 'Loading shared garden';
+    }
+
+    function refreshSharedGarden() {
+      Promise.all([
+        fetchWithTimeout(SB_URL + '/rest/v1/guestbook_entries?select=*&order=created_at.desc&limit=50', {headers: SB_HEADERS}).then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); }),
+        fetchWithTimeout(SB_URL + '/rest/v1/guestbook_entries?select=count', {headers: SB_HEADERS}).then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); }),
+        fetchWithTimeout(SB_URL + '/rest/v1/page_views?select=count', {headers: SB_HEADERS}).then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      ]).then(function(results) {
+        var entries = results[0];
+        var gCount = results[1] && results[1][0] ? results[1][0].count : 0;
+        var pCount = results[2] && results[2][0] ? results[2][0].count : 0;
+
+        var statsEl = document.getElementById('site-stats');
+        if (statsEl) statsEl.textContent = (gCount || '0') + ' total entries · ' + (pCount || '0') + ' page views';
+
+        if (!cachedEntries) {
+          renderSharedEntries(entries);
+        }
+        try { localStorage.setItem('unbounded-garden-cache', JSON.stringify({ ts: Date.now(), data: entries })); } catch(e) {}
+      })['catch'](function() {
+        if (!cachedEntries) {
+          sharedStatus.className = '';
+          sharedStatus.textContent = 'Could not reach the shared garden.';
+        }
+        var statsEl = document.getElementById('site-stats');
+        if (statsEl) statsEl.textContent = 'Garden stats unavailable';
+      });
+    }
+
+    refreshSharedGarden();
   })();
 
   /* ─── PWA: SERVICE WORKER ─── */

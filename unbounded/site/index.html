@@ -24,8 +24,8 @@
         :root {
             --bg: #0a0a0f;
             --fg: #e8e8f0;
-            --accent: #ff6b35;
-            --accent2: #7c3aed;
+            --accent: #7c3aed;
+            --accent2: #ff6b35;
             --glow: rgba(124, 58, 237, 0.3);
             --muted: #8888a0;
             --border: rgba(255, 255, 255, 0.06);
@@ -80,7 +80,7 @@
             font-size: 4rem;
             font-weight: 900;
             letter-spacing: -0.03em;
-            background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+            background: linear-gradient(135deg, var(--accent2), var(--accent));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -134,9 +134,11 @@
         }
         
         p {
-            color: var(--muted);
             margin-bottom: 1.2rem;
             font-size: 1.05rem;
+        }
+        p.muted, .manifesto-preview p {
+            color: var(--muted);
         }
         
         .container {
@@ -292,6 +294,8 @@
             .principles { grid-template-columns: 1fr; }
             .nav { gap: 0.8rem; }
             .nav a { font-size: 0.78rem; }
+            .cta { padding: 0.8rem 1.5rem; font-size: 0.95rem; }
+            .cta-secondary { padding: 0.6rem 1.2rem; font-size: 0.85rem; }
         }
     </style>
 </head>
