@@ -1,0 +1,15 @@
+node_modules/
+.git/
+.gitignore
+*.md
+.env
+.env.local
+.env.example
+.secrets/
+coverage/
+playwright-report/
+test-results/
+docker-compose*.yml
+.gitkeep
+.DS_Store
+Thumbs.db

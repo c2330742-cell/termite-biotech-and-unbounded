@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="ChronoSend — Production Deployment Guide">
+<meta property="og:title" content="ChronoSend — Production Deployment Guide">
+<meta property="og:description" content="ChronoSend — Production Deployment Guide">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://Puronbo.github.io/termite-biotech-and-unbounded/unbounded/site/pages/chronosend/deployment.html">
+<meta property="og:image" content="https://raw.githubusercontent.com/Puronbo/termite-biotech-and-unbounded/main/unbounded/site/favicon.svg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0e0e16">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<title>ChronoSend — Production Deployment Guide</title>
+<link rel="stylesheet" href="../styles.css">
+<style>
+h2 { font-size: 1.4rem; font-weight: 600; margin: 2rem 0 0.75rem; color: var(--fg); }
+h3 { font-size: 1.15rem; font-weight: 600; margin: 1.5rem 0 0.5rem; color: var(--accent3); }
+em { color: var(--muted); }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.skip-link:focus { top: 0; }
+</style>
+</head>
+<body>
+<a href="#main-content" class="skip-link">Skip to content</a>
+<div class="container" id="main-content">
+<div class="top-nav">
+  <a href="../../portal.html">&#9670; Portal</a>
+  <span class="sep">/</span>
+  <a href="index.html">ChronoSend</a>
+  <span class="sep">/</span>
+  <span style="color:var(--fg)">ChronoSend — Production Deployment Guide</span>
+</div>
+<h1>ChronoSend — Production Deployment Guide</h1>
+<h2>Table of Contents</h2>
+<ul>
+<li><a href="#prerequisites">Prerequisites</a></li>
+<li><a href="#environment-variables">Environment Variables</a></li>
+<li><a href="#docker-compose-recommended">Docker Compose (Recommended)</a></li>
+<li><a href="#manual-deployment">Manual Deployment</a></li>
+<li><a href="#database-migrations">Database Migrations</a></li>
+<li><a href="#hosting-platforms">Hosting Platforms</a></li>
+<li><a href="#monitoring--logging">Monitoring &amp; Logging</a></li>
+<li><a href="#security-checklist">Security Checklist</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+</ul>
+<hr />
+<h2>Prerequisites</h2>
+<ul>
+<li><strong>Docker 24+</strong> and <strong>Docker Compose v2.20+</strong></li>
+<li><strong>Node.js 20</strong> (only for manual deployment)</li>
+<li><strong>PostgreSQL 15</strong> (managed service or self-hosted)</li>
+<li>A domain name with DNS pointed at your server (optional but recommended)</li>
+</ul>
+<hr />
+<h2>Environment Variables</h2>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Required</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>NODE_ENV</code></td>
+<td>—</td>
+<td><code>development</code></td>
+<td>Set to <code>production</code></td>
+</tr>
+<tr>
+<td><code>PORT</code></td>
+<td>—</td>
+<td><code>4000</code></td>
+<td>Internal server port</td>
+</tr>
+<tr>
+<td><code>DATABASE_URL</code></td>
+<td><strong>yes</strong></td>
+<td>—</td>
+<td>PostgreSQL connection string</td>
+</tr>
+<tr>
+<td><code>JWT_ACCESS_SECRET</code></td>
+<td><strong>yes</strong></td>
+<td>—</td>
+<td>≥32 chars, random (use <code>openssl rand -hex 32</code>)</td>
+</tr>
+<tr>
+<td><code>JWT_REFRESH_SECRET</code></td>
+<td><strong>yes</strong></td>
+<td>—</td>
+<td>≥32 chars, different from access secret</td>
+</tr>
+<tr>
+<td><code>CREDENTIAL_ENCRYPTION_KEY</code></td>
+<td><strong>yes</strong></td>
+<td>—</td>
+<td>64 hex chars (32 bytes), use <code>openssl rand -hex 32</code></td>
+</tr>
+<tr>
+<td><code>CORS_ORIGIN</code></td>
+<td><strong>yes</strong></td>
+<td>—</td>
+<td>Frontend URL (e.g. <code>https://chronosend.example.com</code>)</td>
+</tr>
+<tr>
+<td><code>LOG_LEVEL</code></td>
+<td>—</td>
+<td><code>info</code></td>
+<td><code>debug</code>, <code>info</code>, <code>warn</code>, <code>error</code>, <code>silent</code></td>
+</tr>
+<tr>
+<td><code>VITE_API_URL</code></td>
+<td>—</td>
+<td><code>http://localhost:4000</code></td>
+<td>API URL for web build</td>
+</tr>
+<tr>
+<td><code>VITE_WS_URL</code></td>
+<td>—</td>
+<td><code>ws://localhost:4000</code></td>
+<td>WebSocket URL for web build</td>
+</tr>
+</tbody>
+</table>
+<h3>Docker Secrets</h3>
+<p>All sensitive variables support a <code>_FILE</code> variant that points to a mounted file (e.g. <code>JWT_ACCESS_SECRET_FILE=/run/secrets/jwt_access_secret</code>). When set, the file content overrides the environment variable. This is the <strong>recommended approach</strong> for Docker Compose and Docker Swarm deployments.</p>
+<p>Generate secure secrets:</p>
+<pre class="codehilite"><code class="language-bash">openssl rand -hex 32 &gt; secrets/jwt_access_secret.txt
+openssl rand -hex 32 &gt; secrets/jwt_refresh_secret.txt
+openssl rand -hex 32 &gt; secrets/credential_encryption_key.txt
+openssl rand -hex 16 &gt; secrets/postgres_password.txt
+chmod 600 secrets/*.txt
+</code></pre>
+
+<hr />
+<h2>Docker Compose (Recommended)</h2>
+<p>The production compose file uses Docker secrets, internal networks, health checks, and resource limits.</p>
+<h3>Quick Start</h3>
+<pre class="codehilite"><code class="language-bash"># 1. Clone the repository
+git clone &lt;repo-url&gt; chronosend
+cd chronosend
+
+# 2. Generate secrets
+mkdir -p secrets
+openssl rand -hex 32 &gt; secrets/jwt_access_secret.txt
+openssl rand -hex 32 &gt; secrets/jwt_refresh_secret.txt
+openssl rand -hex 32 &gt; secrets/credential_encryption_key.txt
+openssl rand -hex 16 &gt; secrets/postgres_password.txt
+chmod 600 secrets/*.txt
+
+# 3. Set required env vars
+export CORS_ORIGIN=https://chronosend.example.com
+export POSTGRES_PASSWORD=$(cat secrets/postgres_password.txt)
+
+# 4. Start all services
+docker compose -f docker-compose.prod.yml up -d
+
+# 5. Run database migrations
+docker compose -f docker-compose.prod.yml exec server node apps/server/dist/db/migrate.js
+
+# 6. (Optional) Seed admin user
+docker compose -f docker-compose.prod.yml exec server node apps/server/dist/db/seeds/seed.js
+
+# 7. Check health
+curl http://localhost:80/api/health
+</code></pre>
+
+<h3>Updating</h3>
+<pre class="codehilite"><code class="language-bash">git pull
+docker compose -f docker-compose.prod.yml build --no-cache
+docker compose -f docker-compose.prod.yml up -d
+docker compose -f docker-compose.prod.yml exec server node apps/server/dist/db/migrate.js
+</code></pre>
+
+<h3>Stopping</h3>
+<pre class="codehilite"><code class="language-bash">docker compose -f docker-compose.prod.yml down
+# To also remove the database volume:
+docker compose -f docker-compose.prod.yml down -v
+</code></pre>
+
+<hr />
+<h2>Manual Deployment</h2>
+<h3>Server</h3>
+<pre class="codehilite"><code class="language-bash"># Build
+npm ci
+npm run build
+
+# Set up env
+cp .env.example .env
+# Edit .env with production values
+
+# Run migrations
+npm run migrate
+
+# Start with process manager
+npm i -g pm2
+pm2 start apps/server/dist/index.js --name chronosend-server
+pm2 save
+pm2 startup
+</code></pre>
+
+<h3>Web (Static Files)</h3>
+<pre class="codehilite"><code class="language-bash"># Build the frontend
+npm run build -w packages/shared
+npm run build -w apps/web
+
+# Serve with any static file server (nginx, caddy, etc.)
+# The built files are in apps/web/dist/
+cp -r apps/web/dist /var/www/chronosend
+</code></pre>
+
+<p>Example nginx config for the web layer:</p>
+<pre class="codehilite"><code class="language-nginx">server {
+    listen 443 ssl http2;
+    server_name chronosend.example.com;
+
+    ssl_certificate /etc/letsencrypt/live/chronosend.example.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/chronosend.example.com/privkey.pem;
+
+    root /var/www/chronosend;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    location /api/ {
+        proxy_pass http://127.0.0.1:4000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    location /ws/ {
+        proxy_pass http://127.0.0.1:4000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection &quot;upgrade&quot;;
+        proxy_set_header Host $host;
+    }
+
+    location /assets/ {
+        expires 1y;
+        add_header Cache-Control &quot;public, immutable&quot;;
+    }
+}
+</code></pre>
+
+<hr />
+<h2>Database Migrations</h2>
+<p>Migrations are managed through Prisma. The migration SQL files live in <code>apps/server/prisma/migrations/</code>.</p>
+<h3>Production Migration</h3>
+<pre class="codehilite"><code class="language-bash"># Via Docker Compose
+docker compose -f docker-compose.prod.yml exec server node apps/server/dist/db/migrate.js
+
+# Manual
+NODE_ENV=production node apps/server/dist/db/migrate.js
+</code></pre>
+
+<p>To create a new migration during development:</p>
+<pre class="codehilite"><code class="language-bash">npm run migrate:dev -- --name describe_change
+</code></pre>
+
+<p>Then commit the generated SQL and run it in production.</p>
+<hr />
+<h2>Hosting Platforms</h2>
+<h3>Railway (Recommended for Simplicity)</h3>
+<ol>
+<li>Create a new project from your Git repository.</li>
+<li>Add a PostgreSQL plugin (Railway provides <code>DATABASE_URL</code>).</li>
+<li>Set the build command: <code>npm run build</code></li>
+<li>Set the start command: <code>npm start</code></li>
+<li>Add all required env vars (see table above).</li>
+<li>Deploy.</li>
+</ol>
+<h3>Render</h3>
+<ul>
+<li><strong>Web Service</strong> — Point at <code>apps/server</code> with build command <code>npm run build</code> and start command <code>npm start</code>.</li>
+<li><strong>Static Site</strong> — Point at <code>apps/web</code> with publish directory <code>dist</code>.</li>
+<li>Add a managed PostgreSQL database.</li>
+</ul>
+<h3>AWS (ECS / Fargate)</h3>
+<ol>
+<li>Build and push Docker images to ECR.</li>
+<li>Create an ECS task definition with the server and a sidecar nginx container.</li>
+<li>Use RDS for PostgreSQL.</li>
+<li>Use Secrets Manager for env vars.</li>
+<li>Set up an Application Load Balancer in front.</li>
+</ol>
+<h3>DigitalOcean App Platform</h3>
+<ol>
+<li>Connect your GitHub repo.</li>
+<li>Add a PostgreSQL dev database.</li>
+<li>Set build command: <code>npm run build</code></li>
+<li>Set run command: <code>npm start</code></li>
+<li>Configure env vars.</li>
+</ol>
+<h3>Fly.io</h3>
+<pre class="codehilite"><code class="language-bash">fly launch
+fly secrets set JWT_ACCESS_SECRET=... JWT_REFRESH_SECRET=...
+fly postgres create
+fly deploy
+</code></pre>
+
+<hr />
+<h2>Monitoring &amp; Logging</h2>
+<h3>Health Endpoints</h3>
+<table>
+<thead>
+<tr>
+<th>Endpoint</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GET /api/health</code></td>
+<td>Public — returns <code>ok</code> if server is running</td>
+</tr>
+<tr>
+<td><code>GET /api/v1/admin/health</code></td>
+<td>Admin — DB status, queue depth, WS clients, memory</td>
+</tr>
+</tbody>
+</table>
+<h3>Docker Logging</h3>
+<pre class="codehilite"><code class="language-bash"># View logs for all services
+docker compose -f docker-compose.prod.yml logs --tail=100 -f
+
+# Specific service
+docker compose -f docker-compose.prod.yml logs --tail=50 -f server
+</code></pre>
+
+<p>The production compose file limits log files to 3 × 10 MB per service via the <code>json-file</code> driver.</p>
+<h3>Prometheus / Grafana (Optional)</h3>
+<p>The server exposes process-level metrics via <code>process.memoryUsage()</code> on the health endpoint. For full metrics, add:</p>
+<ol>
+<li><code>express-prom-bundle</code> or <code>prom-client</code> to the server.</li>
+<li>Expose a <code>/metrics</code> endpoint.</li>
+<li>Point Prometheus at it, then visualize in Grafana.</li>
+</ol>
+<h3>Uptime Monitoring</h3>
+<p>Services like <strong>UptimeRobot</strong>, <strong>Better Uptime</strong>, or <strong>Pingdom</strong> can monitor:</p>
+<ul>
+<li><code>https://chronosend.example.com/api/health</code> (HTTP 200 check)</li>
+<li>TLS certificate expiry</li>
+</ul>
+<hr />
+<h2>Security Checklist</h2>
+<ul>
+<li>[ ] <code>JWT_ACCESS_SECRET</code> and <code>JWT_REFRESH_SECRET</code> are strong and different</li>
+<li>[ ] <code>CREDENTIAL_ENCRYPTION_KEY</code> is a 64-char hex string from <code>openssl rand -hex 32</code></li>
+<li>[ ] <code>POSTGRES_PASSWORD</code> is strong</li>
+<li>[ ] Secrets are stored in Docker secrets or a secrets manager, never in env files</li>
+<li>[ ] HTTPS is enabled (Let's Encrypt / cloud LB)</li>
+<li>[ ] <code>CORS_ORIGIN</code> is set to the exact frontend domain</li>
+<li>[ ] Helmet security headers are active (enabled by default)</li>
+<li>[ ] Rate limiting is configured (enabled by default: 10/min auth, 60/min other)</li>
+<li>[ ] Database is not exposed to the public internet</li>
+<li>[ ] The <code>node</code> user is non-root inside containers</li>
+<li>[ ] Docker images use multi-stage builds (already configured)</li>
+<li>[ ] Production env has <code>NODE_ENV=production</code></li>
+<li>[ ] Access logs are captured and rotated</li>
+</ul>
+<hr />
+<h2>Troubleshooting</h2>
+<table>
+<thead>
+<tr>
+<th>Problem</th>
+<th>Cause</th>
+<th>Solution</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Server returns 503 on health check</td>
+<td>DB not ready or credentials wrong</td>
+<td>Check <code>DATABASE_URL</code> and PostgreSQL logs</td>
+</tr>
+<tr>
+<td>Web shows blank page</td>
+<td>API URL mismatch or build failed</td>
+<td>Verify <code>VITE_API_URL</code> was set during build</td>
+</tr>
+<tr>
+<td>WebSocket disconnects</td>
+<td>Missing proxy config for <code>/ws/</code></td>
+<td>Ensure nginx or LB upgrades the connection</td>
+</tr>
+<tr>
+<td>"Secret file not found"</td>
+<td>Docker secrets not mounted</td>
+<td>Check <code>secrets/</code> directory and <code>docker-compose.yml</code></td>
+</tr>
+<tr>
+<td>Migration fails</td>
+<td>Prisma schema doesn't match DB state</td>
+<td>Run <code>prisma migrate diff</code> to diagnose</td>
+</tr>
+<tr>
+<td>CORS errors in browser</td>
+<td><code>CORS_ORIGIN</code> doesn't match frontend URL</td>
+<td>Set <code>CORS_ORIGIN</code> to the exact origin (no trailing slash)</td>
+</tr>
+<tr>
+<td>Refresh token rejected</td>
+<td><code>JWT_REFRESH_SECRET</code> changed</td>
+<td>Old tokens are invalid after secret rotation</td>
+</tr>
+<tr>
+<td>Rate limiting too aggressive</td>
+<td>High traffic or misconfigured proxy IP</td>
+<td>Set <code>trust proxy</code> in Express if behind a reverse proxy</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Architecture Overview</h2>
+<pre class="codehilite"><code>                          ┌──────────────┐
+                          │   Browser /   │
+                          │    PWA App    │
+                          └──────┬───────┘
+                                 │ HTTPS
+                          ┌──────▼───────┐
+                          │   Nginx      │  ← docker/Dockerfile.web
+                          │  (static)    │
+                          └──────┬───────┘
+                    ────────┬────┘──────────────
+                           /api/           /ws/
+                    ┌──────▼───────┐  ┌──────▼───────┐
+                    │   Express    │  │   WebSocket   │
+                    │   Server     │  │   (ws)        │  ← docker/Dockerfile.server
+                    └──────┬───────┘  └───────────────┘
+                           │ SQL
+                    ┌──────▼───────┐
+                    │  PostgreSQL  │  ← postgres:15-alpine
+                    └──────────────┘
+</code></pre>
+
+<p>All three services run on an isolated Docker network (<code>internal</code>). The database is not exposed to the host. The web nginx proxies <code>/api/</code> and <code>/ws/</code> requests to the server container.</p>
+<div class="foot-nav">
+  <a href="../../portal.html">&#9670; Back to Portal</a>
+  <a href="https://github.com/Puronbo/termite-biotech-and-unbounded/blob/main/unbounded/chronosend/DEPLOYMENT.md" target="_blank">&#9998; Edit on GitHub</a>
+  <a href="#">&#8593; Top</a>
+</div>
+</div>
+<script>
+(function(){var p=location.pathname;var h=p.substring(p.lastIndexOf('/')+1);var r;try{r=JSON.parse(localStorage.getItem('unbounded-history')||'[]')}catch(e){r=[]};if(!r.includes(h)){r.unshift(h);if(r.length>20)r.length=20;try{localStorage.setItem('unbounded-history',JSON.stringify(r))}catch(e){}}})();
+(function(){var u='https://aurxoemycvcywtdwahuc.supabase.co';var k='sb_publishable__bSnqp9ioikLs515Uxtudg_8HtvJPuE';var hd={apikey:k,'Authorization':'Bearer '+k,'Content-Type':'application/json'};var s;try{s=localStorage.getItem('unbounded-session')}catch(e){s=''};if(!s){s='s_'+Date.now()+'_'+Math.random().toString(36).substr(2,9);try{localStorage.setItem('unbounded-session',s)}catch(e){}};var pn=location.pathname.split('/').pop()||'index';fetch(u+'/rest/v1/page_views',{method:'POST',headers:Object.assign({Prefer:'return=minimal'},hd),body:JSON.stringify({page:pn,session_id:s})}).catch(function(){});fetch(u+'/rest/v1/sessions?on_conflict=id',{method:'POST',headers:Object.assign({Prefer:'resolution=merge-duplicates'},hd),body:JSON.stringify({id:s,last_active:new Date().toISOString()})}).catch(function(){});var lb;try{lb=localStorage.getItem('unbounded-heartbeat')}catch(e){lb=''};if(!lb||Date.now()-parseInt(lb)>86400000){fetch(u+'/rest/v1/heartbeats',{method:'POST',headers:Object.assign({Prefer:'return=minimal'},hd),body:'{}'}).catch(function(){});try{localStorage.setItem('unbounded-heartbeat',''+Date.now())}catch(e){}}})();
+</script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+{
+  "name": "chronosend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Schedule messages. Send anywhere. One place.",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:web\"",
+    "dev:server": "npm run dev -w apps/server",
+    "dev:web": "npm run dev -w apps/web",
+    "build": "npm run build -w packages/shared && npm run build -w apps/server && npm run build -w apps/web",
+    "build:server": "npm run build -w apps/server",
+    "build:web": "npm run build -w apps/web",
+    "start": "npm run start -w apps/server",
+    "lint": "eslint 'apps/*/src/**/*.{ts,tsx}' 'packages/*/src/**/*.ts'",
+    "lint:fix": "eslint --fix 'apps/*/src/**/*.{ts,tsx}' 'packages/*/src/**/*.ts'",
+    "format": "prettier --write '**/*.{ts,tsx,json,css,md}'",
+    "type-check": "npm run type-check -w packages/shared && npm run type-check -w apps/server && npm run type-check -w apps/web",
+    "test": "npm run test -w apps/server && npm run test -w apps/web",
+    "test:server": "npm run test -w apps/server",
+    "test:web": "npm run test -w apps/web",
+    "test:e2e": "npx playwright test",
+    "migrate": "npm run migrate -w apps/server",
+    "seed": "npm run seed -w apps/server",
+    "db:setup": "npm run migrate && npm run seed",
+    "prisma:generate": "npm run prisma:generate -w apps/server",
+    "prisma:studio": "npm run prisma:studio -w apps/server",
+    "clean": "rm -rf apps/*/dist packages/*/dist node_modules"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.61.1",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "concurrently": "^8.2.2",
+    "eslint": "^8.57.0",
+    "playwright": "^1.61.1",
+    "prettier": "^3.2.5",
+    "typescript": "^5.4.0"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.8.0"
+  }
+}

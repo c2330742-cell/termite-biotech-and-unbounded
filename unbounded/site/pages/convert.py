@@ -94,6 +94,8 @@ def convert_file(md_path, output_rel):
         depth = rel_path.count('/')
         if depth > 1:
             section_index = '../' * (depth - 1) + section + '/index.html'
+        elif depth == 1:
+            section_index = 'index.html'
 
     # Convert markdown
     html_body = markdown.markdown(
@@ -178,6 +180,8 @@ DOC_DESCRIPTIONS.update({
     'colony-monitoring.html': 'Colony monitoring data and analysis',
     # chronosend
     'overview.html': 'Complete overview of ChronoSend — architecture, channels, quick start, and use cases.',
+    'about.html': 'Full ChronoSend README — features, setup, API endpoints, and project structure.',
+    'deployment.html': 'Comprehensive deployment guide covering Docker, manual setup, hosting, and security.',
 })
 
 DOC_EMOJIS.update({
@@ -202,6 +206,8 @@ DOC_EMOJIS.update({
     'colony-monitoring.html': '\U0001f41c',
     # chronosend
     'overview.html': '\u23f0',
+    'about.html': '\U0001f4d6',
+    'deployment.html': '\U0001f680',
 })
 
 DOC_READING_TIMES = {
@@ -238,6 +244,8 @@ DOC_READING_TIMES = {
     'colony-monitoring.html': '10 min read',
     # chronosend
     'overview.html': '8 min read',
+    'about.html': '5 min read',
+    'deployment.html': '10 min read',
 }
 
 
@@ -371,6 +379,13 @@ def main():
         (os.path.join(tp_root, 'README.md'), 'termite/readme.html'),
     ]
 
+    # chronosend/
+    cs_root = os.path.join(REPO_ROOT, 'chronosend')
+    conversions += [
+        (os.path.join(cs_root, 'README.md'), 'chronosend/about.html'),
+        (os.path.join(cs_root, 'DEPLOYMENT.md'), 'chronosend/deployment.html'),
+    ]
+
     # Create output directories
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     for _, rel in conversions:
@@ -401,7 +416,7 @@ def main():
         ('termite', 'Termite Research', ['master-summary.html', 'cross-verification.html', 'readme.html']),
         ('pest-control', 'Natural Pest Control', ['readme.html', 'manufacturing-guide.html', 'product-formulations.html', 'research-literature.html', 'safety-data-sheets.html', 'implementation-timeline.html', 'manufacturing-setup.html', 'certification-roadmap.html', 'formulation-recipes.html', 'marketing-strategy.html', 'safety-testing.html', 'distribution-strategy.html']),
         ('termite-farming', 'Termite Farming', ['readme.html', 'market-analysis.html', 'farming-methods.html', 'processing-guide.html', 'species-profiles.html', 'implementation-summary.html', 'colony-monitoring.html']),
-        ('chronosend', 'ChronoSend', ['overview.html']),
+        ('chronosend', 'ChronoSend', ['overview.html', 'about.html', 'deployment.html']),
     ]
     for section, name, files in index_configs:
         html = generate_index(files, name, section)

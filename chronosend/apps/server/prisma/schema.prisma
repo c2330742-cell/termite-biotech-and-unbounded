@@ -1,0 +1,127 @@
+// Prisma schema for ChronoSend
+// PostgreSQL 15 — handles users, credentials, messages, delivery logs, and refresh tokens
+// Datasource URL is configured via prisma.config.ts (Prisma 7+)
+
+generator client {
+  provider   = "prisma-client-js"
+  engineType = "client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Users ──────────────────────────────────────────────────────────────────
+model User {
+  id            String   @id @default(uuid()) @db.Uuid
+  email         String   @unique
+  password_hash String?  // Nullable for OAuth-only accounts
+  role          String   @default("user") // "user" | "admin"
+  created_at    DateTime @default(now()) @db.Timestamptz
+  updated_at    DateTime @updatedAt @db.Timestamptz
+
+  refresh_tokens     RefreshToken[]
+  user_credentials   UserCredentials?
+  scheduled_messages ScheduledMessage[]
+  delivery_logs      DeliveryLog[]
+  oauth_accounts     OAuthAccount[]
+
+  @@map("users")
+}
+
+// ─── OAuth Accounts ──────────────────────────────────────────────────────────
+model OAuthAccount {
+  id                  String   @id @default(uuid()) @db.Uuid
+  user_id             String   @db.Uuid
+  provider            String   // "google"
+  provider_account_id String
+  access_token_enc    String?  // AES-256-GCM encrypted
+  refresh_token_enc   String?  // AES-256-GCM encrypted
+  expires_at          DateTime? @db.Timestamptz
+  created_at          DateTime @default(now()) @db.Timestamptz
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([provider, provider_account_id])
+  @@index([user_id])
+  @@map("oauth_accounts")
+}
+
+// ─── Refresh Tokens ─────────────────────────────────────────────────────────
+model RefreshToken {
+  id         String   @id @default(uuid()) @db.Uuid
+  user_id    String   @db.Uuid
+  token_hash String
+  expires_at DateTime @db.Timestamptz
+  created_at DateTime @default(now()) @db.Timestamptz
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@map("refresh_tokens")
+}
+
+// ─── User Credentials (encrypted platform API keys) ──────────────────────────
+model UserCredentials {
+  id                     String   @id @default(uuid()) @db.Uuid
+  user_id                String   @unique @db.Uuid
+  telegram_bot_token_enc String?  // AES-256-GCM encrypted
+  email_address          String?
+  email_app_password_enc String?  // AES-256-GCM encrypted
+  twilio_account_sid_enc String?  // AES-256-GCM encrypted
+  twilio_auth_token_enc  String?  // AES-256-GCM encrypted
+  twilio_phone_number    String?
+  twilio_whatsapp_number String?
+  whatsapp_method        String   @default("twilio") // "twilio" | "baileys"
+  discord_bot_token_enc  String?  // AES-256-GCM encrypted
+  timezone               String   @default("UTC")
+  updated_at             DateTime @updatedAt @db.Timestamptz
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("user_credentials")
+}
+
+// ─── Scheduled Messages ─────────────────────────────────────────────────────
+model ScheduledMessage {
+  id             String    @id @default(uuid()) @db.Uuid
+  user_id        String    @db.Uuid
+  platform       String    // "telegram" | "email" | "sms" | "whatsapp"
+  recipient      String
+  subject        String?
+  body           String
+  send_at        DateTime  @db.Timestamptz
+  repeat_rule    String    @default("none") // "none" | "daily" | "weekly" | "monthly"
+  status         String    @default("pending") // "pending" | "sending" | "sent" | "failed" | "cancelled"
+  failure_reason String?
+  sent_at        DateTime? @db.Timestamptz
+  next_run_at    DateTime? @db.Timestamptz
+  created_at     DateTime  @default(now()) @db.Timestamptz
+  updated_at     DateTime  @updatedAt @db.Timestamptz
+
+  user          User          @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  delivery_logs DeliveryLog[]
+
+  @@index([user_id, status, send_at])
+  @@index([status, send_at])
+  @@index([user_id])
+  @@map("scheduled_messages")
+}
+
+// ─── Delivery Logs ───────────────────────────────────────────────────────────
+model DeliveryLog {
+  id             String   @id @default(uuid()) @db.Uuid
+  message_id     String   @db.Uuid
+  user_id        String   @db.Uuid
+  attempt        Int      @default(1)
+  status         String   // "sent" | "failed"
+  failure_reason String?
+  attempted_at   DateTime @default(now()) @db.Timestamptz
+
+  message ScheduledMessage @relation(fields: [message_id], references: [id], onDelete: Cascade)
+  user    User             @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([message_id])
+  @@index([user_id])
+  @@map("delivery_logs")
+}

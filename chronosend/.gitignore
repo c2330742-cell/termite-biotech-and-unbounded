@@ -1,0 +1,17 @@
+node_modules/
+dist/
+build/
+.env
+.env.local
+*.log
+.DS_Store
+Thumbs.db
+coverage/
+playwright-report/
+test-results/
+*.tsbuildinfo
+.vscode/settings.json
+secrets/
+!secrets/.gitkeep
+cloudflared.exe
+start-prod.ps1

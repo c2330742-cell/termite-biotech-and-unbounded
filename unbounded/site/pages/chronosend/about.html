@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="ChronoSend">
+<meta property="og:title" content="ChronoSend">
+<meta property="og:description" content="ChronoSend">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://Puronbo.github.io/termite-biotech-and-unbounded/unbounded/site/pages/chronosend/about.html">
+<meta property="og:image" content="https://raw.githubusercontent.com/Puronbo/termite-biotech-and-unbounded/main/unbounded/site/favicon.svg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0e0e16">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<title>ChronoSend</title>
+<link rel="stylesheet" href="../styles.css">
+<style>
+h2 { font-size: 1.4rem; font-weight: 600; margin: 2rem 0 0.75rem; color: var(--fg); }
+h3 { font-size: 1.15rem; font-weight: 600; margin: 1.5rem 0 0.5rem; color: var(--accent3); }
+em { color: var(--muted); }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.skip-link:focus { top: 0; }
+</style>
+</head>
+<body>
+<a href="#main-content" class="skip-link">Skip to content</a>
+<div class="container" id="main-content">
+<div class="top-nav">
+  <a href="../../portal.html">&#9670; Portal</a>
+  <span class="sep">/</span>
+  <a href="index.html">ChronoSend</a>
+  <span class="sep">/</span>
+  <span style="color:var(--fg)">ChronoSend</span>
+</div>
+<h1>ChronoSend</h1>
+<p><strong>Schedule messages. Send anywhere. One place.</strong></p>
+<p>ChronoSend is a unified scheduled message sender. Compose a message, choose a recipient, pick a target platform, and set a future date and time. The app sends the message automatically when the time arrives across Telegram, Email, SMS, and WhatsApp — all from a single dashboard on desktop and mobile (PWA).</p>
+<h2>Features</h2>
+<ul>
+<li><strong>Multi-Platform Scheduling</strong> — Telegram, Email (Gmail SMTP), SMS (Twilio), WhatsApp (Twilio or Baileys)</li>
+<li><strong>Repeat Rules</strong> — Once, daily, weekly, monthly</li>
+<li><strong>Real-Time Updates</strong> — WebSocket-based status updates as messages send or fail</li>
+<li><strong>Dashboard</strong> — At-a-glance view of pending, sent, and failed messages</li>
+<li><strong>Settings</strong> — Per-user encrypted credential storage (AES-256-GCM)</li>
+<li><strong>Admin Panel</strong> — System health dashboard, user management, delivery stats</li>
+<li><strong>PWA</strong> — Installable on mobile and desktop, offline-capable</li>
+<li><strong>Dark Mode</strong> — Light/dark theme with system preference detection</li>
+</ul>
+<h2>Tech Stack</h2>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Technology</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Frontend</td>
+<td>React 18, TypeScript, Vite, Tailwind CSS, shadcn/ui, PWA</td>
+</tr>
+<tr>
+<td>Backend</td>
+<td>Node.js 20+, Express 4, TypeScript</td>
+</tr>
+<tr>
+<td>Database</td>
+<td>PostgreSQL 15, Prisma 7 ORM</td>
+</tr>
+<tr>
+<td>Auth</td>
+<td>JWT (access + refresh tokens), bcrypt</td>
+</tr>
+<tr>
+<td>Real-time</td>
+<td>Native WebSocket (ws library)</td>
+</tr>
+<tr>
+<td>Scheduler</td>
+<td>node-cron + in-process job queue</td>
+</tr>
+<tr>
+<td>Encryption</td>
+<td>AES-256-GCM (Node.js crypto)</td>
+</tr>
+<tr>
+<td>Validation</td>
+<td>Zod (shared between frontend and backend)</td>
+</tr>
+<tr>
+<td>Container</td>
+<td>Docker + Docker Compose</td>
+</tr>
+<tr>
+<td>CI/CD</td>
+<td>GitHub Actions</td>
+</tr>
+</tbody>
+</table>
+<h2>Getting Started</h2>
+<h3>Prerequisites</h3>
+<ul>
+<li>Node.js 20+</li>
+<li>PostgreSQL 15</li>
+<li>Docker &amp; Docker Compose (optional)</li>
+</ul>
+<h3>Quick Start (Docker)</h3>
+<pre class="codehilite"><code class="language-bash"># Clone the repository
+git clone &lt;repo-url&gt; chronosend
+cd chronosend
+
+# Copy environment file
+cp .env.example .env
+# Edit .env with your secrets
+
+# Start all services
+docker compose up -d
+
+# Run migrations
+docker compose exec server npm run migrate
+
+# Seed dev data
+docker compose exec server npm run seed
+</code></pre>
+
+<h3>Manual Setup</h3>
+<pre class="codehilite"><code class="language-bash"># Install dependencies
+npm install
+
+# Build shared package
+npm run build -w packages/shared
+
+# Set up environment
+cp .env.example .env
+# Edit DATABASE_URL and secrets in .env
+
+# Run database migrations
+npm run migrate
+
+# Seed development data (creates admin user)
+npm run seed
+
+# Start development servers
+npm run dev
+# Server: http://localhost:4000
+# Web:    http://localhost:5173
+</code></pre>
+
+<h2>Project Structure</h2>
+<pre class="codehilite"><code>chronosend/
+├── apps/
+│   ├── web/              # Vite TypeScript PWA frontend
+│   └── server/           # Express TypeScript API backend
+├── packages/
+│   └── shared/           # Shared types, schemas, constants
+├── docker/               # Dockerfiles and configs
+├── .github/workflows/    # CI/CD pipelines
+└── docker-compose.yml    # Local dev environment
+</code></pre>
+
+<h2>API Endpoints</h2>
+<p>Base URL: <code>/api/v1</code></p>
+<h3>Auth</h3>
+<ul>
+<li><code>POST /auth/register</code> — Create account</li>
+<li><code>POST /auth/login</code> — Login</li>
+<li><code>POST /auth/refresh</code> — Refresh access token</li>
+<li><code>POST /auth/logout</code> — Logout</li>
+<li><code>GET /auth/me</code> — Get current user</li>
+</ul>
+<h3>Messages (auth required)</h3>
+<ul>
+<li><code>GET /messages</code> — List messages (paginated, filterable)</li>
+<li><code>POST /messages</code> — Create scheduled message</li>
+<li><code>GET /messages/:id</code> — Get message details</li>
+<li><code>PATCH /messages/:id</code> — Update pending message</li>
+<li><code>DELETE /messages/:id</code> — Cancel message</li>
+<li><code>GET /messages/stats</code> — Dashboard statistics</li>
+</ul>
+<h3>Settings (auth required)</h3>
+<ul>
+<li><code>GET /settings</code> — Get credentials (redacted)</li>
+<li><code>PUT /settings</code> — Save credentials</li>
+<li><code>PUT /settings/timezone</code> — Update timezone</li>
+<li><code>POST /settings/test/:platform</code> — Test platform credentials</li>
+</ul>
+<h3>Admin (auth + admin role required)</h3>
+<ul>
+<li><code>GET /admin/users</code> — List users with counts</li>
+<li><code>GET /admin/messages</code> — List all messages</li>
+<li><code>GET /admin/health</code> — System health</li>
+<li><code>DELETE /admin/users/:id</code> — Delete user</li>
+</ul>
+<h3>Health</h3>
+<ul>
+<li><code>GET /api/health</code> — Public health check</li>
+</ul>
+<h2>Testing</h2>
+<pre class="codehilite"><code class="language-bash"># Backend tests
+npm run test:server
+
+# Frontend tests
+npm run test:web
+
+# E2E tests
+npm run test:e2e
+
+# All tests
+npm test
+</code></pre>
+
+<h2>Deployment</h2>
+<p>See <strong><a href="./DEPLOYMENT.md">DEPLOYMENT.md</a></strong> for a comprehensive guide covering:</p>
+<ul>
+<li>Production Docker Compose with secrets, health checks, and internal networking</li>
+<li>Manual deployment (PM2 + nginx)</li>
+<li>Database migrations in production</li>
+<li>Hosting platform guides (Railway, Render, AWS, Fly.io, DO Apps)</li>
+<li>Monitoring, logging, and security checklist</li>
+</ul>
+<h2>Security</h2>
+<ul>
+<li>Passwords hashed with bcrypt (cost 12)</li>
+<li>Platform credentials encrypted with AES-256-GCM at rest</li>
+<li>JWTs with short-lived access tokens (15 min) + refresh tokens (7 days)</li>
+<li>Refresh tokens stored as hashes in database</li>
+<li>httpOnly, SameSite=Strict, Secure cookies</li>
+<li>CORS restricted to known origins</li>
+<li>Helmet security headers</li>
+<li>Rate limiting on all endpoints</li>
+<li>Input validation with Zod</li>
+<li>Parameterized SQL queries (no injection)</li>
+<li>RBAC for admin routes</li>
+</ul>
+<h2>License</h2>
+<p>MIT</p>
+<div class="foot-nav">
+  <a href="../../portal.html">&#9670; Back to Portal</a>
+  <a href="https://github.com/Puronbo/termite-biotech-and-unbounded/blob/main/unbounded/chronosend/README.md" target="_blank">&#9998; Edit on GitHub</a>
+  <a href="#">&#8593; Top</a>
+</div>
+</div>
+<script>
+(function(){var p=location.pathname;var h=p.substring(p.lastIndexOf('/')+1);var r;try{r=JSON.parse(localStorage.getItem('unbounded-history')||'[]')}catch(e){r=[]};if(!r.includes(h)){r.unshift(h);if(r.length>20)r.length=20;try{localStorage.setItem('unbounded-history',JSON.stringify(r))}catch(e){}}})();
+(function(){var u='https://aurxoemycvcywtdwahuc.supabase.co';var k='sb_publishable__bSnqp9ioikLs515Uxtudg_8HtvJPuE';var hd={apikey:k,'Authorization':'Bearer '+k,'Content-Type':'application/json'};var s;try{s=localStorage.getItem('unbounded-session')}catch(e){s=''};if(!s){s='s_'+Date.now()+'_'+Math.random().toString(36).substr(2,9);try{localStorage.setItem('unbounded-session',s)}catch(e){}};var pn=location.pathname.split('/').pop()||'index';fetch(u+'/rest/v1/page_views',{method:'POST',headers:Object.assign({Prefer:'return=minimal'},hd),body:JSON.stringify({page:pn,session_id:s})}).catch(function(){});fetch(u+'/rest/v1/sessions?on_conflict=id',{method:'POST',headers:Object.assign({Prefer:'resolution=merge-duplicates'},hd),body:JSON.stringify({id:s,last_active:new Date().toISOString()})}).catch(function(){});var lb;try{lb=localStorage.getItem('unbounded-heartbeat')}catch(e){lb=''};if(!lb||Date.now()-parseInt(lb)>86400000){fetch(u+'/rest/v1/heartbeats',{method:'POST',headers:Object.assign({Prefer:'return=minimal'},hd),body:'{}'}).catch(function(){});try{localStorage.setItem('unbounded-heartbeat',''+Date.now())}catch(e){}}})();
+</script>
+</body>
+</html>
