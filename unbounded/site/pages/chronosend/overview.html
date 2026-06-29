@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="ChronoSend — a message scheduling application that delivers timed messages to any communication platform without code.">
+<meta property="og:title" content="ChronoSend — Timed Messaging for Every Platform">
+<meta property="og:description" content="ChronoSend — a message scheduling application that delivers timed messages to any communication platform without code.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://Puronbo.github.io/termite-biotech-and-unbounded/unbounded/site/pages/chronosend/overview.html">
+<meta property="og:image" content="https://raw.githubusercontent.com/Puronbo/termite-biotech-and-unbounded/main/unbounded/site/favicon.svg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0e0e16">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+<title>ChronoSend — Timed Messaging for Every Platform</title>
+<link rel="stylesheet" href="../../styles.css">
+<style>
+h2 { font-size: 1.4rem; font-weight: 600; margin: 2rem 0 0.75rem; color: var(--fg); }
+h3 { font-size: 1.15rem; font-weight: 600; margin: 1.5rem 0 0.5rem; color: var(--accent3); }
+em { color: var(--muted); }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.skip-link:focus { top: 0; }
+.feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+.feature-card { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; }
+.feature-card h4 { font-size: 1rem; margin-bottom: 0.5rem; color: var(--accent2); }
+.feature-card p { font-size: 0.85rem; color: var(--muted); line-height: 1.5; }
+pre { background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--fg); }
+code { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--accent); }
+.platform-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.75rem; margin: 1rem 0; }
+.platform-tag { background: rgba(124,58,237,0.1); border: 1px solid rgba(124,58,237,0.2); border-radius: 8px; padding: 0.6rem 1rem; text-align: center; font-size: 0.85rem; color: var(--fg); font-weight: 500; }
+</style>
+</head>
+<body>
+<a href="#main-content" class="skip-link">Skip to content</a>
+<div class="container" id="main-content">
+<div class="top-nav">
+  <a href="../../portal.html">&#9670; Portal</a>
+  <span class="sep">/</span>
+  <a href="index.html">ChronoSend</a>
+  <span class="sep">/</span>
+  <span style="color:var(--fg)">Overview</span>
+</div>
+
+<h1>ChronoSend — Timed Messaging for Every Platform</h1>
+
+<p>ChronoSend is a message scheduling application that bridges the gap between intention and delivery. It lets you compose messages once and dispatch them at precisely the right moment — across SMS, email, messaging apps, and webhook endpoints — without writing a single line of integration code.</p>
+
+<h2>Why ChronoSend?</h2>
+
+<p>Existing scheduling tools are locked inside single platforms. You can schedule an email in Gmail, a tweet in Twitter, a Slack message — but there is no unified tool that treats time as a first-class delivery dimension across <em>every</em> communication channel. ChronoSend fills that gap.</p>
+
+<div class="feature-grid">
+  <div class="feature-card">
+    <h4>⏰ Time-Aware Delivery</h4>
+    <p>Schedule messages down to the second. Set timezone-aware delivery for recipients anywhere in the world. Recurring schedules, delayed sends, and countdown-triggered releases.</p>
+  </div>
+  <div class="feature-card">
+    <h4>🔗 Cross-Platform</h4>
+    <p>One message, many destinations. Send the same payload to email, SMS, Telegram, Discord, Slack, WhatsApp, and custom webhooks — each formatted for its target channel.</p>
+  </div>
+  <div class="feature-card">
+    <h4>🧩 No-Code Integration</h4>
+    <p>Configure channels through a simple YAML or JSON manifest. No SDKs to install, no API clients to write. Point, schedule, send.</p>
+  </div>
+  <div class="feature-card">
+    <h4>🔐 Privacy-First</h4>
+    <p>Messages are encrypted at rest and in transit. Delivery logs contain metadata only — content is never stored after delivery unless configured for audit trails.</p>
+  </div>
+  <div class="feature-card">
+    <h4>📊 Delivery Analytics</h4>
+    <p>Track open rates, click-through, delivery failures, and timing accuracy per channel. Export logs as CSV or JSON for external analysis.</p>
+  </div>
+  <div class="feature-card">
+    <h4>⚡ Lightweight & Portable</h4>
+    <p>Single binary with no external dependencies. Runs on anything from a Raspberry Pi to a cloud VM. Deploy via Docker, systemd, or as a serverless function.</p>
+  </div>
+</div>
+
+<h2>Supported Channels</h2>
+
+<div class="platform-grid">
+  <span class="platform-tag">📧 Email (SMTP / SendGrid)</span>
+  <span class="platform-tag">💬 SMS (Twilio / Vonage)</span>
+  <span class="platform-tag">📱 Telegram Bot</span>
+  <span class="platform-tag">💎 Discord Webhook</span>
+  <span class="platform-tag">🔷 Slack Webhook</span>
+  <span class="platform-tag">📞 WhatsApp (Business API)</span>
+  <span class="platform-tag">🌐 Custom Webhooks</span>
+  <span class="platform-tag">📄 WebSocket Push</span>
+</div>
+
+<h2>Quick Start</h2>
+
+<h3>1. Define a channel</h3>
+<pre><code># chronosend.yaml
+channels:
+  alert-email:
+    type: smtp
+    host: smtp.example.com
+    port: 587
+    username: alerts@example.com
+    password: ${SMTP_PASSWORD}
+
+  dev-team:
+    type: slack
+    webhook: https://hooks.slack.com/services/xxx
+
+  public-announce:
+    type: telegram
+    bot_token: ${TELEGRAM_BOT_TOKEN}
+    chat_id: "@my_channel"</code></pre>
+
+<h3>2. Schedule a message</h3>
+<pre><code>chronosend send \
+  --channels alert-email,dev-team \
+  --at "2026-07-15T09:00:00+08:00" \
+  --subject "Deployment complete" \
+  --body "Version 2.4.1 is live. All systems nominal."</code></pre>
+
+<h3>3. Or use the JSON API</h3>
+<pre><code>curl -X POST https://chronosend.example.com/api/schedule \
+  -H "Authorization: Bearer $API_KEY" \
+  -d '{
+    "channels": ["alert-email", "dev-team"],
+    "deliver_at": "2026-07-15T09:00:00+08:00",
+    "content": {
+      "subject": "Deployment complete",
+      "body": "Version 2.4.1 is live. All systems nominal."
+    }
+  }'</code></pre>
+
+<h2>Architecture</h2>
+
+<p>ChronoSend uses a simple pipeline architecture: <strong>Schedule → Queue → Render → Dispatch → Log</strong>.</p>
+
+<ol>
+  <li><strong>Schedule</strong> — messages are accepted via CLI, REST API, or a recurring cron-like configuration file. Each message is assigned a delivery time and a set of target channels.</li>
+  <li><strong>Queue</strong> — an internal priority queue (backed by SQLite or Redis) holds messages until their delivery time. The scheduler polls the queue every second for due messages.</li>
+  <li><strong>Render</strong> — each channel has a template renderer that transforms the generic message body into the platform-specific format (Markdown for Slack, HTML for email, plain text for SMS, etc.).</li>
+  <li><strong>Dispatch</strong> — rendered messages are handed to channel adapters that handle authentication, rate limiting, retry logic, and delivery confirmation.</li>
+  <li><strong>Log</strong> — every dispatch attempt is recorded with timestamp, channel, status, and response code. Failed deliveries are retried with exponential backoff.</li>
+</ol>
+
+<p>The entire pipeline is designed to be observable. Each stage emits structured logs that can be consumed by Grafana, Loki, or any log aggregator.</p>
+
+<h2>Use Cases</h2>
+
+<ul>
+  <li><strong>Incident response</strong> — page the on-call engineer via SMS, Slack, and email simultaneously when a monitoring alert fires.</li>
+  <li><strong>Marketing campaigns</strong> — schedule drip sequences across email and SMS with precise timing for different time zones.</li>
+  <li><strong>Appointment reminders</strong> — send confirmations and reminders via the patient's preferred channel 24 hours and 1 hour before an appointment.</li>
+  <li><strong>DevOps automation</strong> — notify multiple teams across different platforms when a deployment, backup, or maintenance window completes.</li>
+  <li><strong>Personal productivity</strong> — schedule a message to your future self, a birthday greeting, or a recurring daily standup prompt.</li>
+</ul>
+
+<h2>Status</h2>
+
+<p>ChronoSend is currently in <strong>design phase</strong>. The architecture is specified, the channel adapter interface is defined, and a proof-of-concept scheduler has been prototyped. Public alpha is targeted for Q3 2026.</p>
+
+<p>If you want to contribute — whether by writing a channel adapter, improving the scheduler, or documenting the API — see the contribution guide or reach out through the portal.</p>
+
+<div class="foot-nav">
+  <a href="../../portal.html">&#9670; Back to Portal</a>
+  <a href="https://github.com/Puronbo/termite-biotech-and-unbounded/blob/main/unbounded/site/pages/chronosend/overview.html" target="_blank">&#9998; Edit on GitHub</a>
+  <a href="#">&#8593; Top</a>
+</div>
+</div>
+<script>
+(function(){var p=location.pathname;var h=p.substring(p.lastIndexOf('/')+1);var r;try{r=JSON.parse(localStorage.getItem('unbounded-history')||'[]')}catch(e){r=[]};if(!r.includes(h)){r.unshift(h);if(r.length>20)r.length=20;try{localStorage.setItem('unbounded-history',JSON.stringify(r))}catch(e){}}})();
+(function(){var u='https://aurxoemycvcywtdwahuc.supabase.co';var k='sb_publishable__bSnqp9ioikLs515Uxtudg_8HtvJPuE';var hd={apikey:k,'Authorization':'Bearer '+k,'Content-Type':'application/json'};var s;try{s=localStorage.getItem('unbounded-session')}catch(e){s=''};if(!s){s='s_'+Date.now()+'_'+Math.random().toString(36).substr(2,9);try{localStorage.setItem('unbounded-session',s)}catch(e){}};var pn=location.pathname.split('/').pop()||'index';fetch(u+'/rest/v1/page_views',{method:'POST',headers:Object.assign({Prefer:'return=minimal'},hd),body:JSON.stringify({page:pn,session_id:s})}).catch(function(){});fetch(u+'/rest/v1/sessions?on_conflict=id',{method:'POST',headers:Object.assign({Prefer:'resolution=merge-duplicates'},hd),body:JSON.stringify({id:s,last_active:new Date().toISOString()})}).catch(function(){});var lb;try{lb=localStorage.getItem('unbounded-heartbeat')}catch(e){lb=''};if(!lb||Date.now()-parseInt(lb)>86400000){fetch(u+'/rest/v1/heartbeats',{method:'POST',headers:Object.assign({Prefer:'return=minimal'},hd),body:'{}'}).catch(function(){});try{localStorage.setItem('unbounded-heartbeat',''+Date.now())}catch(e){}}}})();
+</script>
+</body>
+</html>

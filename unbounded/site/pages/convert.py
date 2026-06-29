@@ -83,6 +83,7 @@ def convert_file(md_path, output_rel):
         'unbounded': 'UNBOUNDED',
         'pest-control': 'Natural Pest Control',
         'termite-farming': 'Termite Farming',
+        'chronosend': 'ChronoSend',
         '': '',
     }
     section_name = section_names.get(section, section.capitalize())
@@ -175,6 +176,8 @@ DOC_DESCRIPTIONS.update({
     'species-profiles.html': 'Species profiles and biological characteristics',
     'implementation-summary.html': 'Implementation summary and action plan',
     'colony-monitoring.html': 'Colony monitoring data and analysis',
+    # chronosend
+    'overview.html': 'Complete overview of ChronoSend — architecture, channels, quick start, and use cases.',
 })
 
 DOC_EMOJIS.update({
@@ -197,6 +200,8 @@ DOC_EMOJIS.update({
     'species-profiles.html': '\U0001f41c',
     'implementation-summary.html': '\U0001f41c',
     'colony-monitoring.html': '\U0001f41c',
+    # chronosend
+    'overview.html': '\u23f0',
 })
 
 DOC_READING_TIMES = {
@@ -231,6 +236,8 @@ DOC_READING_TIMES = {
     'species-profiles.html': '12 min read',
     'implementation-summary.html': '8 min read',
     'colony-monitoring.html': '10 min read',
+    # chronosend
+    'overview.html': '8 min read',
 }
 
 
@@ -394,6 +401,7 @@ def main():
         ('termite', 'Termite Research', ['master-summary.html', 'cross-verification.html', 'readme.html']),
         ('pest-control', 'Natural Pest Control', ['readme.html', 'manufacturing-guide.html', 'product-formulations.html', 'research-literature.html', 'safety-data-sheets.html', 'implementation-timeline.html', 'manufacturing-setup.html', 'certification-roadmap.html', 'formulation-recipes.html', 'marketing-strategy.html', 'safety-testing.html', 'distribution-strategy.html']),
         ('termite-farming', 'Termite Farming', ['readme.html', 'market-analysis.html', 'farming-methods.html', 'processing-guide.html', 'species-profiles.html', 'implementation-summary.html', 'colony-monitoring.html']),
+        ('chronosend', 'ChronoSend', ['overview.html']),
     ]
     for section, name, files in index_configs:
         html = generate_index(files, name, section)
@@ -410,6 +418,7 @@ def main():
         'termite': ('\U0001f52c', 'Scientific research documentation from the Termite Research Initiative.'),
         'pest-control': ('\U0001f9ea', 'Natural pest control solutions, manufacturing guides, and certification roadmaps.'),
         'termite-farming': ('\U0001f41c', 'Termite farming methods, market analysis, and species profiles.'),
+        'chronosend': ('\u23f0', 'A timed messaging application for cross-platform communication.'),
     }
     all_sections = []
     for section, name, files in index_configs:
