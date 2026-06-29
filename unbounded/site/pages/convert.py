@@ -22,9 +22,9 @@ TEMPLATE = r'''<!DOCTYPE html>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="icon" type="image/svg+xml" href="{prefix}favicon.svg">
 <title>{title}</title>
-<link rel="stylesheet" href="../styles.css">
+<link rel="stylesheet" href="{prefix}styles.css">
 <style>
 h2 {{ font-size: 1.4rem; font-weight: 600; margin: 2rem 0 0.75rem; color: var(--fg); }}
 h3 {{ font-size: 1.15rem; font-weight: 600; margin: 1.5rem 0 0.5rem; color: var(--accent3); }}
@@ -88,14 +88,15 @@ def convert_file(md_path, output_rel):
     }
     section_name = section_names.get(section, section.capitalize())
     section_index = f'{section}/index.html' if section else '../portal.html'
+    depth = rel_path.count('/')
     if section:
         section_index_path = os.path.join(os.path.dirname(rel_path), 'index.html')
         # Compute relative path for section index
-        depth = rel_path.count('/')
         if depth > 1:
             section_index = '../' * (depth - 1) + section + '/index.html'
         elif depth == 1:
             section_index = 'index.html'
+    prefix = '../' * (depth + 1)
 
     # Convert markdown
     html_body = markdown.markdown(
@@ -121,7 +122,7 @@ def convert_file(md_path, output_rel):
     # Render template
     page = TEMPLATE.format(
         title=title, title_short=title_short, meta_desc=meta_desc,
-        content=html_body, section_name=section_name,
+        content=html_body, section_name=section_name, prefix=prefix,
         section_index=section_index, rel_path=rel_path.replace('\\', '/'),
         md_rel_path=md_rel_path
     )
@@ -282,8 +283,11 @@ def generate_index(files, section_name, output_path):
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://raw.githubusercontent.com/Puronbo/termite-biotech-and-unbounded/main/unbounded/site/favicon.svg">
 <meta name="theme-color" content="#0e0e16">
-<link rel="icon" type="image/svg+xml" href="../favicon.svg">
-<link rel="stylesheet" href="../styles.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+<link rel="stylesheet" href="../../styles.css">
 <style>
 .doc-list {{ display: flex; flex-direction: column; gap: 0.75rem; }}
 .doc-item {{ display: flex; align-items: flex-start; gap: 1rem; padding: 1.25rem 1.5rem; background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: var(--radius); text-decoration: none; color: var(--fg); transition: background 0.3s ease, border-color 0.3s ease, transform 0.3s ease; }}
@@ -454,6 +458,9 @@ def main():
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://raw.githubusercontent.com/Puronbo/termite-biotech-and-unbounded/main/unbounded/site/favicon.svg">
 <meta name="theme-color" content="#0e0e16">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="icon" type="image/svg+xml" href="../favicon.svg">
 <link rel="stylesheet" href="../styles.css">
 <style>
