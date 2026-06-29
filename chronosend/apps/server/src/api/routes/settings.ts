@@ -34,6 +34,9 @@ router.get('/', async (req: Request, res: Response) => {
           whatsapp_method: 'twilio',
           timezone: 'UTC',
           updated_at: null,
+          smtp_host: null,
+          smtp_port: null,
+          smtp_secure: null,
           telegram_bot_token_preview: null,
           email_app_password_preview: null,
           twilio_account_sid_preview: null,
@@ -54,6 +57,9 @@ router.get('/', async (req: Request, res: Response) => {
         whatsapp_method: creds.whatsapp_method,
         timezone: creds.timezone,
         updated_at: creds.updated_at,
+        smtp_host: creds.smtp_host,
+        smtp_port: creds.smtp_port,
+        smtp_secure: creds.smtp_secure,
         telegram_bot_token_preview: preview(creds.telegram_bot_token_enc),
         email_app_password_preview: preview(creds.email_app_password_enc),
         twilio_account_sid_preview: preview(creds.twilio_account_sid_enc),
@@ -80,6 +86,15 @@ router.put('/', validate(credentialsSchema), async (req: Request, res: Response)
     }
     if (req.body.email_app_password) {
       data.email_app_password_enc = JSON.stringify(encrypt(req.body.email_app_password));
+    }
+    if (req.body.smtp_host !== undefined) {
+      data.smtp_host = req.body.smtp_host;
+    }
+    if (req.body.smtp_port !== undefined) {
+      data.smtp_port = req.body.smtp_port;
+    }
+    if (req.body.smtp_secure !== undefined) {
+      data.smtp_secure = req.body.smtp_secure;
     }
     if (req.body.twilio_account_sid) {
       data.twilio_account_sid_enc = JSON.stringify(encrypt(req.body.twilio_account_sid));

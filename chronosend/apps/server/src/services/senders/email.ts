@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer';
 import { decrypt } from '../crypto';
-import { EMAIL_SUBJECT_DEFAULT } from '@chronosend/shared';
+import { EMAIL_SUBJECT_DEFAULT, DEFAULT_SMTP_HOST, DEFAULT_SMTP_PORT } from '@chronosend/shared';
 
 interface EmailSenderInput {
   recipient: string;
@@ -9,6 +9,9 @@ interface EmailSenderInput {
   credentials: {
     email_address: string | null;
     email_app_password_enc: string | null;
+    smtp_host?: string | null;
+    smtp_port?: number | null;
+    smtp_secure?: boolean | null;
   };
 }
 
@@ -26,10 +29,14 @@ export async function sendEmail(input: EmailSenderInput): Promise<{ ok: boolean;
     return { ok: false, error: 'Failed to decrypt email app password' };
   }
 
+  const smtpHost = credentials.smtp_host || DEFAULT_SMTP_HOST;
+  const smtpPort = credentials.smtp_port || DEFAULT_SMTP_PORT;
+  const smtpSecure = credentials.smtp_secure ?? smtpPort === 465;
+
   const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 465,
-    secure: true,
+    host: smtpHost,
+    port: smtpPort,
+    secure: smtpSecure,
     auth: {
       user: credentials.email_address,
       pass: appPassword,

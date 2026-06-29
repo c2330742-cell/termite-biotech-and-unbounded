@@ -1,4 +1,5 @@
 import { useAuth } from '../../contexts/auth-context';
+import { useWebSocket } from '../../contexts/websocket-context';
 import { useTheme } from '../../contexts/theme-context';
 import {
   DropdownMenu,
@@ -9,7 +10,7 @@ import {
 } from '../ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '../ui/avatar';
 import { Button } from '../ui/button';
-import { Menu, Moon, Sun, LogOut, User } from 'lucide-react';
+import { Menu, Moon, Sun, LogOut, Wifi, WifiOff } from 'lucide-react';
 
 interface TopBarProps {
   onMenuClick: () => void;
@@ -17,6 +18,7 @@ interface TopBarProps {
 
 export function TopBar({ onMenuClick }: TopBarProps) {
   const { user, logout } = useAuth();
+  const { connected: wsConnected } = useWebSocket();
   const { theme, toggleTheme } = useTheme();
 
   const initials = user?.email
@@ -28,6 +30,14 @@ export function TopBar({ onMenuClick }: TopBarProps) {
       <button onClick={onMenuClick} className="lg:hidden p-2 hover:bg-accent rounded-md">
         <Menu className="h-5 w-5" />
       </button>
+
+      <div className="flex items-center gap-2">
+        {wsConnected ? (
+          <Wifi className="h-4 w-4 text-green-500" title="Connected" />
+        ) : (
+          <WifiOff className="h-4 w-4 text-red-500" title="Disconnected" />
+        )}
+      </div>
 
       <div className="flex-1" />
 

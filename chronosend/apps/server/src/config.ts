@@ -22,7 +22,7 @@ export const config = {
   jwtRefreshSecret: readSecret('JWT_REFRESH_SECRET', 'JWT_REFRESH_SECRET_FILE', 'dev_refresh_secret_change_in_production'),
   credentialEncryptionKey: readSecret('CREDENTIAL_ENCRYPTION_KEY', 'CREDENTIAL_ENCRYPTION_KEY_FILE', ''),
   corsOrigin: process.env.CORS_ORIGIN || 'http://localhost:5173',
-  googleClientId: process.env.GOOGLE_CLIENT_ID || '',
+  googleClientId: readSecret('GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_ID_FILE', ''),
   logLevel: process.env.LOG_LEVEL || 'info',
   isProduction: process.env.NODE_ENV === 'production',
   isTest: process.env.NODE_ENV === 'test',

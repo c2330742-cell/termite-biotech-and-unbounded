@@ -63,3 +63,7 @@ export const RATE_LIMIT_DEFAULT_MAX = 60;
 // Scheduler
 export const SCHEDULER_CRON_INTERVAL = '*/30 * * * * *'; // every 30 seconds
 export const SCHEDULER_LOOKAHEAD_SECONDS = 60;
+
+// Default SMTP settings (customizable per user)
+export const DEFAULT_SMTP_PORT = 587;
+export const DEFAULT_SMTP_HOST = 'smtp.gmail.com';

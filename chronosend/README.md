@@ -24,8 +24,9 @@ ChronoSend is a unified scheduled message sender. Compose a message, choose a re
 | Database      | PostgreSQL 15, Prisma 7 ORM                                      |
 | Auth          | JWT (access + refresh tokens), bcrypt                            |
 | Real-time     | Native WebSocket (ws library)                                    |
-| Scheduler     | node-cron + in-process job queue                                 |
-| Encryption    | AES-256-GCM (Node.js crypto)                                     |
+| Scheduler     | node-cron + in-process job queue with DB crash recovery          |
+| Encryption    | AES-256-GCM (Node.js crypto) — messages + credentials at rest    |
+| CSRF          | Cookie + header token validation on state-changing /api requests |
 | Validation    | Zod (shared between frontend and backend)                        |
 | Container     | Docker + Docker Compose                                          |
 | CI/CD         | GitHub Actions                                                   |
@@ -160,17 +161,35 @@ See **[DEPLOYMENT.md](./DEPLOYMENT.md)** for a comprehensive guide covering:
 
 ## Security
 
+-   All platform credentials **and** message bodies encrypted with AES-256-GCM at rest
+-   CSRF protection via crypto cookie + `X-CSRF-Token` header on every state-changing API call
 -   Passwords hashed with bcrypt (cost 12)
--   Platform credentials encrypted with AES-256-GCM at rest
 -   JWTs with short-lived access tokens (15 min) + refresh tokens (7 days)
 -   Refresh tokens stored as hashes in database
 -   httpOnly, SameSite=Strict, Secure cookies
 -   CORS restricted to known origins
 -   Helmet security headers
 -   Rate limiting on all endpoints
--   Input validation with Zod
+-   Input validation with Zod (shared schemas)
 -   Parameterized SQL queries (no injection)
 -   RBAC for admin routes
+
+## Termite Biotech Data Analysis
+
+This repository also includes a Python data analysis pipeline for biofuel research:
+
+```bash
+# Run with bundled sample data
+python termite-analysis.py --data-dir examples/termite
+
+# Or via npm
+npm run analyze:termite
+```
+
+Outputs a comprehensive JSON report with isolate rankings, fermentation productivity,
+substrate glucose yields, and calibration curves.
+
+See **[FEATURES.md](./FEATURES.md)** for detailed changelog of all additions.
 
 ## License
 

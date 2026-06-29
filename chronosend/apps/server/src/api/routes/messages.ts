@@ -11,6 +11,7 @@ import {
   MAX_PAGE_LIMIT,
 } from '@chronosend/shared';
 import { jobQueue } from '../../services/scheduler/queue';
+import { encrypt, decrypt } from '../../services/crypto';
 
 const router = Router();
 
@@ -36,15 +37,26 @@ router.get('/', validate(messageQuerySchema, 'query'), async (req: Request, res:
 
     const orderBy = { [sort || 'send_at']: order || 'asc' };
 
-    const [items, total] = await Promise.all([
-      prisma.scheduledMessage.findMany({
-        where: where as Record<string, unknown>,
-        orderBy,
-        skip,
-        take: limitNum,
-      }),
-      prisma.scheduledMessage.count({ where: where as Record<string, unknown> }),
-    ]);
+    let items = await prisma.scheduledMessage.findMany({
+      where: where as Record<string, unknown>,
+      orderBy,
+      skip,
+      take: limitNum,
+    });
+    const total = await prisma.scheduledMessage.count({ where: where as Record<string, unknown> });
+
+    // Decrypt bodies on read
+    items = items.map((item) => {
+      try {
+        const parsed = JSON.parse(item.body);
+        if (parsed.encrypted && parsed.iv && parsed.tag) {
+          item.body = decrypt(parsed);
+        }
+      } catch {
+        // Legacy plaintext body
+      }
+      return item;
+    }) as typeof items;
 
     res.json({
       success: true,
@@ -67,18 +79,22 @@ router.post('/', validate(createMessageSchema), async (req: Request, res: Respon
   try {
     const { platform, recipient, subject, body, send_at, repeat_rule } = req.body;
 
+    const encryptedBody = JSON.stringify(encrypt(body));
+
     const message = await prisma.scheduledMessage.create({
       data: {
         user_id: req.user!.userId,
         platform,
         recipient,
         subject: subject || null,
-        body,
+        body: encryptedBody,
         send_at: new Date(send_at),
         repeat_rule: repeat_rule || 'none',
         status: 'pending',
       },
     });
+
+    const decryptedBody = decrypt(JSON.parse(encryptedBody));
 
     // Add to job queue if send_at is within the next minute
     const now = Date.now();
@@ -90,13 +106,16 @@ router.post('/', validate(createMessageSchema), async (req: Request, res: Respon
         platform: message.platform,
         recipient: message.recipient,
         subject: message.subject,
-        body: message.body,
+        body: decryptedBody,
         sendAt: new Date(send_at),
         repeatRule: repeat_rule || 'none',
       });
     }
 
-    res.status(201).json({ success: true, data: message });
+    res.status(201).json({
+      success: true,
+      data: { ...message, body: decryptedBody },
+    });
   } catch (err) {
     console.error('[messages/create]', err);
     res.status(500).json({ success: false, error: 'Failed to create message' });
@@ -110,7 +129,7 @@ router.get('/stats', async (req: Request, res: Response) => {
     const now = new Date();
     const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-    const [total, pending, sent, failed, cancelled, sentToday, failedToday, nextScheduled, recent] = await Promise.all([
+    const [total, pending, sent, failed, cancelled, sentToday, failedToday, nextScheduled, rawRecent] = await Promise.all([
       prisma.scheduledMessage.count({ where: { user_id: userId } }),
       prisma.scheduledMessage.count({ where: { user_id: userId, status: 'pending' } }),
       prisma.scheduledMessage.count({ where: { user_id: userId, status: 'sent' } }),
@@ -132,6 +151,18 @@ router.get('/stats', async (req: Request, res: Response) => {
         take: 5,
       }),
     ]);
+
+    const recent = rawRecent.map((msg: Record<string, unknown>) => {
+      try {
+        const parsed = JSON.parse(msg.body as string);
+        if (parsed.encrypted && parsed.iv && parsed.tag) {
+          msg.body = decrypt(parsed);
+        }
+      } catch {
+        // Legacy plaintext body
+      }
+      return msg;
+    });
 
     // By-platform breakdown
     const platforms = ['telegram', 'email', 'sms', 'whatsapp', 'discord'] as const;
@@ -172,7 +203,18 @@ router.get('/:id', async (req: Request, res: Response) => {
       return;
     }
 
-    res.json({ success: true, data: message });
+    // Decrypt body
+    let decryptedBody = message.body;
+    try {
+      const parsed = JSON.parse(message.body);
+      if (parsed.encrypted && parsed.iv && parsed.tag) {
+        decryptedBody = decrypt(parsed);
+      }
+    } catch {
+      // Legacy plaintext body
+    }
+
+    res.json({ success: true, data: { ...message, body: decryptedBody } });
   } catch (err) {
     console.error('[messages/get]', err);
     res.status(500).json({ success: false, error: 'Failed to fetch message' });
@@ -201,7 +243,7 @@ router.patch('/:id', validate(updateMessageSchema), async (req: Request, res: Re
     if (platform) updateData.platform = platform;
     if (recipient) updateData.recipient = recipient;
     if (subject !== undefined) updateData.subject = subject;
-    if (body) updateData.body = body;
+    if (body) updateData.body = JSON.stringify(encrypt(body));
     if (send_at) updateData.send_at = new Date(send_at);
     if (repeat_rule) updateData.repeat_rule = repeat_rule;
 
@@ -210,7 +252,8 @@ router.patch('/:id', validate(updateMessageSchema), async (req: Request, res: Re
       data: updateData,
     });
 
-    res.json({ success: true, data: updated });
+    // Return decrypted body
+    res.json({ success: true, data: { ...updated, body } });
   } catch (err) {
     console.error('[messages/update]', err);
     res.status(500).json({ success: false, error: 'Failed to update message' });

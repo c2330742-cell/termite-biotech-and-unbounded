@@ -111,15 +111,16 @@ describe('Messages Routes', () => {
         .mockResolvedValueOnce(1) // failed
         .mockResolvedValueOnce(1) // cancelled
         .mockResolvedValueOnce(2) // sent today
-        .mockResolvedValueOnce(0) // failed today
-        .mockResolvedValueOnce(null) // next scheduled
-        .mockResolvedValueOnce([]); // recent
+        .mockResolvedValueOnce(0); // failed today
+      mockPrisma.scheduledMessage.findFirst.mockResolvedValueOnce(null); // next scheduled
+      mockPrisma.scheduledMessage.findMany.mockResolvedValueOnce([]); // recent
       // Platform counts
       mockPrisma.scheduledMessage.count
         .mockResolvedValueOnce(2) // telegram
         .mockResolvedValueOnce(4) // email
         .mockResolvedValueOnce(3) // sms
-        .mockResolvedValueOnce(1); // whatsapp
+        .mockResolvedValueOnce(1) // whatsapp
+        .mockResolvedValueOnce(0); // discord
 
       const res = await request(app).get(`${API_BASE}/messages/stats`);
 

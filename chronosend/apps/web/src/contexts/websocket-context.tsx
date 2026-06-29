@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useCallback, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from 'react';
 import { wsClient } from '../lib/ws';
 import { useAuth } from './auth-context';
 import { getAccessToken } from '../lib/auth';
@@ -12,6 +12,7 @@ const WsContext = createContext<WsContextType | null>(null);
 
 export function WebSocketProvider({ children }: { children: ReactNode }) {
   const { isAuthenticated } = useAuth();
+  const [connected, setConnected] = useState(false);
 
   useEffect(() => {
     if (isAuthenticated && getAccessToken()) {
@@ -19,6 +20,12 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
     } else {
       wsClient.disconnect();
     }
+
+    const interval = setInterval(() => {
+      setConnected(wsClient.connected);
+    }, 2000);
+
+    return () => clearInterval(interval);
   }, [isAuthenticated]);
 
   const on = useCallback((event: string, handler: (data: Record<string, unknown>) => void) => {
@@ -26,7 +33,7 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <WsContext.Provider value={{ on, connected: wsClient.connected }}>
+    <WsContext.Provider value={{ on, connected }}>
       {children}
     </WsContext.Provider>
   );

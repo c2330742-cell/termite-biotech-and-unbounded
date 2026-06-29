@@ -3,6 +3,7 @@ import prisma from '../../db/client';
 import { authGuard } from '../middleware/auth';
 import { requireRole } from '../middleware/rbac';
 import { jobQueue } from '../../services/scheduler/queue';
+import { getPendingJobCount } from '../../services/scheduler/persistence';
 import { getWsManager } from '../../services/websocket';
 
 const router = Router();
@@ -104,9 +105,10 @@ router.get('/health', async (_req: Request, res: Response) => {
     // DB check
     await prisma.$queryRaw`SELECT 1`;
 
-    const [totalUsers, totalMessages] = await Promise.all([
+    const [totalUsers, totalMessages, pendingJobs] = await Promise.all([
       prisma.user.count(),
       prisma.scheduledMessage.count(),
+      getPendingJobCount(),
     ]);
 
     const memUsage = process.memoryUsage();
@@ -120,6 +122,7 @@ router.get('/health', async (_req: Request, res: Response) => {
         timestamp: new Date().toISOString(),
         database: 'connected',
         scheduler_queue_depth: jobQueue.size,
+        scheduler_pending_db_jobs: pendingJobs,
         websocket_clients: wsManager.connectedClients,
         memory_usage: {
           heapUsed: Math.round(memUsage.heapUsed / 1024 / 1024),

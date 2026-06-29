@@ -7,10 +7,14 @@ class WsClient {
   private handlers = new Map<string, Set<EventHandler>>();
   private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
   private isConnecting = false;
+  private reconnectAttempts = 0;
+  private maxReconnectDelay = 30000;
+  private shouldReconnect = false;
 
   connect(): void {
     if (this.ws?.readyState === WebSocket.OPEN || this.isConnecting) return;
     this.isConnecting = true;
+    this.shouldReconnect = true;
 
     const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     const wsUrl = import.meta.env.VITE_WS_URL || `${wsProtocol}//${window.location.host}/ws`;
@@ -18,7 +22,7 @@ class WsClient {
 
     this.ws.onopen = () => {
       this.isConnecting = false;
-      // Authenticate
+      this.reconnectAttempts = 0;
       const token = getAccessToken();
       if (token) {
         this.ws?.send(JSON.stringify({ type: 'auth', token }));
@@ -33,7 +37,6 @@ class WsClient {
         if (typeHandlers) {
           typeHandlers.forEach((handler) => handler(data));
         }
-        // Also notify wildcard handlers
         const wildcardHandlers = this.handlers.get('*');
         if (wildcardHandlers) {
           wildcardHandlers.forEach((handler) => handler(data));
@@ -45,20 +48,25 @@ class WsClient {
 
     this.ws.onclose = () => {
       this.isConnecting = false;
-      // Reconnect after 5s
-      this.reconnectTimer = setTimeout(() => this.connect(), 5000);
+      this.ws = null;
+      if (this.shouldReconnect) {
+        const delay = Math.min(1000 * Math.pow(2, this.reconnectAttempts), this.maxReconnectDelay);
+        this.reconnectAttempts++;
+        this.reconnectTimer = setTimeout(() => this.connect(), delay);
+      }
     };
 
     this.ws.onerror = () => {
       this.isConnecting = false;
-      this.ws?.close();
     };
   }
 
   disconnect(): void {
+    this.shouldReconnect = false;
     if (this.reconnectTimer) clearTimeout(this.reconnectTimer);
     this.ws?.close();
     this.ws = null;
+    this.reconnectAttempts = 0;
   }
 
   on(event: string, handler: EventHandler): () => void {

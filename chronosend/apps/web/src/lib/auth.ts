@@ -70,6 +70,11 @@ async function tryRefresh(): Promise<boolean> {
   return refreshPromise;
 }
 
+function getCsrfToken(): string | null {
+  const match = document.cookie.match(/(?:^|;\s*)csrf-token=([^;]*)/);
+  return match ? match[1] : null;
+}
+
 export async function apiFetch<T = unknown>(
   path: string,
   options: RequestInit = {},
@@ -83,6 +88,15 @@ export async function apiFetch<T = unknown>(
   const token = getAccessToken();
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;
+  }
+
+  // Add CSRF token for state-changing methods
+  const method = (options.method || 'GET').toUpperCase();
+  if (!['GET', 'HEAD', 'OPTIONS'].includes(method)) {
+    const csrf = getCsrfToken();
+    if (csrf) {
+      headers['X-CSRF-Token'] = csrf;
+    }
   }
 
   let res = await fetch(url, { ...options, headers, credentials: 'include' });

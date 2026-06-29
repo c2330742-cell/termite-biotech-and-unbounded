@@ -4,6 +4,8 @@ import { getWsManager } from '../websocket';
 import { sendTelegram, sendEmail, sendSms, sendWhatsApp, sendDiscord } from '../senders';
 import { getCredentials } from './credentials';
 import { jobQueue } from './queue';
+import { persistJobState, getPendingJobCount } from './persistence';
+import { decrypt } from '../crypto';
 import { SCHEDULER_CRON_INTERVAL, REPEAT_RULES } from '@chronosend/shared';
 
 // Track which message IDs are currently being processed (prevents double-sends)
@@ -43,6 +45,9 @@ async function dispatch(
         credentials: {
           email_address: credentials.email_address,
           email_app_password_enc: credentials.email_app_password_enc,
+          smtp_host: credentials.smtp_host,
+          smtp_port: credentials.smtp_port,
+          smtp_secure: credentials.smtp_secure,
         },
       });
 
@@ -86,25 +91,27 @@ async function dispatch(
 
 // ─── Calculate next run time for repeating messages ──────────────────────────
 function calculateNextRun(sendAt: Date, repeatRule: string): Date | null {
-  const next = new Date(sendAt);
-  switch (repeatRule) {
-    case 'daily':
-      next.setDate(next.getDate() + 1);
-      break;
-    case 'weekly':
-      next.setDate(next.getDate() + 7);
-      break;
-    case 'monthly':
-      next.setMonth(next.getMonth() + 1);
-      break;
-    default:
-      return null;
+  const now = Date.now();
+  let next = new Date(sendAt);
+  const maxIterations = 1000;
+
+  for (let i = 0; i < maxIterations; i++) {
+    switch (repeatRule) {
+      case 'daily':
+        next.setDate(next.getDate() + 1);
+        break;
+      case 'weekly':
+        next.setDate(next.getDate() + 7);
+        break;
+      case 'monthly':
+        next.setMonth(next.getMonth() + 1);
+        break;
+      default:
+        return null;
+    }
+    if (next.getTime() > now) return next;
   }
-  // Ensure next run is in the future
-  if (next.getTime() <= Date.now()) {
-    return calculateNextRun(next, repeatRule);
-  }
-  return next;
+  return null;
 }
 
 // ─── Process a single message ────────────────────────────────────────────────
@@ -121,6 +128,17 @@ async function processMessage(message: {
   if (processing.has(message.id)) return;
   processing.add(message.id);
 
+  // Decrypt body before dispatch
+  let decryptedBody = message.body;
+  try {
+    const parsed = JSON.parse(message.body);
+    if (parsed.encrypted && parsed.iv && parsed.tag) {
+      decryptedBody = decrypt(parsed);
+    }
+  } catch {
+    // Legacy plaintext body
+  }
+
   try {
     // Mark as sending
     await prisma.scheduledMessage.update({
@@ -128,8 +146,8 @@ async function processMessage(message: {
       data: { status: 'sending' },
     });
 
-    // Dispatch to sender
-    const result = await dispatch(message);
+    // Dispatch to sender with decrypted body
+    const result = await dispatch({ ...message, body: decryptedBody });
     const ws = getWsManager();
 
     if (result.ok) {
@@ -274,6 +292,11 @@ async function notifyMissedMessages(): Promise<void> {
 // ─── Public API ──────────────────────────────────────────────────────────────
 export function startScheduler(): void {
   console.log('[scheduler] Starting scheduler...');
+  persistJobState().then(() => {
+    getPendingJobCount().then((count) => {
+      console.log(`[scheduler] ${count} pending jobs ready for processing`);
+    });
+  });
   notifyMissedMessages();
   startPolling();
   console.log('[scheduler] Scheduler running (polling every 30s)');

@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../co
 import { AlertCircle } from 'lucide-react';
 import { Clock } from 'lucide-react';
 
-const GOOGLE_CLIENT_ID = '1052008581434-qh8uodifebf3okhl6hr7ll421r9nr77a.apps.googleusercontent.com';
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
 
 export function LoginPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -22,7 +22,7 @@ export function LoginPage() {
   const gsiInited = useRef(false);
 
   useEffect(() => {
-    if (gsiInited.current) return;
+    if (!GOOGLE_CLIENT_ID || gsiInited.current) return;
     gsiInited.current = true;
 
     if (window.google) {
@@ -154,16 +154,20 @@ export function LoginPage() {
             </Button>
           </form>
 
-          <div className="relative my-6">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
-            </div>
-          </div>
+          {GOOGLE_CLIENT_ID && (
+            <>
+              <div className="relative my-6">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
+                </div>
+              </div>
 
-          <div ref={googleBtnRef} className="flex justify-center" />
+              <div ref={googleBtnRef} className="flex justify-center" />
+            </>
+          )}
 
           <p className="mt-4 text-center text-xs text-muted-foreground">
             {isLogin ? (

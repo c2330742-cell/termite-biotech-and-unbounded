@@ -1,4 +1,5 @@
 import path from 'path';
+import crypto from 'crypto';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -71,6 +72,33 @@ async function main(): Promise<void> {
     if (config.isProduction && host === 'chronosend.hexname.com') {
       return res.redirect(301, `https://www.chronosend.hexname.com${req.originalUrl}`);
     }
+    next();
+  });
+
+  // ─── CSRF Protection ───────────────────────────────────────────────────────
+  const CSRF_COOKIE = 'csrf-token';
+  app.use((req, res, next) => {
+    // Generate CSRF token if not present
+    if (!req.cookies[CSRF_COOKIE]) {
+      const token = crypto.randomBytes(32).toString('hex');
+      res.cookie(CSRF_COOKIE, token, {
+        httpOnly: false,  // Must be readable by JS
+        sameSite: 'strict',
+        secure: config.isProduction,
+        maxAge: 86400000, // 24h
+      });
+    }
+
+    // Validate CSRF for state-changing methods on API routes
+    if (req.path.startsWith('/api') && !['GET', 'HEAD', 'OPTIONS'].includes(req.method)) {
+      const headerToken = req.headers['x-csrf-token'] as string;
+      const cookieToken = req.cookies[CSRF_COOKIE];
+      if (!headerToken || !cookieToken || headerToken !== cookieToken) {
+        res.status(403).json({ success: false, error: 'CSRF token mismatch' });
+        return;
+      }
+    }
+
     next();
   });
 
